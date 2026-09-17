@@ -1,7 +1,8 @@
 param(
   [Parameter(Mandatory=$true)][string]$Root,
   [int]$Port = 8810,
-  [int]$TimeoutMinutes = 240
+  [int]$TimeoutMinutes = 240,
+  [string]$NoteDir = ''
 )
 
 # Accept a relative -Root. Resolve it against the current directory first,
@@ -20,10 +21,16 @@ $types = @{
   '.png'='image/png'; '.jpg'='image/jpeg'; '.jpeg'='image/jpeg'; '.svg'='image/svg+xml';
   '.ico'='image/x-icon'; '.woff2'='font/woff2'; '.woff'='font/woff'
 }
+# Folder where notes written from the dashboard are appended.
+if (-not $NoteDir) { $NoteDir = Join-Path (Split-Path -Parent $Root) '20260917_Ghi nhan tu Dashboard' }
+if (-not (Test-Path -LiteralPath $NoteDir)) { New-Item -ItemType Directory -Path $NoteDir -Force | Out-Null }
+$NoteFile = Join-Path $NoteDir 'ghi-chu.jsonl'
+
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()
 Write-Output "SERVING $Root  ->  http://localhost:$Port/"
+Write-Output "NOTES   $NoteFile"
 
 $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
 while ((Get-Date) -lt $deadline) {
@@ -37,6 +44,30 @@ while ((Get-Date) -lt $deadline) {
   $res.Headers.Add("Cache-Control", "no-store, no-cache, must-revalidate")
   $rel = [System.Uri]::UnescapeDataString($ctx.Request.Url.AbsolutePath).TrimStart('/')
   if ([string]::IsNullOrWhiteSpace($rel)) { $rel = 'index.html' }
+
+  # The dashboard posts notes here. Append one JSON object per line, then answer 200.
+  if ($rel -eq '__ghi-chu') {
+    $res.Headers.Add("Access-Control-Allow-Origin", "*")
+    $res.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
+    if ($ctx.Request.HttpMethod -eq 'OPTIONS') {
+      $res.StatusCode = 204; $res.Close(); continue
+    }
+    try {
+      $sr = New-Object System.IO.StreamReader($ctx.Request.InputStream, [System.Text.Encoding]::UTF8)
+      $body = $sr.ReadToEnd(); $sr.Close()
+      [System.IO.File]::AppendAllText($NoteFile, $body.Trim() + "`r`n", (New-Object System.Text.UTF8Encoding($false)))
+      $ok = [System.Text.Encoding]::UTF8.GetBytes('{"ok":true}')
+      $res.ContentType = 'application/json; charset=utf-8'
+      $res.ContentLength64 = $ok.Length
+      $res.OutputStream.Write($ok, 0, $ok.Length)
+      Write-Output "NOTE saved ($($body.Length) bytes)"
+    } catch {
+      $res.StatusCode = 500
+      Write-Output "NOTE error: $($_.Exception.Message)"
+    }
+    $res.Close(); continue
+  }
+
   $path = Join-Path $Root $rel
 
   if (Test-Path -LiteralPath $path -PathType Leaf) {
