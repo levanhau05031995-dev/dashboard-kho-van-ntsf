@@ -1,0 +1,11 @@
+# KHONG BAO GIO dua vao repo - chua mat khau dang ro
+DOI-MAT-KHAU.md
+
+# Du lieu tho trich tu SAP
+*.csv
+
+# Rac he thong
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
