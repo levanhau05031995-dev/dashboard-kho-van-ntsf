@@ -100,7 +100,175 @@
     if (last) bar.insertBefore(b, last); else bar.appendChild(b);
   }
 
-  function start() { buildSidebar(); wireChrome(); wireLogout(); }
+  /* ═══════════════════════════════════════════════════════
+     GHI CHÚ TẠI CHỖ
+     Gắn nút ✎ vào tiêu đề mọi thẻ. Bấm vào thì mở khung nhập,
+     ghi chú gắn sẵn tên màn và tên biểu đồ đang xem.
+     Lưu ở localStorage, đồng thời gửi về máy chủ cục bộ để ghi
+     ra thư mục ghi nhận. Chạy trên GitHub Pages thì không có
+     máy chủ, ghi chú vẫn giữ trong máy và tải về được.
+     ═══════════════════════════════════════════════════════ */
+  var NOTE_KEY = 'ntsf_ghi_chu';
+  var LOAI = ['Câu hỏi', 'Sửa số liệu', 'Thêm chỉ số', 'Góp ý giao diện', 'Việc cần làm'];
+
+  function docGhiChu() {
+    try { return JSON.parse(localStorage.getItem(NOTE_KEY)) || []; } catch (e) { return []; }
+  }
+  function luuGhiChu(list) {
+    try { localStorage.setItem(NOTE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  function tenMan() {
+    var h = document.querySelector('.topbar h1');
+    return h ? h.textContent.trim() : (document.body.dataset.page || 'Không rõ');
+  }
+  function guiVeMayChu(note) {
+    /* Chỉ thử khi mở qua máy chủ cục bộ. Thất bại thì im lặng — ghi chú đã nằm trong máy rồi. */
+    if (location.protocol !== 'http:') return Promise.resolve(false);
+    return fetch('/__ghi-chu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note)
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  function buildNoteUi() {
+    if (document.getElementById('ghiChuPanel')) return;
+
+    var wrap = document.createElement('div');
+    wrap.innerHTML =
+      '<button class="note-fab" id="noteFab" type="button" title="Ghi chú">✎<span class="note-count" id="noteCount"></span></button>'
+      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-label="Ghi chú">'
+      +   '<div class="note-head"><b>Ghi chú khi xem báo cáo</b>'
+      +     '<button class="note-x" id="noteClose" type="button" aria-label="Đóng">✕</button></div>'
+      +   '<div class="note-form">'
+      +     '<label class="note-lb">Vị trí</label>'
+      +     '<div class="note-at" id="noteAt">—</div>'
+      +     '<label class="note-lb" for="noteLoai">Loại</label>'
+      +     '<select id="noteLoai">' + LOAI.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select>'
+      +     '<label class="note-lb" for="noteText">Nội dung</label>'
+      +     '<textarea id="noteText" rows="4" placeholder="Ví dụ: biểu đồ này nên tách riêng nhóm Z401, và cho tôi xem cả số tháng trước."></textarea>'
+      +     '<button class="note-save" id="noteSave" type="button">Lưu ghi chú</button>'
+      +     '<p class="note-msg" id="noteMsg"></p>'
+      +   '</div>'
+      +   '<div class="note-list-head"><b>Đã ghi</b>'
+      +     '<span><button class="note-mini" id="noteExport" type="button">⤓ Tải về (.md)</button>'
+      +     '<button class="note-mini" id="noteClear" type="button">Xoá hết</button></span></div>'
+      +   '<div class="note-list" id="noteList"></div>'
+      + '</div>';
+    while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+
+    var panel = document.getElementById('ghiChuPanel');
+    var atEl = document.getElementById('noteAt');
+    var msg = document.getElementById('noteMsg');
+    var viTri = 'Toàn trang';
+
+    function moPanel(muc) {
+      viTri = muc || 'Toàn trang';
+      atEl.textContent = tenMan() + ' › ' + viTri;
+      panel.classList.add('on');
+      msg.textContent = '';
+      document.getElementById('noteText').focus();
+    }
+    function dongPanel() { panel.classList.remove('on'); }
+
+    function veDanhSach() {
+      var list = docGhiChu();
+      document.getElementById('noteCount').textContent = list.length ? list.length : '';
+      document.getElementById('noteList').innerHTML = list.length
+        ? list.slice().reverse().map(function (n, i) {
+            var idx = list.length - 1 - i;
+            return '<div class="note-item"><div class="note-item-top">'
+              + '<span class="note-tag">' + n.loai + '</span>'
+              + '<span class="note-when">' + n.luc + '</span>'
+              + '<button class="note-del" data-i="' + idx + '" type="button" aria-label="Xoá">✕</button></div>'
+              + '<div class="note-where">' + n.man + ' › ' + n.muc + '</div>'
+              + '<div class="note-body">' + n.noiDung.replace(/[<>&]/g, function (c) {
+                  return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; }) + '</div></div>';
+          }).join('')
+        : '<p class="note-empty">Chưa có ghi chú nào. Bấm nút ✎ cạnh tiêu đề bất kỳ biểu đồ nào để ghi.</p>';
+    }
+
+    /* Gắn nút ✎ vào tiêu đề các thẻ */
+    function ganNut() {
+      var tieuDe = document.querySelectorAll('.card > h3, .insight > h4, .banner > h2');
+      Array.prototype.forEach.call(tieuDe, function (h) {
+        if (h.querySelector('.note-pin')) return;
+        var b = document.createElement('button');
+        b.className = 'note-pin'; b.type = 'button';
+        b.title = 'Ghi chú cho mục này'; b.textContent = '✎';
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          moPanel(h.textContent.replace('✎', '').trim());
+        });
+        h.appendChild(b);
+      });
+    }
+    ganNut();
+    /* Biểu đồ vẽ lại không đụng tới tiêu đề, nhưng trang có thể dựng thẻ động */
+    setTimeout(ganNut, 1200);
+
+    document.getElementById('noteFab').addEventListener('click', function () {
+      panel.classList.contains('on') ? dongPanel() : moPanel('Toàn trang');
+    });
+    document.getElementById('noteClose').addEventListener('click', dongPanel);
+
+    document.getElementById('noteSave').addEventListener('click', function () {
+      var txt = document.getElementById('noteText').value.trim();
+      if (!txt) { msg.textContent = 'Chưa nhập nội dung.'; msg.className = 'note-msg bad'; return; }
+      var n = {
+        luc: new Date().toLocaleString('vi-VN'),
+        man: tenMan(),
+        muc: viTri,
+        loai: document.getElementById('noteLoai').value,
+        noiDung: txt,
+        trang: location.pathname.split('/').pop() || 'index.html'
+      };
+      var list = docGhiChu(); list.push(n);
+      if (!luuGhiChu(list)) {
+        msg.textContent = 'Trình duyệt chặn bộ nhớ cục bộ nên không lưu được.';
+        msg.className = 'note-msg bad'; return;
+      }
+      document.getElementById('noteText').value = '';
+      veDanhSach();
+      msg.textContent = 'Đã lưu trong máy.'; msg.className = 'note-msg ok';
+      guiVeMayChu(n).then(function (ok) {
+        if (ok) { msg.textContent = 'Đã lưu và ghi vào thư mục ghi nhận.'; msg.className = 'note-msg ok'; }
+      });
+    });
+
+    document.getElementById('noteList').addEventListener('click', function (e) {
+      var b = e.target.closest('.note-del'); if (!b) return;
+      var list = docGhiChu(); list.splice(+b.dataset.i, 1); luuGhiChu(list); veDanhSach();
+    });
+
+    document.getElementById('noteClear').addEventListener('click', function () {
+      if (!docGhiChu().length) return;
+      if (confirm('Xoá toàn bộ ghi chú đang lưu trong máy?')) { luuGhiChu([]); veDanhSach(); }
+    });
+
+    document.getElementById('noteExport').addEventListener('click', function () {
+      var list = docGhiChu();
+      if (!list.length) { msg.textContent = 'Chưa có ghi chú nào để tải.'; msg.className = 'note-msg bad'; return; }
+      var md = '# Ghi nhận từ Dashboard Kho vận & Logistics\n\n'
+        + 'Xuất lúc ' + new Date().toLocaleString('vi-VN') + ' · ' + list.length + ' ghi chú\n\n';
+      list.forEach(function (n, i) {
+        md += '## ' + (i + 1) + '. [' + n.loai + '] ' + n.man + ' › ' + n.muc + '\n\n'
+           + '- Thời điểm: ' + n.luc + '\n- Trang: `' + n.trang + '`\n\n' + n.noiDung + '\n\n';
+      });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown;charset=utf-8' }));
+      a.download = 'ghi-nhan-dashboard-' + new Date().toISOString().slice(0, 10) + '.md';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panel.classList.contains('on')) dongPanel();
+    });
+
+    veDanhSach();
+  }
+
+  function start() { buildSidebar(); wireChrome(); wireLogout(); buildNoteUi(); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();

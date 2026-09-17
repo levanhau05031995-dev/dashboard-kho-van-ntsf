@@ -460,6 +460,59 @@ tbody tr:hover{background:var(--surface-tint)}
 .nav-item[aria-disabled="true"]{opacity:.62; cursor:default}
 .nav-item[aria-disabled="true"]:hover{background:transparent; color:var(--on-navy)}
 
+/* ═══ GHI CHÚ TẠI CHỖ ═══ */
+.note-pin{margin-left:8px;border:0;background:transparent;color:var(--ink-3);cursor:pointer;
+  font-size:13px;line-height:1;padding:2px 5px;border-radius:5px;opacity:.45;transition:opacity .15s,background .15s}
+.note-pin:hover{opacity:1;background:var(--panel);color:var(--blue)}
+.card:hover .note-pin,.insight:hover .note-pin,.banner:hover .note-pin{opacity:.8}
+.banner .note-pin{color:rgba(255,255,255,.75)}
+.banner .note-pin:hover{background:rgba(255,255,255,.16);color:#fff}
+
+.note-fab{position:fixed;right:20px;bottom:20px;z-index:60;width:50px;height:50px;border:0;cursor:pointer;
+  border-radius:var(--r-pill);background:linear-gradient(135deg,#0B4183,#093670);color:#fff;font-size:20px;
+  box-shadow:0 8px 24px rgba(9,54,112,.34);transition:transform .15s,box-shadow .15s}
+.note-fab:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(9,54,112,.42)}
+.note-count{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:var(--r-pill);
+  background:var(--brand-red);color:#fff;font:800 11px/20px Roboto,sans-serif;padding:0 5px}
+.note-count:empty{display:none}
+
+.note-panel{position:fixed;right:20px;bottom:82px;z-index:61;width:min(380px,calc(100vw - 40px));
+  max-height:min(640px,calc(100vh - 120px));overflow:auto;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r-card);box-shadow:0 20px 50px rgba(9,54,112,.22);padding:14px 16px 16px;display:none}
+.note-panel.on{display:block}
+.note-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.note-head b{font:800 14px/1.3 Mulish,sans-serif;color:var(--ink)}
+.note-x{border:0;background:transparent;color:var(--ink-3);cursor:pointer;font-size:15px;padding:3px 6px;border-radius:6px}
+.note-x:hover{background:var(--panel);color:var(--ink)}
+.note-lb{display:block;font:800 9px/1 Roboto,sans-serif;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:10px 0 5px}
+.note-at{background:var(--panel);border-left:3px solid var(--c5);border-radius:6px;padding:7px 10px;
+  font:600 11.5px/1.45 Roboto,sans-serif;color:var(--ink-2)}
+.note-panel select,.note-panel textarea{width:100%;border:1.5px solid var(--line);border-radius:8px;
+  padding:8px 10px;font:400 12.5px/1.5 Roboto,sans-serif;color:var(--ink);background:var(--bg);outline:none;resize:vertical}
+.note-panel select:focus,.note-panel textarea:focus{border-color:var(--blue);background:var(--card)}
+.note-save{width:100%;margin-top:10px;padding:10px;border:0;border-radius:8px;cursor:pointer;
+  background:linear-gradient(135deg,#0B4183,#093670);color:#fff;font:800 12.5px/1 Mulish,sans-serif}
+.note-save:hover{filter:brightness(1.08)}
+.note-msg{margin:8px 0 0;font:600 11px/1.4 Roboto,sans-serif;min-height:14px}
+.note-msg.ok{color:var(--good)} .note-msg.bad{color:var(--bad)}
+.note-list-head{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;
+  padding-top:12px;border-top:1px solid var(--line)}
+.note-list-head b{font:800 12px/1 Mulish,sans-serif;color:var(--ink)}
+.note-mini{border:1px solid var(--line);background:var(--card);color:var(--ink-2);cursor:pointer;
+  font:700 10px/1 Roboto,sans-serif;padding:5px 8px;border-radius:var(--r-pill);margin-left:5px}
+.note-mini:hover{background:var(--panel);color:var(--ink)}
+.note-item{background:var(--panel);border-radius:8px;padding:9px 11px;margin-bottom:7px}
+.note-item-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.note-tag{font:800 9px/1 Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(0,70,132,.12);color:var(--blue);padding:3px 6px;border-radius:var(--r-pill)}
+.note-when{font:400 9.5px/1 Roboto,sans-serif;color:var(--ink-3)}
+.note-del{margin-left:auto;border:0;background:transparent;color:var(--ink-3);cursor:pointer;font-size:11px;padding:2px 5px;border-radius:5px}
+.note-del:hover{background:rgba(180,35,24,.12);color:var(--bad)}
+.note-where{font:700 10px/1.35 Roboto,sans-serif;color:var(--ink-2);margin-bottom:3px}
+.note-body{font:400 11.5px/1.55 Roboto,sans-serif;color:var(--ink);white-space:pre-wrap}
+.note-empty{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-3)}
+@media print{.note-fab,.note-panel,.note-pin{display:none !important}}
 </style>
 <style>
 /* ── Từ điển chỉ số — chỉ dùng ở màn này ── */
@@ -601,7 +654,175 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
     if (last) bar.insertBefore(b, last); else bar.appendChild(b);
   }
 
-  function start() { buildSidebar(); wireChrome(); wireLogout(); }
+  /* ═══════════════════════════════════════════════════════
+     GHI CHÚ TẠI CHỖ
+     Gắn nút ✎ vào tiêu đề mọi thẻ. Bấm vào thì mở khung nhập,
+     ghi chú gắn sẵn tên màn và tên biểu đồ đang xem.
+     Lưu ở localStorage, đồng thời gửi về máy chủ cục bộ để ghi
+     ra thư mục ghi nhận. Chạy trên GitHub Pages thì không có
+     máy chủ, ghi chú vẫn giữ trong máy và tải về được.
+     ═══════════════════════════════════════════════════════ */
+  var NOTE_KEY = 'ntsf_ghi_chu';
+  var LOAI = ['Câu hỏi', 'Sửa số liệu', 'Thêm chỉ số', 'Góp ý giao diện', 'Việc cần làm'];
+
+  function docGhiChu() {
+    try { return JSON.parse(localStorage.getItem(NOTE_KEY)) || []; } catch (e) { return []; }
+  }
+  function luuGhiChu(list) {
+    try { localStorage.setItem(NOTE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  function tenMan() {
+    var h = document.querySelector('.topbar h1');
+    return h ? h.textContent.trim() : (document.body.dataset.page || 'Không rõ');
+  }
+  function guiVeMayChu(note) {
+    /* Chỉ thử khi mở qua máy chủ cục bộ. Thất bại thì im lặng — ghi chú đã nằm trong máy rồi. */
+    if (location.protocol !== 'http:') return Promise.resolve(false);
+    return fetch('/__ghi-chu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note)
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  function buildNoteUi() {
+    if (document.getElementById('ghiChuPanel')) return;
+
+    var wrap = document.createElement('div');
+    wrap.innerHTML =
+      '<button class="note-fab" id="noteFab" type="button" title="Ghi chú">✎<span class="note-count" id="noteCount"></span></button>'
+      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-label="Ghi chú">'
+      +   '<div class="note-head"><b>Ghi chú khi xem báo cáo</b>'
+      +     '<button class="note-x" id="noteClose" type="button" aria-label="Đóng">✕</button></div>'
+      +   '<div class="note-form">'
+      +     '<label class="note-lb">Vị trí</label>'
+      +     '<div class="note-at" id="noteAt">—</div>'
+      +     '<label class="note-lb" for="noteLoai">Loại</label>'
+      +     '<select id="noteLoai">' + LOAI.map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select>'
+      +     '<label class="note-lb" for="noteText">Nội dung</label>'
+      +     '<textarea id="noteText" rows="4" placeholder="Ví dụ: biểu đồ này nên tách riêng nhóm Z401, và cho tôi xem cả số tháng trước."></textarea>'
+      +     '<button class="note-save" id="noteSave" type="button">Lưu ghi chú</button>'
+      +     '<p class="note-msg" id="noteMsg"></p>'
+      +   '</div>'
+      +   '<div class="note-list-head"><b>Đã ghi</b>'
+      +     '<span><button class="note-mini" id="noteExport" type="button">⤓ Tải về (.md)</button>'
+      +     '<button class="note-mini" id="noteClear" type="button">Xoá hết</button></span></div>'
+      +   '<div class="note-list" id="noteList"></div>'
+      + '</div>';
+    while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+
+    var panel = document.getElementById('ghiChuPanel');
+    var atEl = document.getElementById('noteAt');
+    var msg = document.getElementById('noteMsg');
+    var viTri = 'Toàn trang';
+
+    function moPanel(muc) {
+      viTri = muc || 'Toàn trang';
+      atEl.textContent = tenMan() + ' › ' + viTri;
+      panel.classList.add('on');
+      msg.textContent = '';
+      document.getElementById('noteText').focus();
+    }
+    function dongPanel() { panel.classList.remove('on'); }
+
+    function veDanhSach() {
+      var list = docGhiChu();
+      document.getElementById('noteCount').textContent = list.length ? list.length : '';
+      document.getElementById('noteList').innerHTML = list.length
+        ? list.slice().reverse().map(function (n, i) {
+            var idx = list.length - 1 - i;
+            return '<div class="note-item"><div class="note-item-top">'
+              + '<span class="note-tag">' + n.loai + '</span>'
+              + '<span class="note-when">' + n.luc + '</span>'
+              + '<button class="note-del" data-i="' + idx + '" type="button" aria-label="Xoá">✕</button></div>'
+              + '<div class="note-where">' + n.man + ' › ' + n.muc + '</div>'
+              + '<div class="note-body">' + n.noiDung.replace(/[<>&]/g, function (c) {
+                  return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; }) + '</div></div>';
+          }).join('')
+        : '<p class="note-empty">Chưa có ghi chú nào. Bấm nút ✎ cạnh tiêu đề bất kỳ biểu đồ nào để ghi.</p>';
+    }
+
+    /* Gắn nút ✎ vào tiêu đề các thẻ */
+    function ganNut() {
+      var tieuDe = document.querySelectorAll('.card > h3, .insight > h4, .banner > h2');
+      Array.prototype.forEach.call(tieuDe, function (h) {
+        if (h.querySelector('.note-pin')) return;
+        var b = document.createElement('button');
+        b.className = 'note-pin'; b.type = 'button';
+        b.title = 'Ghi chú cho mục này'; b.textContent = '✎';
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          moPanel(h.textContent.replace('✎', '').trim());
+        });
+        h.appendChild(b);
+      });
+    }
+    ganNut();
+    /* Biểu đồ vẽ lại không đụng tới tiêu đề, nhưng trang có thể dựng thẻ động */
+    setTimeout(ganNut, 1200);
+
+    document.getElementById('noteFab').addEventListener('click', function () {
+      panel.classList.contains('on') ? dongPanel() : moPanel('Toàn trang');
+    });
+    document.getElementById('noteClose').addEventListener('click', dongPanel);
+
+    document.getElementById('noteSave').addEventListener('click', function () {
+      var txt = document.getElementById('noteText').value.trim();
+      if (!txt) { msg.textContent = 'Chưa nhập nội dung.'; msg.className = 'note-msg bad'; return; }
+      var n = {
+        luc: new Date().toLocaleString('vi-VN'),
+        man: tenMan(),
+        muc: viTri,
+        loai: document.getElementById('noteLoai').value,
+        noiDung: txt,
+        trang: location.pathname.split('/').pop() || 'index.html'
+      };
+      var list = docGhiChu(); list.push(n);
+      if (!luuGhiChu(list)) {
+        msg.textContent = 'Trình duyệt chặn bộ nhớ cục bộ nên không lưu được.';
+        msg.className = 'note-msg bad'; return;
+      }
+      document.getElementById('noteText').value = '';
+      veDanhSach();
+      msg.textContent = 'Đã lưu trong máy.'; msg.className = 'note-msg ok';
+      guiVeMayChu(n).then(function (ok) {
+        if (ok) { msg.textContent = 'Đã lưu và ghi vào thư mục ghi nhận.'; msg.className = 'note-msg ok'; }
+      });
+    });
+
+    document.getElementById('noteList').addEventListener('click', function (e) {
+      var b = e.target.closest('.note-del'); if (!b) return;
+      var list = docGhiChu(); list.splice(+b.dataset.i, 1); luuGhiChu(list); veDanhSach();
+    });
+
+    document.getElementById('noteClear').addEventListener('click', function () {
+      if (!docGhiChu().length) return;
+      if (confirm('Xoá toàn bộ ghi chú đang lưu trong máy?')) { luuGhiChu([]); veDanhSach(); }
+    });
+
+    document.getElementById('noteExport').addEventListener('click', function () {
+      var list = docGhiChu();
+      if (!list.length) { msg.textContent = 'Chưa có ghi chú nào để tải.'; msg.className = 'note-msg bad'; return; }
+      var md = '# Ghi nhận từ Dashboard Kho vận & Logistics\n\n'
+        + 'Xuất lúc ' + new Date().toLocaleString('vi-VN') + ' · ' + list.length + ' ghi chú\n\n';
+      list.forEach(function (n, i) {
+        md += '## ' + (i + 1) + '. [' + n.loai + '] ' + n.man + ' › ' + n.muc + '\n\n'
+           + '- Thời điểm: ' + n.luc + '\n- Trang: `' + n.trang + '`\n\n' + n.noiDung + '\n\n';
+      });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown;charset=utf-8' }));
+      a.download = 'ghi-nhan-dashboard-' + new Date().toISOString().slice(0, 10) + '.md';
+      a.click(); URL.revokeObjectURL(a.href);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panel.classList.contains('on')) dongPanel();
+    });
+
+    veDanhSach();
+  }
+
+  function start() { buildSidebar(); wireChrome(); wireLogout(); buildNoteUi(); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
@@ -781,7 +1002,7 @@ window.NTSF_RANGE = (function () {
 
       <section class="banner">
         <h2>Mọi con số trên dashboard được tính như thế nào</h2>
-        <p>26 chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ</p>
+        <p>29 chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ</p>
       </section>
 
       <!-- QUY ƯỚC CHUNG -->
@@ -849,7 +1070,7 @@ window.NTSF_RANGE = (function () {
         <p><span class="formula">Tổng luân chuyển kho 37.387 tấn ≠ Sản lượng giao khách 2.570 tấn — chênh 14,5 lần</span></p>
         <p><b>Một — luân chuyển kho và giao khách là hai thứ khác nhau.</b> Màn 1 có biểu đồ <b>Tổng luân chuyển kho</b> gồm toàn bộ 46 kho, tính cả nguyên liệu vào sản xuất và thức ăn ra trại. Màn 2 có <b>Sản lượng giao cho khách</b> chỉ tính hàng đi khách. Hai biểu đồ này không bao giờ khớp nhau và không nên khớp.</p>
         <p><b>Hai — cùng một chỉ số nhưng khác kỳ.</b> Màn 1 là màn điều hành nên hiển thị <b>tháng gần nhất</b>: giao đúng hạn 52,7%, sản lượng xử lý 103 tấn mỗi ngày. Các màn chuyên đề hiển thị <b>toàn kỳ</b>: giao đúng hạn 16,6%, sản lượng xử lý 144 tấn mỗi ngày. Không phải số nào sai, chỉ là khác kỳ — nhãn trên mỗi thẻ đều ghi rõ.</p>
-        <p><b>Ba — con số đẹp chưa chắc là tin tốt.</b> <b>Chính xác soạn hàng 100%</b> không chứng minh thao tác chính xác, vì hệ thống tự xác nhận lệnh ngay khi tạo. <b>Mức lấp đầy kho 95,5%</b> không nói kho đã dùng hết sức chứa, vì mẫu số là đỉnh tồn chứ không phải sức chứa thiết kế. Hai chỗ này đều đã ghi cảnh báo ngay trên thẻ.</p>
+        <p><b>Ba — con số đẹp chưa chắc là tin tốt.</b> <b>Chính xác soạn hàng 100%</b> không chứng minh thao tác chính xác, vì hệ thống tự xác nhận lệnh ngay khi tạo. <b>Mức lấp đầy kho lạnh 66,9%</b> là số tổng của 9 kho — nó che mất việc Kho 4000 đang vượt trần 107,2% trong khi bốn kho A chỉ dùng 28–47%. Hai chỗ này đều đã ghi cảnh báo ngay trên thẻ.</p>
         <p class="act">Gợi ý hành động: khi bộ KPI chính thức của Khối được chốt, sửa lại đúng ba chỗ — mảng chỉ tiêu ở Màn 5, nhãn mã KPI trên các thẻ, và các mục tương ứng ở màn này. Toàn bộ biểu đồ và bảng còn lại tự cập nhật theo.</p>
       </section>
 
@@ -867,10 +1088,20 @@ const DEFS=[
  ng:'stock_monthly.csv ← MMIM_STOCKINDATERANGE_SRV (tương đương MB5B / ZWM06)',
  luu:'Đây là số chốt cuối tháng 9. Ảnh chụp tồn tức thời trong stock.csv cho <b>6.040,2 tấn</b> — lệch vì khác thời điểm chốt, không phải một trong hai sai.'},
 
-{g:'ton', n:'Mức lấp đầy kho', ma:'CC-04', val:'95,5', u:'%', man:'Màn 1 · Màn 3',
- ct:'Tồn kho cuối kỳ ÷ Sức chứa quy ước 6.444,6 tấn',
- ng:'stock_monthly.csv',
- luu:'<b>Mẫu số là ước tính.</b> 6.444,6 tấn là đỉnh tồn cao nhất trong kỳ, không phải sức chứa thiết kế của kho. Con số 95,5% chỉ nói kho đang gần mức đầy nhất từng đạt, chưa nói đã dùng bao nhiêu phần sức chứa thật.'},
+{g:'ton', n:'Mức lấp đầy kho lạnh', ma:'CC-04', val:'66,9', u:'%', man:'Màn 1 · Màn 3',
+ ct:'Tồn 9 kho lạnh thành phẩm ÷ Sức chứa thiết kế 6.444,6 tấn',
+ ng:'stock_monthly_by_location.csv (9 mã kho 5300–5304, 5101, 5102, 5201, 5202) + hồ sơ layout kho của Khối',
+ luu:'<b>Đã sửa ngày 17/09/2026.</b> Trước đó tử số lấy nhầm là tồn của <b>toàn bộ 64 kho</b> — gồm cả trại nuôi, vật tư, kho ngoài — rồi đem chia cho sức chứa của riêng 9 kho lạnh, ra 95,5% và báo sai là "vượt sức chứa 109,5%" ở tháng 8. Số đúng là <b>66,9%</b>, và kho <b>chưa bao giờ vượt trần</b>.<br><br>Tổng số vẫn che mất lệch tải: <b>Kho 4000 đang ở 107,2%</b> trong khi bốn kho A nhỏ chỉ dùng 28–47%. Xem bảng chi tiết từng kho ở Màn 3.'},
+
+{g:'ton', n:'Sức chứa thiết kế kho lạnh', ma:null, val:'6.444,6', u:'tấn', man:'Màn 3',
+ ct:'Tổng sức chứa thiết kế của 9 kho lạnh thành phẩm tại NTSF Cần Thơ',
+ ng:'Hồ sơ layout kho của Khối Kho vận, không lấy từ SAP',
+ luu:'Kèm theo: <b>13.633 m²</b> diện tích và <b>67 cửa</b>. Đây là <b>master data ngoài SAP</b> — SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng nên không cộng được. Nếu Khối sửa layout kho thì phải cập nhật lại mảng <code>WH</code> trong Màn 3, dashboard không tự biết.'},
+
+{g:'ton', n:'Tồn theo loại kho', ma:null, val:null, u:null, man:'Màn 3',
+ ct:'Gộp 64 kho thành 7 nhóm theo tên kho trong SAP',
+ ng:'stock_monthly_by_location.csv',
+ luu:'SAP <b>có</b> tách kho vật liệu và kho thành phẩm, ghi rõ ngay trong tên kho: <code>Kho NL cá</code>, <code>Kho vật tư tổng</code>, <code>461-Kho BaoBì Cá</code>, <code>TânLộc-K.ThứcĂn</code>… Chốt tháng 9: kho lạnh thành phẩm <b>4.312,2 t (70,1%)</b>, trại nuôi <b>1.035,3 t</b>, vật tư và bao bì <b>407,9 t</b>, kho ngoài <b>259,5 t</b>. Chỉ nhóm đầu mới thuộc phạm vi CC-04.'},
 
 {g:'ton', n:'Số ngày tồn kho thành phẩm', ma:'CC-02', val:'48,6', u:'ngày', man:'Màn 1 · Màn 3',
  ct:'Tồn kho bình quân ÷ Lượng xuất bình quân mỗi ngày',
