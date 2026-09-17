@@ -18,6 +18,18 @@
 
    ĐỔI MẬT KHẨU: xem hướng dẫn trong tệp DOI-MAT-KHAU.md
    ═══════════════════════════════════════════════════════ */
+/* ── Khôi phục giao diện sáng/tối đã chọn ──────────────
+   Đặt ở ĐÂY chứ không ở app.js là có lý do: auth.js là script đồng bộ
+   đầu tiên trong <head>, chạy trước khi trang vẽ lần đầu. app.js dùng
+   defer nên chạy sau khi trang đã vẽ — để ở đó thì mỗi lần chuyển trang
+   sẽ loé trắng một nhịp rồi mới chuyển sang nền tối. */
+(function () {
+  try {
+    var t = localStorage.getItem('ntsf_theme');
+    if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { /* trình duyệt chặn bộ nhớ cục bộ thì bỏ qua, dùng mặc định */ }
+})();
+
 (function (root) {
   'use strict';
 
@@ -528,6 +540,9 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
                : cur === 'light' ? 'dark'
                : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
       document.documentElement.setAttribute('data-theme', next);
+      /* Ghi nhớ để giữ nguyên giao diện khi chuyển sang trang khác.
+         auth.js đọc lại giá trị này ngay đầu <head> của mỗi trang. */
+      try { localStorage.setItem('ntsf_theme', next); } catch (e) {}
       if (typeof window.drawAll === 'function') window.drawAll();
     });
   }
@@ -556,6 +571,156 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+   Bộ lọc phạm vi thời gian — dùng chung cho mọi màn
+   Trang gọi NTSF_RANGE.init({ onChange: fn }) rồi vẽ lại
+   theo cửa sổ thời gian nhận được.
+   ═══════════════════════════════════════════════════════ */
+window.NTSF_RANGE = (function () {
+  'use strict';
+
+  var BASE = new Date(2026, 0, 1);    // mốc 0 của offset ngày
+  var END  = new Date(2026, 8, 16);   // ngày chốt số liệu 16/09/2026
+  var THANG = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+
+  function off(d) { return Math.round((d - BASE) / 86400000); }
+  function dateOf(o) { var d = new Date(BASE); d.setDate(d.getDate() + o); return d; }
+  function dd(d) { return ('0' + d.getDate()).slice(-2); }
+  function mm(d) { return ('0' + (d.getMonth() + 1)).slice(-2); }
+  function vn(d) { return dd(d) + '/' + mm(d) + '/' + d.getFullYear(); }
+  function vnNgan(d) { return dd(d) + '/' + mm(d); }
+
+  var END_OFF = off(END);
+
+  /* Thứ Hai đầu tuần chứa ngày d */
+  function thuHai(d) {
+    var k = (d.getDay() + 6) % 7;      // 0 = thứ Hai
+    var r = new Date(d); r.setDate(d.getDate() - k); r.setHours(0, 0, 0, 0);
+    return r;
+  }
+
+  var PRESETS = [
+    { id: 'w', label: 'Tuần này',  bucket: 'day',   ten: 'tuần hiện tại' },
+    { id: 'm', label: 'Tháng này', bucket: 'day',   ten: 'tháng hiện tại' },
+    { id: '3', label: '3 tháng',   bucket: 'week',  ten: '3 tháng gần nhất' },
+    { id: '6', label: '6 tháng',   bucket: 'month', ten: '6 tháng gần nhất' },
+    { id: 'y', label: 'Năm 2026',  bucket: 'month', ten: 'cả năm 2026' }
+  ];
+
+  function cuaSo(id) {
+    var p = null, i;
+    for (i = 0; i < PRESETS.length; i++) if (PRESETS[i].id === id) p = PRESETS[i];
+    if (!p) p = PRESETS[PRESETS.length - 1];
+
+    var from;
+    if (id === 'w')      from = thuHai(END);
+    else if (id === 'm') from = new Date(2026, END.getMonth(), 1);
+    else if (id === '3') from = new Date(2026, END.getMonth() - 2, 1);
+    else if (id === '6') from = new Date(2026, END.getMonth() - 5, 1);
+    else                 from = new Date(BASE);
+    if (from < BASE) from = new Date(BASE);
+
+    var fo = off(from);
+    return {
+      id: p.id, label: p.label, ten: p.ten, bucket: p.bucket,
+      from: from, to: END, fromOff: fo, toOff: END_OFF,
+      soNgay: END_OFF - fo + 1,
+      nhan: vn(from) + ' → ' + vn(END),
+      toanKy: p.id === 'y'
+    };
+  }
+
+  /* Giải nén chuỗi "off,tk,pk,tr,tn,ct,cn,oo,ot;…" thành mảng bản ghi ngày */
+  function parse(packed) {
+    return packed.split(';').map(function (s) {
+      var v = s.split(',');
+      return {
+        o: +v[0], d: dateOf(+v[0]),
+        tk: +v[1], pk: +v[2], tr: +v[3], tn: +v[4],
+        ct: +v[5], cn: +v[6], oo: +v[7], ot: +v[8]
+      };
+    });
+  }
+
+  function loc(rows, r) {
+    return rows.filter(function (x) { return x.o >= r.fromOff && x.o <= r.toOff; });
+  }
+
+  /* Gom nhóm theo ngày / tuần / tháng. Trả về [{nhan, phu, rows}] */
+  function gom(rows, r) {
+    var out = [], key = {}, i, x, k, lb, sub;
+    for (i = 0; i < rows.length; i++) {
+      x = rows[i];
+      if (r.bucket === 'day') { k = x.o; lb = vnNgan(x.d); sub = ''; }
+      else if (r.bucket === 'week') {
+        var h = thuHai(x.d); k = 'w' + off(h);
+        lb = vnNgan(h); sub = 'tuần';
+      } else { k = 'm' + x.d.getMonth(); lb = 'T' + THANG[x.d.getMonth()]; sub = ''; }
+      if (!key[k]) { key[k] = { nhan: lb, phu: sub, rows: [] }; out.push(key[k]); }
+      key[k].rows.push(x);
+    }
+    out.forEach(function (b) {
+      b.tk = 0; b.pk = 0; b.tr = 0; b.tn = 0; b.ct = 0; b.cn = 0; b.oo = 0; b.ot = 0;
+      b.rows.forEach(function (x) {
+        b.tk += x.tk; b.pk += x.pk; b.tr += x.tr; b.tn += x.tn;
+        b.ct += x.ct; b.cn += x.cn; b.oo += x.oo; b.ot += x.ot;
+      });
+      b.tn = Math.round(b.tn * 10) / 10;
+      b.cn = Math.round(b.cn * 10) / 10;
+      b.soNgayCo = b.rows.filter(function (x) { return x.tk > 0; }).length;
+    });
+    return out;
+  }
+
+  /* Số tháng trọn vẹn mà cửa sổ chạm tới — để cắt các mảng theo tháng sẵn có */
+  function thangTrongKy(r) {
+    var a = r.from.getMonth(), b = r.to.getMonth(), out = [];
+    for (var i = a; i <= b; i++) out.push(i);
+    return out;
+  }
+
+  var current = null, cb = null;
+
+  function render(host, activeId) {
+    host.innerHTML = PRESETS.map(function (p) {
+      return '<button class="chip" data-r="' + p.id + '"'
+           + (p.id === activeId ? ' aria-pressed="true"' : '') + '>' + p.label + '</button>';
+    }).join('');
+  }
+
+  function init(opt) {
+    opt = opt || {};
+    var host = document.getElementById(opt.host || 'rangeChips');
+    if (!host) return null;
+    cb = opt.onChange || null;
+    var def = opt.def || 'y';
+
+    render(host, def);
+    host.addEventListener('click', function (e) {
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      var kids = host.children, i;
+      for (i = 0; i < kids.length; i++) kids[i].setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-pressed', 'true');
+      current = cuaSo(b.dataset.r);
+      if (cb) cb(current);
+    });
+
+    current = cuaSo(def);
+    if (cb) cb(current);
+    return current;
+  }
+
+  return {
+    init: init, parse: parse, loc: loc, gom: gom,
+    cuaSo: cuaSo, thangTrongKy: thangTrongKy,
+    vn: vn, vnNgan: vnNgan, THANG: THANG,
+    get hienTai() { return current; },
+    DATA_END: END
+  };
 })();
 
 </script>
@@ -592,7 +757,7 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
       <section class="banner">
         <h2>Tác nghiệp trong kho NTSF</h2>
-        <p>45.861 lệnh · 34.215 tấn · 238 ngày có phát sinh · mọi mốc thời gian đã đổi sang giờ Việt Nam · không có lệnh nào ghi nhận chênh lệch số lượng trong suốt kỳ</p>
+        <p id="bannerSub">—</p>
       </section>
 
       <!-- HERO + KPI -->
@@ -602,31 +767,27 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
             <span class="lbl">Sản lượng xử lý bình quân</span>
             <span class="tag ops">Vận hành</span>
           </div>
-          <div class="big num">144<small> t/ngày</small></div>
-          <div class="sub">34.215 tấn trong 238 ngày</div>
-          <div class="delta flat">Trung vị 143,5 · cao nhất 339,0 t</div>
-          <div class="foot">Ngày bận nhất gấp <b>4 lần</b> ngày vắng nhất trong nhóm giữa. Bấm để xem phân tích sâu.</div>
+          <div class="big num" id="heroVal">—</div>
+          <div class="sub" id="heroSub">—</div>
+          <div class="delta flat" id="heroDelta">—</div>
+          <div class="foot" id="heroFoot">Bấm để xem phân tích sâu.</div>
         </button>
         <div class="kpis" id="kpis"></div>
       </section>
 
       <!-- DIỄN BIẾN NGÀY -->
       <article class="card">
-        <h3>Sản lượng xử lý theo ngày</h3>
-        <p class="how">238 ngày có phát sinh, từ 03/01 đến 16/09/2026 · đường mờ = sản lượng từng ngày · đường đậm = trung bình động 7 ngày, đây mới là xu hướng thật · nét đứt = mức bình quân 144 tấn mỗi ngày</p>
-        <div class="legend">
-          <span><i class="swatch line" style="background:var(--c3)"></i>Từng ngày</span>
-          <span><i class="swatch line" style="background:var(--c1)"></i>Trung bình 7 ngày</span>
-          <span><i class="swatch dash"></i>Bình quân 144 t</span>
-        </div>
+        <h3 id="ttSeries">Sản lượng xử lý</h3>
+        <p class="how" id="howSeries">—</p>
+        <div class="legend" id="lgSeries"></div>
         <div class="chart" id="chDaily"></div>
       </article>
 
       <!-- NHỊP GIỜ + THỨ -->
       <section class="grid2">
         <article class="card" style="border-top:3px solid var(--c5)">
-          <h3>Nhịp tác nghiệp theo giờ trong ngày</h3>
-          <p class="how">Số lệnh phát sinh theo giờ Việt Nam, cộng dồn cả kỳ · lộ rõ hai ca làm việc và quãng nghỉ trưa · dùng để bố trí ca và giờ giao ca</p>
+          <h3>Nhịp tác nghiệp theo giờ trong ngày <span class="tag ops">Toàn kỳ</span></h3>
+          <p class="how"><b>Biểu đồ này không đổi theo bộ lọc</b> — dữ liệu giờ chỉ được SAP kết xuất ở mức cộng dồn cả kỳ, không tách theo ngày. Số lệnh theo giờ Việt Nam · lộ rõ hai ca làm việc và quãng nghỉ trưa · dùng để bố trí ca và giờ giao ca</p>
           <div class="legend">
             <span><i class="swatch" style="background:var(--bad)"></i>Giờ cao điểm</span>
             <span><i class="swatch" style="background:var(--c1)"></i>Giờ thường</span>
@@ -649,8 +810,8 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
       <!-- CƠ CẤU + LUỒNG -->
       <section class="grid2">
         <article class="card">
-          <h3>Cơ cấu tác nghiệp theo tháng</h3>
-          <p class="how">Cột chồng · phần đậm = soạn hàng xuất, phần nhạt = điều chuyển nội bộ trong kho · tỷ lệ chung là 1 lệnh soạn hàng đi kèm 2,5 lệnh điều chuyển</p>
+          <h3 id="ttMix">Cơ cấu tác nghiệp</h3>
+          <p class="how" id="howMix">—</p>
           <div class="legend">
             <span><i class="swatch" style="background:var(--c1)"></i>Soạn hàng xuất</span>
             <span><i class="swatch" style="background:var(--c3)"></i>Điều chuyển nội bộ</span>
@@ -659,25 +820,25 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
         </article>
 
         <article class="card">
-          <h3>Luồng di chuyển giữa các khu vực</h3>
-          <p class="how">Tám luồng nhiều lệnh nhất · mỗi lần hàng đổi khu vực là một lần tốn công bốc xếp · luồng đi và về giữa khu trung gian và khu thành phẩm chính chiếm nhiều nhất</p>
+          <h3>Luồng di chuyển giữa các khu vực <span class="tag ops">Toàn kỳ</span></h3>
+          <p class="how"><b>Không đổi theo bộ lọc</b> — luồng di chuyển chỉ có ở mức cộng dồn cả kỳ. Tám luồng nhiều lệnh nhất · mỗi lần hàng đổi khu vực là một lần tốn công bốc xếp</p>
           <div class="chart" id="chRoute"></div>
         </article>
       </section>
 
       <!-- TOP MẶT HÀNG -->
       <article class="card">
-        <h3>Mười mặt hàng chiếm nhiều công xử lý nhất</h3>
-        <p class="how">Theo khối lượng đã xử lý trong kỳ · con số bên phải là sản lượng và số lệnh tác nghiệp · mặt hàng nhiều lệnh nhưng ít tấn là loại tốn công trên mỗi tấn</p>
+        <h3>Mười mặt hàng chiếm nhiều công xử lý nhất <span class="tag ops">Toàn kỳ</span></h3>
+        <p class="how"><b>Không đổi theo bộ lọc</b> — số liệu theo mặt hàng chỉ có ở mức cộng dồn cả kỳ. Con số bên phải là sản lượng và số lệnh tác nghiệp · mặt hàng nhiều lệnh nhưng ít tấn là loại tốn công trên mỗi tấn</p>
         <div class="chart" id="chProd"></div>
       </article>
 
       <section class="insight">
         <h4>Kết luận</h4>
-        <p><span class="formula">34.215 tấn ÷ 238 ngày = 144 tấn mỗi ngày · 45.861 lệnh = 12.993 soạn hàng + 32.868 điều chuyển</span></p>
-        <p>Hai ca làm việc hiện rõ trong dữ liệu: đỉnh sáng lúc <b>8 giờ</b> với 6.973 lệnh, đỉnh chiều lúc <b>17 giờ</b> với 5.191 lệnh, quãng nghỉ trưa lúc <b>12 giờ</b> chỉ còn 571 lệnh. Từ <b>0 đến 5 giờ</b> gần như không có hoạt động.</p>
-        <p>Chênh lệch giữa các ngày trong tuần rất lớn: <b>thứ Hai 205,8 tấn</b> so với <b>chủ nhật 66,5 tấn</b> — gấp <b>3,1 lần</b>. So với thứ Năm là ngày thấp nhất trong tuần làm việc thì vẫn gấp <b>1,6 lần</b>.</p>
-        <p>Cơ cấu tác nghiệp nghiêng mạnh về <b>điều chuyển nội bộ</b>: cứ một lệnh soạn hàng xuất thì có <b>2,5 lệnh</b> chuyển hàng qua lại trong kho. Riêng hai luồng giữa khu trung gian và khu thành phẩm chính đã chiếm <b>25.561 lệnh</b>, tức <b>56%</b> toàn bộ tác nghiệp.</p>
+        <p><span class="formula" id="ktCT">—</span></p>
+        <p>Hai ca làm việc hiện rõ trong dữ liệu: đỉnh sáng lúc <b>8 giờ</b> với 6.973 lệnh, đỉnh chiều lúc <b>17 giờ</b> với 5.191 lệnh, quãng nghỉ trưa lúc <b>12 giờ</b> chỉ còn 571 lệnh. Từ <b>0 đến 5 giờ</b> gần như không có hoạt động. <i>(số giờ là toàn kỳ, không đổi theo bộ lọc)</i></p>
+        <p id="ktDow">—</p>
+        <p id="ktMix">—</p>
         <p class="act">Gợi ý hành động: hai việc. Một, bố trí nhân lực bốc xếp theo nhịp thật — tăng ca thứ Hai và thứ Ba, giảm thứ Năm và chủ nhật, thay vì xếp đều bảy ngày. Hai, rà lại luồng đi-về giữa khu trung gian và khu thành phẩm chính; mỗi lần cắt được một chặng điều chuyển là cắt trực tiếp chi phí nhân công bốc xếp.</p>
       </section>
 
@@ -702,29 +863,20 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 <script>
 /* ═══ DỮ LIỆU THẬT — SAP S/4HANA, kho EWM 520, trích 16/09/2026 ═══ */
 const M = ['01','02','03','04','05','06','07','08','09'];
-const tasks = [6660,4129,7720,2341,4131,6585,7442,4875,1978];
-const pick  = [1614,1106,1656,1657,1382,1940,1812,1316,510];
-const trans = [5046,3023,6064,684,2749,4645,5630,3559,1468];
-const thru  = [4775.8,2590.0,5100.9,2906.8,3905.6,4973.0,5263.2,3464.7,1235.3];
-const days  = [29,16,31,28,30,30,31,31,12];
-const TB_NGAY = 144, TONG_TAN = 34215, TONG_LENH = 45861, TONG_NGAY = 238;
+const TONG_LENH = 45861, TONG_TAN = 34215;
 
 /* Sản lượng từng ngày, 03/01 → 16/09/2026 */
-const D = [54.5,74.2,105.8,264.7,150.9,193.9,163,103.4,140.3,271.6,96.3,97.4,98.5,186.1,117.1,99.7,233.3,304.1,158.7,155.5,168,150.9,97.4,244.8,73.6,232.6,244.1,157.5,337.8,57.1,156.4,143.5,186.7,149.2,179.5,137.5,98.9,235.9,322.3,294.8,160.5,4.7,67.7,302.6,92.6,119,155.5,203.3,137.9,178.6,241.6,171.2,117.3,118.6,242,222.3,96.6,271.5,227,53.8,271,206.3,121.5,115.4,126.1,157.1,97.4,189.2,178.4,143.7,271.7,58,93.2,21.3,234.8,259.6,48.9,84.4,72.3,88.7,8.9,184.1,176.2,75.1,105.6,144,111,6,200,95.2,98.3,130.6,72.7,119.3,0.9,166.1,98.1,75.4,65.3,195.1,52.5,164.5,159,108.8,8.3,0,165.7,69.1,166.6,205.1,52.9,132.6,2.1,177.7,179.7,128.2,42.6,43.7,144.4,66.1,320.7,96.7,154.6,61.2,169.6,172.2,58.4,332.1,250.1,139.8,125.7,164.6,90.9,184.2,164.3,238,211.8,273.9,85,149.1,91.9,229.7,194.2,184,227,74.9,154.3,55.9,218.9,51.7,193.8,70.4,152.6,168.6,88.4,339,178.5,152.6,184.6,218,82.8,45.4,240,253.8,62.4,133,139.5,154.2,49.7,224,141.6,275.1,172.9,262.7,114.3,107.7,132.5,210.7,175.5,87.6,266.6,228,61.2,277.5,178.7,133.3,209.3,215.5,234.1,63.6,289.4,273.7,163.1,145.5,80.5,146.9,63.9,223.8,119.8,75.1,100.9,50.9,193.7,107.4,227.9,224.3,17.9,17.6,35,192.2,40.4,73.7,116.2,133.5,143.3,23.7,29.6,21.4,144.9,226.3,71.8,36.1,334.9,51.8,29.7,189.9,13.9,129.4,98.1,181.7,101.5,163.1,100.7,148.1,72.2,118.3,55.3,53];
+const PACKED = '0,0,0,0,0,0,0,0,111;1,0,0,0,0,0,0,0,109;2,100,96,4,54.5,2,33,0,0;3,128,45,83,74.2,2,34.3,5,269;4,103,10,93,105.8,3,59.5,6,108;5,327,124,203,264.7,8,121.1,3,102;6,245,19,226,150.9,3,67.7,13,39;7,198,65,133,193.9,7,80.7,0,87;8,161,31,130,163,5,105.6,0,66;9,147,23,124,103.4,3,20.6,0,0;10,223,22,201,140.3,7,85.7,11,39;11,330,81,249,271.6,11,169.3,0,129;12,135,18,117,96.3,3,53,7,25;13,179,10,169,97.4,4,36.1,0,38;14,186,9,177,98.5,3,46.1,1,1;15,193,18,175,186.1,4,84.3,2,35;16,133,21,112,117.1,3,37.8,0,0;17,221,3,218,99.7,2,8,93,234;18,311,125,186,233.3,9,167,11,25;19,539,106,433,304.1,7,122.4,7,7;20,192,45,147,158.7,5,91.9,0,10;21,258,61,197,155.5,4,77.2,0,13;22,197,64,133,168,6,119.5,55,93;23,313,69,244,150.9,5,69,0,0;24,242,0,242,97.4,0,0,6,15;25,306,33,273,244.8,7,146.6,0,23;26,94,21,73,73.6,3,51.3,0,46;27,280,44,236,232.6,8,130.1,2,46;28,292,120,172,244.1,9,176.5,0,274;29,239,189,50,157.5,7,120.9,12,30;30,388,142,246,337.8,20,255.5,0,0;31,194,0,194,57.1,0,0,5,15;32,273,14,259,156.4,3,60.7,1,11;33,274,9,265,143.5,3,39.7,0,50;34,291,84,207,186.7,5,100.4,5,29;35,282,59,223,149.2,6,77.5,3,3;36,347,98,249,179.5,4,55.9,10,36;37,172,29,143,137.5,4,80,0,0;38,285,0,285,98.9,0,0,9,9;39,358,176,182,235.9,9,151.5,5,39;40,503,114,389,322.3,11,197.8,1,9;41,489,119,370,294.8,8,158.1,4,4;42,229,120,109,160.5,1,21.1,0,0;43,19,0,19,4.7,6,113.8,0,216;46,0,0,0,0,0,0,0,14;49,0,0,0,0,0,0,0,11;50,0,0,0,0,0,0,0,26;54,0,0,0,0,0,0,0,15;56,44,27,17,67.7,3,56.1,2,33;57,312,235,77,302.6,13,251.7,0,260;58,57,22,35,92.6,4,77.6,0,0;59,333,0,333,119,0,0,0,45;60,169,68,101,155.5,7,115.6,0,207;61,336,38,298,203.3,5,104.9,0,0;62,358,7,351,137.9,1,0,3,34;63,158,59,99,178.6,8,138.4,6,26;64,347,62,285,241.6,8,122.8,5,8;65,141,55,86,171.2,7,141.4,0,0;66,357,41,316,117.3,0,0,21,35;67,269,70,199,118.6,5,44.6,5,57;68,453,78,375,242,7,108,0,56;69,381,41,340,222.3,6,107.8,0,21;70,138,19,119,96.6,2,41.5,0,8;71,330,77,253,271.5,11,166.8,3,234;72,269,45,224,227,10,152.9,0,0;73,174,0,174,53.8,0,0,2,30;74,453,29,424,271,7,117.6,15,39;75,212,144,68,206.3,10,181.5,0,177;76,199,70,129,121.5,5,75.3,0,0;77,210,14,196,115.4,2,39.8,16,197;78,117,35,82,126.1,5,91.9,1,9;79,264,71,193,157.1,6,78.8,0,0;80,232,0,232,97.4,0,0,4,22;81,211,104,107,189.2,7,135.1,0,0;82,219,59,160,178.4,7,131,0,27;83,246,14,232,143.7,4,47.2,4,4;84,316,76,240,271.7,7,116.1,0,12;85,87,12,75,58,4,74.5,0,4;86,88,87,1,93.2,6,114.3,0,0;87,70,0,70,21.3,0,0,10,303;88,303,150,153,234.8,11,186.5,5,91;89,280,131,149,259.6,13,213.1,1,148;90,101,2,99,48.9,0,0,0,0;91,72,30,42,84.4,5,89.3,5,5;92,76,40,36,72.3,4,60,17,28;93,76,52,24,88.7,5,80.4,0,0;94,30,0,30,8.9,0,0,4,48;95,107,72,35,184.1,10,174.2,0,15;96,179,104,75,176.2,9,154.5,2,8;97,40,16,24,75.1,5,63.5,0,4;98,118,107,11,105.6,7,102.5,11,71;99,94,79,15,144,8,139.9,0,17;100,95,46,49,111,5,88.5,0,0;101,29,27,2,6,1,5.9,11,22;102,213,190,23,200,10,189.6,0,0;103,101,64,37,95.2,4,86.3,36,372;104,57,39,18,98.3,5,92.9,3,14;105,208,144,64,130.6,7,108.8,0,5;106,49,41,8,72.7,4,71.9,0,0;107,58,48,10,119.3,6,103.6,0,0;108,4,0,4,0.9,0,0,0,38;109,54,51,3,166.1,9,165.2,1,1;110,103,85,18,98.1,8,92.4,0,2;111,35,27,8,75.4,3,53.9,0,9;112,15,14,1,65.3,4,85.1,0,4;113,76,65,11,195.1,8,146.8,0,34;114,41,37,4,52.5,6,97.7,0,0;115,0,0,0,0,0,0,57,86;116,139,136,3,164.5,11,142.1,0,9;117,98,83,15,159,8,132.5,10,104;118,73,58,15,108.8,6,120,0,0;121,7,0,7,8.3,0,0,0,0;122,3,0,3,0,0,0,12,12;123,143,135,8,165.7,13,162.8,15,30;124,55,49,6,69.1,5,67.7,5,19;125,60,42,18,166.6,8,162.2,4,29;126,67,57,10,205.1,8,130.9,0,27;127,30,30,0,52.9,6,105.3,0,51;128,144,137,7,132.6,5,76.1,0,0;129,6,0,6,2.1,0,0,0,0;130,117,116,1,177.7,13,212.6,0,15;131,64,64,0,179.7,8,138.4,18,18;132,96,36,60,128.2,8,162.7,4,4;133,17,16,1,42.6,2,42.6,0,313;134,75,19,56,43.7,3,21.1,0,98;135,122,59,63,144.4,6,86,0,0;136,122,0,122,66.1,0,0,5,5;137,189,121,68,320.7,17,328.6,3,3;138,85,8,77,96.7,4,66.4,0,38;139,161,26,135,154.6,5,100.5,0,15;140,181,0,181,61.2,0,0,0,49;141,244,26,218,169.6,3,65,0,21;142,342,67,275,172.2,5,87.1,0,0;143,149,0,149,58.4,0,0,46,116;144,305,92,213,332.1,15,232.5,0,23;145,260,165,95,250.1,10,195.5,3,28;146,158,9,149,139.8,2,45.5,0,0;147,232,53,179,125.7,3,58.2,7,7;148,206,27,179,164.6,4,75.5,35,169;149,225,0,225,90.9,1,21.8,0,1;150,266,28,238,184.2,0,0,21,229;151,286,139,147,164.3,11,178.8,0,0;152,330,51,279,238,7,122.8,0,4;153,473,12,461,211.8,2,22.1,21,31;154,330,104,226,273.9,11,193.4,2,13;155,31,29,2,85,4,63.7,0,69;156,300,56,244,149.1,3,67.7,0,0;157,198,4,194,91.9,1,21.3,0,0;158,406,177,229,229.7,4,69.3,27,31;159,189,73,116,194.2,13,186,11,117;160,208,35,173,184,4,70.3,18,22;161,340,39,301,227,6,116.7,0,0;162,16,15,1,74.9,4,74.8,8,8;163,164,38,126,154.3,5,99,0,0;164,138,0,138,55.9,0,0,29,184;165,184,49,135,218.9,9,142.9,0,77;166,106,6,100,51.7,4,10.4,3,18;167,245,129,116,193.8,9,118.6,0,30;168,44,35,9,70.4,4,85.5,0,11;169,222,23,199,152.6,4,55.3,5,212;170,172,108,64,168.6,7,144.8,0,0;171,150,0,150,88.4,0,0,0,51;172,388,176,212,339,12,228.8,0,12;173,264,123,141,178.5,5,43,0,43;174,224,10,214,152.6,5,84.6,5,30;175,127,117,10,184.6,8,160.1,63,75;176,323,131,192,218,6,111.6,43,43;177,75,69,6,82.8,8,97.1,0,0;178,114,0,114,45.4,0,0,22,22;179,237,157,80,240,12,197.8,21,289;180,301,35,266,253.8,8,129.2,0,68;181,98,58,40,62.4,2,28,8,9;182,248,23,225,133,4,67.4,0,10;183,192,48,144,139.5,5,77.5,0,0;184,268,24,244,154.2,3,38.8,0,0;185,114,0,114,49.7,0,0,76,93;186,307,127,180,224,8,112.8,0,0;187,178,109,69,141.6,7,135,65,68;188,540,92,448,275.1,5,91.1,10,19;189,112,35,77,172.9,9,135.1,7,105;190,385,36,349,262.7,7,104.4,8,11;191,95,40,55,114.3,6,93,0,0;192,284,0,284,107.7,0,0,0,0;193,125,57,68,132.5,5,97,38,38;194,309,90,219,210.7,5,83.5,0,329;195,194,48,146,175.5,7,138.7,21,21;196,117,74,43,87.6,6,73,18,18;197,309,40,269,266.6,6,114.6,0,0;198,220,99,121,228,6,98.2,0,0;199,149,0,149,61.2,0,0,4,126;200,221,99,122,277.5,12,229,0,13;201,263,33,230,178.7,4,77,5,62;202,222,27,195,133.3,4,61.3,0,23;203,380,75,305,209.3,5,94.6,4,4;204,343,31,312,215.5,5,96,6,34;205,319,94,225,234.1,8,147.2,0,0;206,152,0,152,63.6,0,0,77,87;207,488,292,196,289.4,13,198.6,7,24;208,343,68,275,273.7,10,86,4,17;209,116,40,76,163.1,9,172.4,10,195;210,230,26,204,145.5,6,82.6,0,17;211,121,27,94,80.5,2,41.5,26,87;212,289,108,181,146.9,3,51.9,0,0;213,150,0,150,63.9,0,0,0,30;214,239,71,168,223.8,9,170.4,29,32;215,174,52,122,119.8,5,74.1,0,10;216,195,36,159,75.1,2,13,0,0;217,124,14,110,100.9,3,56,0,17;218,125,0,125,50.9,0,0,0,0;219,221,52,169,193.7,6,122.6,0,0;220,279,0,279,107.4,0,0,67,115;221,134,133,1,227.9,7,124.6,0,3;222,272,110,162,224.3,14,246,0,0;223,7,4,3,17.9,1,17.5,0,0;224,23,0,23,17.6,0,0,0,0;225,21,21,0,35,2,35,9,90;226,186,35,151,192.2,6,123.6,0,0;227,98,0,98,40.4,0,0,0,0;228,193,33,160,73.7,2,15.1,58,69;229,154,87,67,116.2,6,86.5,0,27;230,217,55,162,133.5,2,34.9,0,23;231,215,79,136,143.3,8,81.8,0,0;232,20,12,8,23.7,3,59.5,18,18;233,12,12,0,29.6,2,29.6,0,0;234,49,0,49,21.4,0,0,34,65;235,222,59,163,144.9,5,78.5,32,80;236,227,59,168,226.3,8,125,0,84;237,65,65,0,71.8,2,36.9,0,7;238,15,14,1,36.1,5,91.6,64,64;239,522,104,418,334.9,9,161.6,0,128;240,105,0,105,51.8,0,0,0,0;241,64,0,64,29.7,0,0,0,2;242,258,101,157,189.9,9,105.6,0,0;244,0,0,0,0,0,0,0,6;245,32,0,32,13.9,0,0,0,8;246,36,36,0,129.4,2,47.8,0,23;247,201,35,166,98.1,6,98.5,0,0;249,278,34,244,181.7,4,71.8,0,3;250,161,11,150,101.5,4,42.6,0,7;251,216,61,155,163.1,8,102.9,0,6;252,124,59,65,100.7,7,79,0,0;253,170,49,121,148.1,6,97,59,59;254,202,59,143,72.2,3,17.8,0,0;256,295,126,169,118.3,3,55.2,0,0;257,120,0,120,55.3,0,0,0,0;258,143,40,103,53,1,16,0,0';
+const ALL = NTSF_RANGE.parse(PACKED);
 
 /* Số lệnh theo giờ Việt Nam (UTC+7) */
 const HOUR = [1,2,0,0,20,129,1087,4004,6973,2877,2509,1376,571,3408,3456,2424,3452,5191,3218,1879,1636,1227,366,55];
 
 /* Theo thứ trong tuần */
-const DOW = [
-  {k:'Thứ Hai',  s:'T2', lenh:8614, tan:7203.5, ngay:35},
-  {k:'Thứ Ba',   s:'T3', lenh:7708, tan:5982.5, ngay:34},
-  {k:'Thứ Tư',   s:'T4', lenh:6804, tan:4808.0, ngay:34},
-  {k:'Thứ Năm',  s:'T5', lenh:5682, tan:4468.9, ngay:34},
-  {k:'Thứ Sáu',  s:'T6', lenh:6035, tan:4990.9, ngay:34},
-  {k:'Thứ Bảy',  s:'T7', lenh:6011, tan:4632.1, ngay:35},
-  {k:'Chủ nhật', s:'CN', lenh:5007, tan:2129.5, ngay:32}
-];
+/* Nhịp theo thứ — tính lại từ dữ liệu ngày theo phạm vi đang chọn */
+const DOW_TEN=[{k:'Thứ Hai',s:'T2'},{k:'Thứ Ba',s:'T3'},{k:'Thứ Tư',s:'T4'},{k:'Thứ Năm',s:'T5'},
+               {k:'Thứ Sáu',s:'T6'},{k:'Thứ Bảy',s:'T7'},{k:'Chủ nhật',s:'CN'}];
+let DOW=[];
 
 /* Luồng di chuyển giữa các khu vực trong kho */
 const ROUTE = [
@@ -812,90 +964,174 @@ function hbars(id,items,max,opt={}){
   box.appendChild(svg);
 }
 
-/* Sản lượng theo ngày — đường mờ + trung bình động 7 ngày */
-function drawDaily(){
+/* Sản lượng theo phạm vi đang chọn.
+   Mức ngày  → đường mờ từng ngày + trung bình động 7 ngày
+   Mức tuần/tháng → cột có nhãn giá trị */
+function drawSeries(){
   const box=document.getElementById('chDaily'); box.innerHTML='';
-  const W=1000,H=280,P={t:22,r:18,b:34,l:48},IW=W-P.l-P.r,IH=H-P.t-P.b,max=360;
-  const X=i=>P.l+IW*i/(D.length-1), Y=v=>P.t+IH-IH*v/max;
-  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+  const SER = S.duongNgay ? BD : B;               /* biểu đồ này luôn ưu tiên mức ngày */
+  if(!SER.length){ box.innerHTML='<p class="how">Không có ngày nào phát sinh trong phạm vi này.</p>'; return; }
+  const CW=1000,H=280,P={t:24,r:18,b:34,l:48},IW=CW-P.l-P.r,IH=H-P.t-P.b;
+  const max=S.tranTan, n=SER.length;
+  const Y=v=>P.t+IH-IH*v/max;
+  const svg=el('svg',{viewBox:`0 0 ${CW} ${H}`,role:'img'});
   for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);
-    svg.appendChild(el('line',{x1:P.l,x2:W-P.r,y1:y,y2:y,stroke:css('--line-soft')}));
+    svg.appendChild(el('line',{x1:P.l,x2:CW-P.r,y1:y,y2:y,stroke:css('--line-soft')}));
     const t=el('text',{x:P.l-7,y:y+3.5,'text-anchor':'end','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
     t.textContent=vi(v); svg.appendChild(t);}
-  const ry=Y(TB_NGAY);
-  svg.appendChild(el('line',{x1:P.l,x2:W-P.r,y1:ry,y2:ry,stroke:css('--ink-3'),'stroke-width':1.8,'stroke-dasharray':'6 4'}));
-  const rt=el('text',{x:W-P.r,y:ry-6,'text-anchor':'end','font-size':9,'font-weight':700,fill:css('--ink-2'),'font-family':'Roboto,sans-serif'});
-  rt.textContent='Bình quân 144 t'; svg.appendChild(rt);
-  let raw=''; D.forEach((v,i)=>raw+=(i?' L ':'M ')+X(i).toFixed(1)+' '+Y(v).toFixed(1));
-  svg.appendChild(el('path',{d:raw,fill:'none',stroke:css('--c3'),'stroke-width':1,opacity:.8}));
-  const ma=D.map((_,i)=>{const a=Math.max(0,i-6),s=D.slice(a,i+1);return s.reduce((x,y)=>x+y,0)/s.length;});
-  let mp=''; ma.forEach((v,i)=>mp+=(i?' L ':'M ')+X(i).toFixed(1)+' '+Y(v).toFixed(1));
-  svg.appendChild(el('path',{d:mp,fill:'none',stroke:css('--c1'),'stroke-width':2.4,'stroke-linejoin':'round','stroke-linecap':'round'}));
-  /* mốc tháng */
-  let cum=0;
-  M.forEach((m,k)=>{
-    const t=el('text',{x:X(cum),y:H-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
-    t.textContent='T'+m; svg.appendChild(t);
-    if(k) svg.appendChild(el('line',{x1:X(cum),x2:X(cum),y1:P.t,y2:P.t+IH,stroke:css('--line'),'stroke-width':.8}));
-    cum+=days[k];});
-  /* vùng bắt sự kiện */
-  const hz=el('rect',{x:P.l,y:P.t,width:IW,height:IH,fill:'transparent',class:'hitbox'});
-  hz.addEventListener('mousemove',e=>{
-    const r=hz.getBoundingClientRect();
-    const i=Math.round((e.clientX-r.left)/r.width*(D.length-1));
-    if(i<0||i>=D.length)return;
-    showTip(e,'Ngày thứ '+(i+1)+' trong kỳ',[['Sản lượng',vi(D[i],1)+' t'],
-      ['Trung bình 7 ngày',vi(ma[i],1)+' t'],['So bình quân',(D[i]>=TB_NGAY?'+':'')+vi(D[i]-TB_NGAY,1)+' t']]);});
-  hz.addEventListener('mouseleave',hideTip); svg.appendChild(hz);
+
+  /* mốc bình quân của chính phạm vi đang xem */
+  /* Biểu đồ này luôn ở mức ngày, nên mốc so sánh phải là bình quân mỗi ngày
+     CÓ phát sinh — đúng bằng con số trên thẻ hero, không chia cho ngày trống. */
+  const mocTB = S.tbTan;
+  const ry=Y(mocTB);
+  svg.appendChild(el('line',{x1:P.l,x2:CW-P.r,y1:ry,y2:ry,stroke:css('--ink-3'),'stroke-width':1.8,'stroke-dasharray':'6 4'}));
+  const rt=el('text',{x:CW-P.r,y:ry-6,'text-anchor':'end','font-size':9,'font-weight':700,fill:css('--ink-2'),'font-family':'Roboto,sans-serif'});
+  rt.textContent='Bình quân '+vi(mocTB,1)+' t'; svg.appendChild(rt);
+
+  if(S.duongNgay){
+    const X=i=>P.l+IW*i/(n-1);
+    let raw=''; SER.forEach((b,i)=>raw+=(i?' L ':'M ')+X(i).toFixed(1)+' '+Y(b.tn).toFixed(1));
+    svg.appendChild(el('path',{d:raw,fill:'none',stroke:css('--c3'),'stroke-width':1,opacity:.85}));
+    const ma=SER.map((_,i)=>{const a=Math.max(0,i-6),s=SER.slice(a,i+1);return s.reduce((x,y)=>x+y.tn,0)/s.length;});
+    let mp=''; ma.forEach((v,i)=>mp+=(i?' L ':'M ')+X(i).toFixed(1)+' '+Y(v).toFixed(1));
+    svg.appendChild(el('path',{d:mp,fill:'none',stroke:css('--c1'),'stroke-width':2.4,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    const buoc=Math.max(1,Math.ceil(n/12));
+    SER.forEach((b,i)=>{ if(i%buoc)return;
+      const t=el('text',{x:X(i),y:H-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
+      t.textContent=b.nhan; svg.appendChild(t);});
+    const hz=el('rect',{x:P.l,y:P.t,width:IW,height:IH,fill:'transparent',class:'hitbox'});
+    hz.addEventListener('mousemove',e=>{
+      const r=hz.getBoundingClientRect();
+      const i=Math.max(0,Math.min(n-1,Math.round((e.clientX-r.left)/r.width*(n-1))));
+      showTip(e,'Ngày '+SER[i].nhan,[['Sản lượng',vi(SER[i].tn,1)+' t'],['Số lệnh',vi(SER[i].tk)],
+        ['Trung bình 7 ngày',vi(ma[i],1)+' t'],['So bình quân',(SER[i].tn>=mocTB?'+':'')+vi(SER[i].tn-mocTB,1)+' t']]);});
+    hz.addEventListener('mouseleave',hideTip); svg.appendChild(hz);
+  } else {
+    const band=IW/n, X=i=>P.l+band*(i+0.5), bw=Math.min(54,band-10);
+    SER.forEach((b,i)=>{
+      svg.appendChild(el('rect',{x:X(i)-bw/2,y:Y(b.tn),width:bw,height:Math.max(1.5,Y(0)-Y(b.tn)),rx:2,
+        fill:b.tn>=mocTB?css('--c1'):css('--c3')}));
+      if(n<=24){
+        const t=el('text',{x:X(i),y:Y(b.tn)-7,'text-anchor':'middle','font-size':9.5,'font-weight':800,fill:css('--ink'),'font-family':'Roboto,sans-serif'});
+        t.textContent=vi(b.tn,0); svg.appendChild(t);}
+      const lb=el('text',{x:X(i),y:H-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
+      lb.textContent=b.nhan; svg.appendChild(lb);
+      const hz=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH,fill:'transparent',class:'hitbox'});
+      hz.addEventListener('mousemove',e=>showTip(e,(b.phu?'Tuần ':'')+b.nhan,
+        [['Sản lượng',vi(b.tn,1)+' t'],['Số lệnh',vi(b.tk)],['Số ngày có việc',vi(b.soNgayCo)],
+         ['Bình quân ngày',vi(b.soNgayCo?b.tn/b.soNgayCo:0,1)+' t']]));
+      hz.addEventListener('mouseleave',hideTip); svg.appendChild(hz);});
+  }
   box.appendChild(svg);
 }
 
-/* Cơ cấu tác nghiệp — cột chồng */
+/* Cơ cấu tác nghiệp — cột chồng, theo phạm vi đang chọn */
 function drawMix(){
   const box=document.getElementById('chMix'); box.innerHTML='';
-  const W=470,H=250,P={t:26,r:14,b:40,l:44},IW=W-P.l-P.r,IH=H-P.t-P.b,max=8000;
-  const X=i=>P.l+IW*(i+0.5)/M.length, Y=v=>P.t+IH-IH*v/max, band=IW/M.length;
-  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
+  if(!B.length){ box.innerHTML='<p class="how">Không có dữ liệu trong phạm vi này.</p>'; return; }
+  const CW=470,H=250,P={t:26,r:14,b:40,l:44},IW=CW-P.l-P.r,IH=H-P.t-P.b;
+  const n=B.length, max=S.tranLenh;
+  const band=IW/n, X=i=>P.l+band*(i+0.5), Y=v=>P.t+IH-IH*v/max;
+  const svg=el('svg',{viewBox:`0 0 ${CW} ${H}`,role:'img'});
   for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);
-    svg.appendChild(el('line',{x1:P.l,x2:W-P.r,y1:y,y2:y,stroke:css('--line-soft')}));
+    svg.appendChild(el('line',{x1:P.l,x2:CW-P.r,y1:y,y2:y,stroke:css('--line-soft')}));
     const t=el('text',{x:P.l-6,y:y+3.5,'text-anchor':'end','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
-    t.textContent=vi(v/1000)+'k'; svg.appendChild(t);}
-  const bw=Math.min(28,band-10);
-  M.forEach((m,i)=>{
-    const hP=Y(0)-Y(pick[i]), hT=Y(0)-Y(trans[i]);
-    svg.appendChild(el('rect',{x:X(i)-bw/2,y:Y(pick[i]),width:bw,height:Math.max(1.5,hP),rx:2,fill:css('--c1')}));
-    svg.appendChild(el('rect',{x:X(i)-bw/2,y:Y(tasks[i]),width:bw,height:Math.max(1.5,hT-2),rx:2,fill:css('--c3')}));
-    const lb=el('text',{x:X(i),y:H-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
-    lb.textContent='T'+m; svg.appendChild(lb);
+    t.textContent=max>=4000?vi(v/1000,1)+'k':vi(v); svg.appendChild(t);}
+  const bw=Math.min(28,band-6), buoc=Math.max(1,Math.ceil(n/14));
+  B.forEach((b,i)=>{
+    svg.appendChild(el('rect',{x:X(i)-bw/2,y:Y(b.pk),width:bw,height:Math.max(1.5,Y(0)-Y(b.pk)),rx:2,fill:css('--c1')}));
+    svg.appendChild(el('rect',{x:X(i)-bw/2,y:Y(b.tk),width:bw,height:Math.max(1.5,Y(0)-Y(b.tr)-2),rx:2,fill:css('--c3')}));
+    if(i%buoc===0){
+      const lb=el('text',{x:X(i),y:H-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
+      lb.textContent=b.nhan; svg.appendChild(lb);}
     const hz=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH,fill:'transparent',class:'hitbox'});
-    hz.addEventListener('mousemove',e=>showTip(e,'Tháng '+m+'/2026',[
-      ['Tổng lệnh',vi(tasks[i])],['Soạn hàng',vi(pick[i])],['Điều chuyển',vi(trans[i])],
-      ['Tỷ lệ','1 : '+vi(trans[i]/pick[i],1)]]));
+    hz.addEventListener('mousemove',e=>showTip(e,b.nhan,[
+      ['Tổng lệnh',vi(b.tk)],['Soạn hàng',vi(b.pk)],['Điều chuyển',vi(b.tr)],
+      ['Tỷ lệ',b.pk?'1 : '+vi(b.tr/b.pk,1):'—']]));
     hz.addEventListener('mouseleave',hideTip); svg.appendChild(hz);});
   box.appendChild(svg);
 }
 
-/* ═══ THẺ KPI ═══ */
-const KPI=[
-  {k:'thru', lbl:'Sản lượng xử lý', val:'34.215', unit:'tấn', tag:'Vận hành', tagType:'ops',
-   cmp:'238 ngày phát sinh', cls:'flat', prev:'Bình quân 144 t/ngày',
-   formula:'Khối lượng xác nhận trên lệnh tác nghiệp kho', sp:thru, spc:'--c1'},
-  {k:'tasks', lbl:'Tác nghiệp kho', val:'45.861', unit:'lệnh', tag:'Vận hành', tagType:'ops',
-   cmp:'193 lệnh/ngày', cls:'flat', prev:'Soạn hàng 12.993 · chuyển 32.868',
-   formula:'Lệnh soạn hàng và điều chuyển đã xác nhận', sp:tasks, spc:'--c2'},
-  {k:'mix', lbl:'Tỷ lệ điều chuyển', val:'1 : 2,5', unit:'', tag:'Vận hành', tagType:'ops',
-   cmp:'▲ Cao', cls:'down', prev:'mỗi lệnh soạn hàng kèm 2,5 lệnh chuyển',
-   formula:'Lệnh điều chuyển ÷ lệnh soạn hàng xuất', sp:trans.map((v,i)=>v/pick[i]), spc:'--c5'},
-  {k:'hour', lbl:'Giờ cao điểm', val:'8', unit:'giờ sáng', tag:'Vận hành', tagType:'ops',
-   cmp:'6.973 lệnh', cls:'flat', prev:'Đỉnh chiều: 17 giờ · 5.191 lệnh',
-   formula:'Giờ có nhiều lệnh nhất, theo giờ Việt Nam', mini:'hour'},
-  {k:'dow', lbl:'Ngày bận nhất', val:'205,8', unit:'t/ngày', tag:'Vận hành', tagType:'ops',
-   cmp:'▲ 3,1× chủ nhật', cls:'flat', prev:'Thứ Hai · chủ nhật 66,5 t',
-   formula:'Bình quân tấn xử lý mỗi ngày theo thứ', mini:'dow'},
-  {k:'acc', lbl:'Chính xác soạn hàng', val:'100,0', unit:'%', tag:'Vận hành', tagType:'ops',
-   cmp:'⚠ Cần đọc kỹ', cls:'flat', prev:'0 / 45.861 lệnh lệch',
-   formula:'Lệnh không lệch số lượng ÷ tổng số lệnh', sp:[100,100,100,100,100,100,100,100,100], spc:'--good'}
-];
+/* ═══ TRẠNG THÁI THEO PHẠM VI ĐANG CHỌN ═══
+   R = cửa sổ thời gian · W = các ngày trong cửa sổ · B = nhóm để vẽ · S = số tổng hợp */
+let R=null, W=[], B=[], S={};
+
+function trungVi(a){
+  if(!a.length) return 0;
+  const x=[...a].sort((p,q)=>p-q), m=x.length>>1;
+  return x.length%2 ? x[m] : (x[m-1]+x[m])/2;
+}
+
+let BD=[];   /* luôn ở mức NGÀY — dành riêng cho biểu đồ sản lượng chủ đạo */
+
+function tinhLai(){
+  W = NTSF_RANGE.loc(ALL, R);
+  B = NTSF_RANGE.gom(W, R);
+  BD = NTSF_RANGE.gom(W, {bucket:'day'});
+  const co = W.filter(x=>x.tk>0);                 /* ngày thực có phát sinh */
+  const tan = co.map(x=>x.tn);
+
+  S.tk   = W.reduce((a,x)=>a+x.tk,0);
+  S.pk   = W.reduce((a,x)=>a+x.pk,0);
+  S.tr   = W.reduce((a,x)=>a+x.tr,0);
+  S.tn   = Math.round(W.reduce((a,x)=>a+x.tn,0)*10)/10;
+  S.ngay = co.length;
+  S.tbTan  = S.ngay ? S.tn/S.ngay : 0;
+  S.tbLenh = S.ngay ? S.tk/S.ngay : 0;
+  S.max    = tan.length ? Math.max(...tan) : 0;
+  S.trungVi = trungVi(tan);
+  S.tyLe   = S.pk ? S.tr/S.pk : 0;
+
+  /* nhịp theo thứ, chỉ đếm ngày có phát sinh */
+  DOW = DOW_TEN.map(t=>({...t, lenh:0, tan:0, ngay:0}));
+  co.forEach(x=>{
+    const i=(x.d.getDay()+6)%7;                   /* 0 = thứ Hai */
+    DOW[i].lenh+=x.tk; DOW[i].tan+=x.tn; DOW[i].ngay++;
+  });
+  DOW.forEach(d=>{ d.tan=Math.round(d.tan*10)/10; d.tbTan=d.ngay?d.tan/d.ngay:0; d.tbLenh=d.ngay?d.lenh/d.ngay:0; });
+  const banNhat=[...DOW].filter(d=>d.ngay).sort((a,b)=>b.tbTan-a.tbTan);
+  S.dowMax = banNhat[0] || null;
+  S.dowMin = banNhat[banNhat.length-1] || null;
+
+  /* thang cho truc so lieu, lam tron len cho de doc */
+  S.duongNgay = BD.length > 20;                   /* đủ điểm thì vẽ đường ngày */
+  const nguon = S.duongNgay ? BD : B;
+  const dinh = nguon.length ? Math.max(...nguon.map(b=>b.tn)) : 1;
+  S.tranTan = Math.max(10, Math.ceil(dinh/10)*10);
+  const dinhL = B.length ? Math.max(...B.map(b=>b.tk)) : 1;
+  S.tranLenh = Math.max(100, Math.ceil(dinhL/100)*100);
+}
+
+/* ═══ THẺ KPI — tính lại mỗi khi đổi phạm vi ═══ */
+let KPI=[];
+function buildKpiData(){
+  const ser=B.map(b=>b.tn), serL=B.map(b=>b.tk);
+  const serR=B.map(b=>b.pk?b.tr/b.pk:0);
+  const lan = (S.dowMax && S.dowMin && S.dowMin.tbTan) ? S.dowMax.tbTan/S.dowMin.tbTan : 0;
+  KPI=[
+    {k:'thru', lbl:'Sản lượng xử lý', val:vi(S.tn,S.tn<1000?1:0), unit:'tấn', tag:'Vận hành', tagType:'ops',
+     cmp:vi(S.ngay)+' ngày phát sinh', cls:'flat', prev:'Bình quân '+vi(S.tbTan,1)+' t/ngày',
+     formula:'Khối lượng xác nhận trên lệnh tác nghiệp kho', sp:ser.length>1?ser:[0,0], spc:'--c1'},
+    {k:'tasks', lbl:'Tác nghiệp kho', val:vi(S.tk), unit:'lệnh', tag:'Vận hành', tagType:'ops',
+     cmp:vi(S.tbLenh,0)+' lệnh/ngày', cls:'flat', prev:'Soạn hàng '+vi(S.pk)+' · chuyển '+vi(S.tr),
+     formula:'Lệnh soạn hàng và điều chuyển đã xác nhận', sp:serL.length>1?serL:[0,0], spc:'--c2'},
+    {k:'mix', lbl:'Tỷ lệ điều chuyển', val:S.pk?'1 : '+vi(S.tyLe,1):'—', unit:'', tag:'Vận hành', tagType:'ops',
+     cmp:S.tyLe>=2?'▲ Cao':'Bình thường', cls:S.tyLe>=2?'down':'flat',
+     prev:'mỗi lệnh soạn hàng kèm '+vi(S.tyLe,1)+' lệnh chuyển',
+     formula:'Lệnh điều chuyển ÷ lệnh soạn hàng xuất', sp:serR.length>1?serR:[0,0], spc:'--c5'},
+    {k:'hour', lbl:'Giờ cao điểm', val:'8', unit:'giờ sáng', tag:'Toàn kỳ', tagType:'ops',
+     cmp:'6.973 lệnh', cls:'flat', prev:'Đỉnh chiều: 17 giờ · 5.191 lệnh',
+     formula:'Giờ có nhiều lệnh nhất · số liệu chỉ có ở mức toàn kỳ', mini:'hour'},
+    {k:'dow', lbl:'Ngày bận nhất', val:S.dowMax?vi(S.dowMax.tbTan,1):'—', unit:'t/ngày', tag:'Vận hành', tagType:'ops',
+     cmp:lan?'▲ '+vi(lan,1)+'× '+(S.dowMin?S.dowMin.k.toLowerCase():''):'—', cls:'flat',
+     prev:S.dowMax?S.dowMax.k+(S.dowMin?' · '+S.dowMin.k.toLowerCase()+' '+vi(S.dowMin.tbTan,1)+' t':''):'—',
+     formula:'Bình quân tấn xử lý mỗi ngày theo thứ', mini:'dow'},
+    {k:'acc', lbl:'Chính xác soạn hàng', val:'100,0', unit:'%', tag:'Vận hành', tagType:'ops',
+     cmp:'⚠ Cần đọc kỹ', cls:'flat', prev:'0 / '+vi(S.tk)+' lệnh lệch',
+     formula:'Lệnh không lệch số lượng ÷ tổng số lệnh', sp:[100,100], spc:'--good'}
+  ];
+}
 function spark(vals,color){
   const w=150,h=26,mn=Math.min(...vals),mx=Math.max(...vals),sp=(mx-mn)||1;
   const X=i=>2+(w-4)*i/(vals.length-1),Y=v=>h-3-(h-8)*(v-mn)/sp;
@@ -912,18 +1148,27 @@ function miniCols(vals,colorFn){
 }
 function miniFor(kind){
   if(kind==='hour') return miniCols(HOUR,(i,v,mx)=>v>=mx*0.7?css('--bad'):v>=mx*0.25?css('--c1'):css('--c3'));
-  if(kind==='dow')  return miniCols(DOW.map(d=>d.tan/d.ngay),(i,v)=>v>=TB_NGAY?css('--bad'):css('--c2'));
+  if(kind==='dow'){
+    const v=DOW.map(d=>d.tbTan||0);
+    if(!v.some(x=>x>0)) return '';
+    return miniCols(v,(i,x)=>x>=S.tbTan?css('--bad'):css('--c2'));
+  }
   return '';
 }
-document.getElementById('kpis').innerHTML=KPI.map(k=>`
-  <button class="kpi" data-drill="${k.k}">
-    <span class="kpi-head"><span class="lbl">${k.lbl}</span><span class="tag ${k.tagType}">${k.tag}</span></span>
-    <span class="val num">${k.val}${k.unit?`<span class="unit">${k.unit}</span>`:''}</span>
-    <span class="cmp ${k.cls}">${k.cmp}</span>
-    <span class="prev num">${k.prev}</span>
-    <span class="spark"></span>
-    <span class="formula">${k.formula}</span>
-  </button>`).join('');
+function renderKpis(){
+  buildKpiData();
+  document.getElementById('kpis').innerHTML=KPI.map(k=>`
+    <button class="kpi" data-drill="${k.k}">
+      <span class="kpi-head"><span class="lbl">${k.lbl}</span><span class="tag ${k.tagType}">${k.tag}</span></span>
+      <span class="val num">${k.val}${k.unit?`<span class="unit">${k.unit}</span>`:''}</span>
+      <span class="cmp ${k.cls}">${k.cmp}</span>
+      <span class="prev num">${k.prev}</span>
+      <span class="spark"></span>
+      <span class="formula">${k.formula}</span>
+    </button>`).join('');
+  document.querySelectorAll('.kpi .spark').forEach((s,i)=>{
+    s.innerHTML=KPI[i].mini?miniFor(KPI[i].mini):spark(KPI[i].sp,css(KPI[i].spc));});
+}
 
 /* ═══ MODAL ═══ */
 const scrim=document.getElementById('scrim'), mBody=document.getElementById('mBody');
@@ -959,34 +1204,38 @@ const DRILL={
       null,{W:900,H:280,bw:26,gap:6});}},
 
   dow:{eye:'Năng suất · NTSF · kho 520', title:'Nhịp theo thứ trong tuần <span>bố trí nhân lực</span>',
-    build(){return attrs([
-        ['Bận nhất','Thứ Hai'],['Tấn mỗi ngày','205,8','t'],
-        ['Vắng nhất','Chủ nhật'],['Tấn mỗi ngày','66,5','t'],
-        ['Chênh lệch','3,1','lần'],['Bình quân chung','144','t/ngày'],
-        ['Ngày làm việc','238'],['Tình trạng','Lệch tải']])
+    build(){
+      const mx=S.dowMax, mn=S.dowMin, lan=(mx&&mn&&mn.tbTan)?mx.tbTan/mn.tbTan:0;
+      const hai=DOW.slice(0,2).reduce((a,d)=>a+d.tan,0);
+      return attrs([
+        ['Bận nhất',mx?mx.k:'—'],['Tấn mỗi ngày',mx?vi(mx.tbTan,1):'—','t'],
+        ['Vắng nhất',mn?mn.k:'—'],['Tấn mỗi ngày',mn?vi(mn.tbTan,1):'—','t'],
+        ['Chênh lệch',lan?vi(lan,1):'—','lần'],['Bình quân chung',vi(S.tbTan,1),'t/ngày'],
+        ['Ngày làm việc',vi(S.ngay)],['Phạm vi',R.label]])
       + `<div class="card"><h3>Tấn xử lý bình quân mỗi ngày</h3>
-          <p class="how">Đỏ = trên mức bình quân chung 144 tấn</p>
+          <p class="how">Đỏ = trên mức bình quân chung ${vi(S.tbTan,1)} tấn · tính trên phạm vi <b>${R.nhan}</b></p>
           <div class="chart" id="dDow"></div></div>`
       + miniTable(['Thứ','Số lệnh','Khối lượng','Số ngày','Lệnh/ngày','Tấn/ngày'],
-          DOW.map(d=>[d.k,vi(d.lenh),vi(d.tan,1)+' t',vi(d.ngay),vi(d.lenh/d.ngay),vi(d.tan/d.ngay,1)]))
+          DOW.map(d=>[d.k,vi(d.lenh),vi(d.tan,1)+' t',vi(d.ngay),vi(d.tbLenh,0),vi(d.tbTan,1)]))
       + `<div class="insight"><h4>Nhận định</h4>
-          <p><span class="formula">Thứ Hai 205,8 t/ngày ÷ chủ nhật 66,5 t/ngày = 3,1 lần</span></p>
-          <p>Đầu tuần dồn việc rất nặng. Thứ Hai và thứ Ba cộng lại chiếm <b>13.186 tấn</b>, bằng <b>38,5%</b> toàn kỳ dù chỉ chiếm 29% số ngày.</p>
-          <p>Chủ nhật vẫn có <b>5.007 lệnh</b> nhưng chỉ <b>2.129,5 tấn</b> — tức nhiều lệnh nhỏ lẻ, khối lượng mỗi lệnh thấp hơn hẳn ngày thường.</p>
-          <p class="act">Gợi ý hành động: xếp nhân lực bốc xếp theo nhịp thật thay vì đều bảy ngày. Tăng cường thứ Hai, thứ Ba; rút bớt thứ Năm và chủ nhật.</p></div>`;},
-    after(){bars('dDow',DOW.map(d=>d.tan/d.ngay),DOW.map(d=>d.k),
-      (v,lbl)=>lbl?vi(v,1):vi(v,0),220,(i,v)=>v>=TB_NGAY?css('--bad'):css('--c2'),
-      i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tan/DOW[i].ngay,1)],['Lệnh mỗi ngày',vi(DOW[i].lenh/DOW[i].ngay)],
-        ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),TB_NGAY,{W:900,H:280});}},
+          <p><span class="formula">${mx?mx.k+' '+vi(mx.tbTan,1)+' t/ngày':''} ÷ ${mn?mn.k.toLowerCase()+' '+vi(mn.tbTan,1)+' t/ngày':''} = ${lan?vi(lan,1):'—'} lần</span></p>
+          <p>Hai ngày đầu tuần cộng lại chiếm <b>${vi(hai,1)} tấn</b>, bằng <b>${S.tn?vi(hai/S.tn*100,1):'—'}%</b> khối lượng của kỳ đang xem.</p>
+          <p class="act">Gợi ý hành động: xếp nhân lực bốc xếp theo nhịp thật thay vì đều bảy ngày. Tăng cường ngày bận, rút bớt ngày vắng.</p></div>`;},
+    after(){
+      const tran=Math.max(20,Math.ceil(Math.max(...DOW.map(d=>d.tbTan||0))/20)*20);
+      bars('dDow',DOW.map(d=>d.tbTan||0),DOW.map(d=>d.k),
+      (v,lbl)=>lbl?(v?vi(v,1):''):vi(v,0),tran,(i,v)=>v>=S.tbTan?css('--bad'):css('--c2'),
+      i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tbTan,1)],['Lệnh mỗi ngày',vi(DOW[i].tbLenh,0)],
+        ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{W:900,H:280});}},
 
   mix:{eye:'Năng suất · NTSF · kho 520', title:'Cơ cấu tác nghiệp <span>soạn hàng và điều chuyển</span>',
     build(){return attrs([
-        ['Tổng lệnh','45.861'],['Soạn hàng xuất','12.993'],
-        ['Điều chuyển nội bộ','32.868'],['Tỷ lệ','1 : 2,5'],
-        ['Hai luồng lớn nhất','25.561','lệnh'],['Chiếm','55,7%'],
-        ['Lệnh lệch số lượng','0'],['Tình trạng','Cần rà luồng']])
-      + `<div class="card"><h3>Tám luồng di chuyển nhiều lệnh nhất</h3>
-          <p class="how">Mỗi lần hàng đổi khu vực là một lần tốn công bốc xếp</p>
+        ['Tổng lệnh',vi(S.tk)],['Soạn hàng xuất',vi(S.pk)],
+        ['Điều chuyển nội bộ',vi(S.tr)],['Tỷ lệ',S.pk?'1 : '+vi(S.tyLe,1):'—'],
+        ['Phạm vi',R.label],['Số ngày',vi(S.ngay)],
+        ['Lệnh lệch số lượng','0'],['Tình trạng',S.tyLe>=2?'Cần rà luồng':'Bình thường']])
+      + `<div class="card"><h3>Tám luồng di chuyển nhiều lệnh nhất <span class="tag ops">Toàn kỳ</span></h3>
+          <p class="how"><b>Bảng luồng luôn là số toàn kỳ</b>, không đổi theo bộ lọc — SAP chỉ kết xuất luồng ở mức cộng dồn. Mỗi lần hàng đổi khu vực là một lần tốn công bốc xếp</p>
           <div class="chart" id="dRoute"></div></div>`
       + miniTable(['Luồng','Số lệnh','Khối lượng','Tỷ trọng lệnh'],
           ROUTE.map(r=>[r.k,vi(r.lenh),vi(r.tan,1)+' t',vi(r.lenh/TONG_LENH*100,1)+'%']))
@@ -1001,11 +1250,11 @@ const DRILL={
 
   acc:{eye:'Chất lượng · NTSF · kho 520', title:'Độ chính xác soạn hàng <span>đọc kỹ trước khi dùng</span>',
     build(){return attrs([
-        ['Tổng lệnh','45.861'],['Lệnh lệch','0'],['Độ chính xác','100,0%'],
-        ['Chuẩn thế giới','≥ 99,5%'],['Kỳ đo','238','ngày'],['Đánh giá','Chưa kết luận được']])
+        ['Tổng lệnh',vi(S.tk)],['Lệnh lệch','0'],['Độ chính xác','100,0%'],
+        ['Chuẩn thế giới','≥ 99,5%'],['Kỳ đo',vi(S.ngay),'ngày'],['Đánh giá','Chưa kết luận được']])
       + `<div class="insight"><h4>Cảnh báo cách đọc</h4>
-          <p><span class="formula">Độ chính xác = (45.861 − 0) ÷ 45.861 = 100,0%</span></p>
-          <p>Không có lệnh nào ghi nhận chênh lệch giữa số lượng yêu cầu và số lượng xác nhận trong suốt 238 ngày.</p>
+          <p><span class="formula">Độ chính xác = (${vi(S.tk)} − 0) ÷ ${vi(S.tk)} = 100,0%</span></p>
+          <p>Không có lệnh nào ghi nhận chênh lệch giữa số lượng yêu cầu và số lượng xác nhận trong suốt ${vi(S.ngay)} ngày của kỳ đang xem.</p>
           <p><b>Nhưng không nên coi đây là bằng chứng thao tác chính xác.</b> Hệ thống đang <b>tự xác nhận lệnh ngay khi tạo</b> — thời gian hoàn thành trung vị bằng <b>0 phút</b> — nên chênh lệch gần như không có cơ hội phát sinh. Con số 100% phản ánh <b>cách hệ thống được cấu hình</b>, không phải chất lượng công việc ngoài hiện trường.</p>
           <p class="act">Gợi ý hành động: muốn đo độ chính xác thật thì phải chuyển sang xác nhận lệnh bằng quét mã tại hiện trường. Đây là nội dung nên đưa vào giai đoạn sau của dự án ERP, cùng với việc bật quản lý ô kệ.</p></div>`;},
     after(){}}
@@ -1025,26 +1274,72 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&scrim.classList.contains('on'))closeDrill();});
 
-/* ═══ BỘ LỌC ═══ */
-const note=document.getElementById('filterNote');
-const setNote=n=>note.innerHTML=`Kỳ đang xem: <b>${n===9?'03/01/2026 → 16/09/2026':'tháng '+M[9-n]+'/2026 → 16/09/2026'}</b> · ${n} tháng · khối lượng tính bằng tấn · giờ hiển thị là giờ Việt Nam.`;
-setNote(9);
-document.getElementById('rangeChips').addEventListener('click',e=>{
-  const b=e.target.closest('.chip'); if(!b)return;
-  [...e.currentTarget.children].forEach(c=>c.setAttribute('aria-pressed','false'));
-  b.setAttribute('aria-pressed','true'); setNote(+b.dataset.n);});
+/* ═══ CHỮ THEO PHẠM VI ═══ */
+const MUC={day:'từng ngày',week:'từng tuần',month:'từng tháng'};
+function capNhatChu(){
+  document.getElementById('filterNote').innerHTML =
+    `Kỳ đang xem: <b>${R.nhan}</b> · ${R.ten} · ${vi(R.soNgay)} ngày theo lịch, `
+    + `<b>${vi(S.ngay)}</b> ngày thực có phát sinh · gom số liệu theo <b>${MUC[R.bucket]}</b> · `
+    + `khối lượng tính bằng tấn · giờ hiển thị là giờ Việt Nam.`;
+
+  document.getElementById('bannerSub').innerHTML =
+    `${vi(S.tk)} lệnh · ${vi(S.tn,1)} tấn · ${vi(S.ngay)} ngày có phát sinh · `
+    + `mọi mốc thời gian đã đổi sang giờ Việt Nam · không có lệnh nào ghi nhận chênh lệch số lượng`;
+
+  document.getElementById('heroVal').innerHTML = vi(S.tbTan,S.tbTan<100?1:0)+'<small> t/ngày</small>';
+  document.getElementById('heroSub').textContent = vi(S.tn,1)+' tấn trong '+vi(S.ngay)+' ngày';
+  document.getElementById('heroDelta').textContent =
+    'Trung vị '+vi(S.trungVi,1)+' · cao nhất '+vi(S.max,1)+' t';
+  const mx=S.dowMax, mn=S.dowMin, lan=(mx&&mn&&mn.tbTan)?mx.tbTan/mn.tbTan:0;
+  document.getElementById('heroFoot').innerHTML = lan
+    ? `${mx.k} bận gấp <b>${vi(lan,1)} lần</b> ${mn.k.toLowerCase()}. Bấm để xem phân tích sâu.`
+    : 'Bấm để xem phân tích sâu.';
+
+  const duong = S.duongNgay;
+  document.getElementById('ttSeries').textContent = 'Sản lượng xử lý theo ngày';
+  document.getElementById('howSeries').innerHTML = duong
+    ? `${vi(S.ngay)} ngày có phát sinh trong kỳ đang chọn · đường mờ = sản lượng từng ngày · đường đậm = trung bình động 7 ngày, đây mới là xu hướng thật · nét đứt = mức bình quân ${vi(S.tbTan,1)} tấn mỗi ngày`
+    : `Mỗi cột là một ngày · cột đậm = trên mức bình quân của kỳ · nét đứt = mức bình quân ${vi(S.tbTan,1)} tấn`;
+  /* Hộp kết luận — phần nào tính được theo phạm vi thì tính lại */
+  document.getElementById('ktCT').textContent =
+    `${vi(S.tn,1)} tấn ÷ ${vi(S.ngay)} ngày = ${vi(S.tbTan,1)} tấn mỗi ngày · `
+    + `${vi(S.tk)} lệnh = ${vi(S.pk)} soạn hàng + ${vi(S.tr)} điều chuyển`;
+  document.getElementById('ktDow').innerHTML = lan
+    ? `Chênh lệch giữa các ngày trong tuần: <b>${mx.k} ${vi(mx.tbTan,1)} tấn</b> so với <b>${mn.k.toLowerCase()} ${vi(mn.tbTan,1)} tấn</b> — gấp <b>${vi(lan,1)} lần</b>. Tính trên ${vi(S.ngay)} ngày có phát sinh của kỳ đang xem.`
+    : 'Chưa đủ ngày trong phạm vi này để so sánh nhịp theo thứ.';
+  document.getElementById('ktMix').innerHTML =
+    `Cơ cấu tác nghiệp nghiêng về <b>điều chuyển nội bộ</b>: cứ một lệnh soạn hàng xuất thì có <b>${S.pk?vi(S.tyLe,1):'—'} lệnh</b> chuyển hàng qua lại trong kho. `
+    + `Riêng hai luồng giữa khu trung gian và khu thành phẩm chính chiếm <b>25.561 lệnh</b>, tức <b>56%</b> toàn bộ tác nghiệp toàn kỳ.`;
+
+  document.getElementById('ttMix').textContent = 'Cơ cấu tác nghiệp theo '+MUC[R.bucket].replace('từng ','');
+  document.getElementById('howMix').innerHTML =
+    `Cột chồng · phần đậm = soạn hàng xuất, phần nhạt = điều chuyển nội bộ · mỗi cột là ${MUC[R.bucket].replace('từng ','một ')} · `
+    + `tỷ lệ của kỳ đang xem là 1 lệnh soạn hàng đi kèm <b>${S.pk?vi(S.tyLe,1):'—'}</b> lệnh điều chuyển`;
+
+  document.getElementById('lgSeries').innerHTML = duong
+    ? `<span><i class="swatch line" style="background:var(--c3)"></i>Từng ngày</span>
+       <span><i class="swatch line" style="background:var(--c1)"></i>Trung bình 7 ngày</span>
+       <span><i class="swatch dash"></i>Bình quân ${vi(S.tbTan,1)} t</span>`
+    : `<span><i class="swatch" style="background:var(--c1)"></i>Trên bình quân</span>
+       <span><i class="swatch" style="background:var(--c3)"></i>Dưới bình quân</span>
+       <span><i class="swatch dash"></i>Bình quân kỳ</span>`;
+}
 
 /* ═══ VẼ ═══ */
 function drawAll(){
-  drawDaily(); drawMix();
+  if(!R) return;
+  capNhatChu();
+  renderKpis();
+  drawSeries(); drawMix();
   bars('chHour',HOUR,HOUR.map((_,i)=>i+'h'),(v,lbl)=>lbl?(v>=4000?vi(v):''):vi(v/1000,1)+'k',7000,
     (i,v)=>v>=4000?css('--bad'):v>=1500?css('--c1'):css('--c3'),
     i=>({t:i+' giờ (giờ Việt Nam)',rows:[['Số lệnh',vi(HOUR[i])],['Tỷ trọng',vi(HOUR[i]/TONG_LENH*100,1)+'%']]}),
     null,{W:470,H:250,bw:13,gap:3,l:40,everyOther:2});
-  bars('chDow',DOW.map(d=>d.tan/d.ngay),DOW.map(d=>d.s),
-    (v,lbl)=>lbl?vi(v,1):vi(v,0),220,(i,v)=>v>=TB_NGAY?css('--bad'):css('--c2'),
-    i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tan/DOW[i].ngay,1)],['Lệnh mỗi ngày',vi(DOW[i].lenh/DOW[i].ngay)],
-      ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),TB_NGAY,{W:470,H:250,bw:34,l:42});
+  const tranDow=Math.max(20,Math.ceil(Math.max(...DOW.map(d=>d.tbTan||0))/20)*20);
+  bars('chDow',DOW.map(d=>d.tbTan||0),DOW.map(d=>d.s),
+    (v,lbl)=>lbl?(v?vi(v,1):''):vi(v,0),tranDow,(i,v)=>v>=S.tbTan?css('--bad'):css('--c2'),
+    i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tbTan,1)],['Lệnh mỗi ngày',vi(DOW[i].tbLenh,0)],
+      ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{W:470,H:250,bw:34,l:42});
   hbars('chRoute',ROUTE.map(r=>({k:r.s,v:r.lenh,c:r.lenh>10000?'--bad':r.lenh>3000?'--c5':'--c2',
     lbl:vi(r.lenh)+' lệnh',
     tip:[['Số lệnh',vi(r.lenh)],['Khối lượng',vi(r.tan,1)+' t'],['Tỷ trọng',vi(r.lenh/TONG_LENH*100,1)+'%']]})),14000,
@@ -1053,11 +1348,11 @@ function drawAll(){
     lbl:vi(p.tan,1)+' t · '+vi(p.lenh)+' lệnh',
     tip:[['Sản lượng',vi(p.tan,1)+' t'],['Số lệnh',vi(p.lenh)],['Tấn mỗi lệnh',vi(p.tan/p.lenh,2)]]})),2000,
     {W:900,padL:280,padR:200,rowH:36});
-  document.querySelectorAll('.kpi .spark').forEach((s,i)=>{
-    s.innerHTML=KPI[i].mini?miniFor(KPI[i].mini):spark(KPI[i].sp,css(KPI[i].spc));});
 }
 window.drawAll=drawAll;
-drawAll();
+
+/* ═══ BỘ LỌC ═══ */
+NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); } });
 addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(drawAll,180);});
 </script>
 </body>

@@ -18,6 +18,18 @@
 
    ĐỔI MẬT KHẨU: xem hướng dẫn trong tệp DOI-MAT-KHAU.md
    ═══════════════════════════════════════════════════════ */
+/* ── Khôi phục giao diện sáng/tối đã chọn ──────────────
+   Đặt ở ĐÂY chứ không ở app.js là có lý do: auth.js là script đồng bộ
+   đầu tiên trong <head>, chạy trước khi trang vẽ lần đầu. app.js dùng
+   defer nên chạy sau khi trang đã vẽ — để ở đó thì mỗi lần chuyển trang
+   sẽ loé trắng một nhịp rồi mới chuyển sang nền tối. */
+(function () {
+  try {
+    var t = localStorage.getItem('ntsf_theme');
+    if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { /* trình duyệt chặn bộ nhớ cục bộ thì bỏ qua, dùng mặc định */ }
+})();
+
 (function (root) {
   'use strict';
 
@@ -528,6 +540,9 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
                : cur === 'light' ? 'dark'
                : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
       document.documentElement.setAttribute('data-theme', next);
+      /* Ghi nhớ để giữ nguyên giao diện khi chuyển sang trang khác.
+         auth.js đọc lại giá trị này ngay đầu <head> của mỗi trang. */
+      try { localStorage.setItem('ntsf_theme', next); } catch (e) {}
       if (typeof window.drawAll === 'function') window.drawAll();
     });
   }
@@ -556,6 +571,156 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
+})();
+
+
+/* ═══════════════════════════════════════════════════════
+   Bộ lọc phạm vi thời gian — dùng chung cho mọi màn
+   Trang gọi NTSF_RANGE.init({ onChange: fn }) rồi vẽ lại
+   theo cửa sổ thời gian nhận được.
+   ═══════════════════════════════════════════════════════ */
+window.NTSF_RANGE = (function () {
+  'use strict';
+
+  var BASE = new Date(2026, 0, 1);    // mốc 0 của offset ngày
+  var END  = new Date(2026, 8, 16);   // ngày chốt số liệu 16/09/2026
+  var THANG = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+
+  function off(d) { return Math.round((d - BASE) / 86400000); }
+  function dateOf(o) { var d = new Date(BASE); d.setDate(d.getDate() + o); return d; }
+  function dd(d) { return ('0' + d.getDate()).slice(-2); }
+  function mm(d) { return ('0' + (d.getMonth() + 1)).slice(-2); }
+  function vn(d) { return dd(d) + '/' + mm(d) + '/' + d.getFullYear(); }
+  function vnNgan(d) { return dd(d) + '/' + mm(d); }
+
+  var END_OFF = off(END);
+
+  /* Thứ Hai đầu tuần chứa ngày d */
+  function thuHai(d) {
+    var k = (d.getDay() + 6) % 7;      // 0 = thứ Hai
+    var r = new Date(d); r.setDate(d.getDate() - k); r.setHours(0, 0, 0, 0);
+    return r;
+  }
+
+  var PRESETS = [
+    { id: 'w', label: 'Tuần này',  bucket: 'day',   ten: 'tuần hiện tại' },
+    { id: 'm', label: 'Tháng này', bucket: 'day',   ten: 'tháng hiện tại' },
+    { id: '3', label: '3 tháng',   bucket: 'week',  ten: '3 tháng gần nhất' },
+    { id: '6', label: '6 tháng',   bucket: 'month', ten: '6 tháng gần nhất' },
+    { id: 'y', label: 'Năm 2026',  bucket: 'month', ten: 'cả năm 2026' }
+  ];
+
+  function cuaSo(id) {
+    var p = null, i;
+    for (i = 0; i < PRESETS.length; i++) if (PRESETS[i].id === id) p = PRESETS[i];
+    if (!p) p = PRESETS[PRESETS.length - 1];
+
+    var from;
+    if (id === 'w')      from = thuHai(END);
+    else if (id === 'm') from = new Date(2026, END.getMonth(), 1);
+    else if (id === '3') from = new Date(2026, END.getMonth() - 2, 1);
+    else if (id === '6') from = new Date(2026, END.getMonth() - 5, 1);
+    else                 from = new Date(BASE);
+    if (from < BASE) from = new Date(BASE);
+
+    var fo = off(from);
+    return {
+      id: p.id, label: p.label, ten: p.ten, bucket: p.bucket,
+      from: from, to: END, fromOff: fo, toOff: END_OFF,
+      soNgay: END_OFF - fo + 1,
+      nhan: vn(from) + ' → ' + vn(END),
+      toanKy: p.id === 'y'
+    };
+  }
+
+  /* Giải nén chuỗi "off,tk,pk,tr,tn,ct,cn,oo,ot;…" thành mảng bản ghi ngày */
+  function parse(packed) {
+    return packed.split(';').map(function (s) {
+      var v = s.split(',');
+      return {
+        o: +v[0], d: dateOf(+v[0]),
+        tk: +v[1], pk: +v[2], tr: +v[3], tn: +v[4],
+        ct: +v[5], cn: +v[6], oo: +v[7], ot: +v[8]
+      };
+    });
+  }
+
+  function loc(rows, r) {
+    return rows.filter(function (x) { return x.o >= r.fromOff && x.o <= r.toOff; });
+  }
+
+  /* Gom nhóm theo ngày / tuần / tháng. Trả về [{nhan, phu, rows}] */
+  function gom(rows, r) {
+    var out = [], key = {}, i, x, k, lb, sub;
+    for (i = 0; i < rows.length; i++) {
+      x = rows[i];
+      if (r.bucket === 'day') { k = x.o; lb = vnNgan(x.d); sub = ''; }
+      else if (r.bucket === 'week') {
+        var h = thuHai(x.d); k = 'w' + off(h);
+        lb = vnNgan(h); sub = 'tuần';
+      } else { k = 'm' + x.d.getMonth(); lb = 'T' + THANG[x.d.getMonth()]; sub = ''; }
+      if (!key[k]) { key[k] = { nhan: lb, phu: sub, rows: [] }; out.push(key[k]); }
+      key[k].rows.push(x);
+    }
+    out.forEach(function (b) {
+      b.tk = 0; b.pk = 0; b.tr = 0; b.tn = 0; b.ct = 0; b.cn = 0; b.oo = 0; b.ot = 0;
+      b.rows.forEach(function (x) {
+        b.tk += x.tk; b.pk += x.pk; b.tr += x.tr; b.tn += x.tn;
+        b.ct += x.ct; b.cn += x.cn; b.oo += x.oo; b.ot += x.ot;
+      });
+      b.tn = Math.round(b.tn * 10) / 10;
+      b.cn = Math.round(b.cn * 10) / 10;
+      b.soNgayCo = b.rows.filter(function (x) { return x.tk > 0; }).length;
+    });
+    return out;
+  }
+
+  /* Số tháng trọn vẹn mà cửa sổ chạm tới — để cắt các mảng theo tháng sẵn có */
+  function thangTrongKy(r) {
+    var a = r.from.getMonth(), b = r.to.getMonth(), out = [];
+    for (var i = a; i <= b; i++) out.push(i);
+    return out;
+  }
+
+  var current = null, cb = null;
+
+  function render(host, activeId) {
+    host.innerHTML = PRESETS.map(function (p) {
+      return '<button class="chip" data-r="' + p.id + '"'
+           + (p.id === activeId ? ' aria-pressed="true"' : '') + '>' + p.label + '</button>';
+    }).join('');
+  }
+
+  function init(opt) {
+    opt = opt || {};
+    var host = document.getElementById(opt.host || 'rangeChips');
+    if (!host) return null;
+    cb = opt.onChange || null;
+    var def = opt.def || 'y';
+
+    render(host, def);
+    host.addEventListener('click', function (e) {
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      var kids = host.children, i;
+      for (i = 0; i < kids.length; i++) kids[i].setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-pressed', 'true');
+      current = cuaSo(b.dataset.r);
+      if (cb) cb(current);
+    });
+
+    current = cuaSo(def);
+    if (cb) cb(current);
+    return current;
+  }
+
+  return {
+    init: init, parse: parse, loc: loc, gom: gom,
+    cuaSo: cuaSo, thangTrongKy: thangTrongKy,
+    vn: vn, vnNgan: vnNgan, THANG: THANG,
+    get hienTai() { return current; },
+    DATA_END: END
+  };
 })();
 
 </script>
@@ -592,7 +757,7 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
       <section class="banner">
         <h2>Tồn kho nhà máy NTSF</h2>
-        <p>6.153 tấn · 440,3 tỷ đồng · 1.846 mã vật tư · sức chứa danh nghĩa 6.444,6 tấn theo hồ sơ layout kho · chỉ tính các mã quy về ki-lô-gam, không gộp mã tính bằng cái hay lít</p>
+        <p id="bannerSub">—</p>
       </section>
 
       <!-- HERO + KPI -->
@@ -600,10 +765,10 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
         <button class="hero" data-drill="value">
           <div class="kpi-head">
             <span class="lbl">Giá trị tồn kho</span>
-            <span class="tag ops">Vận hành</span>
+            <span class="tag ops">Ảnh chụp 16/09</span>
           </div>
           <div class="big num">440,3<small> tỷ</small></div>
-          <div class="sub">6.153 tấn · 1.846 mã vật tư</div>
+          <div class="sub" id="heroSub">—</div>
           <div class="delta flat">Bình quân 9 tháng: 263,0 tỷ</div>
           <div class="foot"><b>105 mã</b> — đúng <b>3%</b> danh mục — chiếm <b>71,3%</b> giá trị. Bấm để xem phân tích sâu.</div>
         </button>
@@ -718,13 +883,15 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
 <script>
 /* ═══ DỮ LIỆU THẬT — SAP S/4HANA, plant P100, trích 16/09/2026 ═══ */
-const M      = ['01','02','03','04','05','06','07','08','09'];
+const M_ALL  = ['01','02','03','04','05','06','07','08','09'];
+let M = M_ALL.slice();
 const CAP    = 6444.6;
-const stockE = [4914.5,4718.8,4051.5,4241.3,5173.7,5581.5,5834.3,7054.4,6153.4];
-const stockS = [6108.7,4937.0,4867.1,4298.9,4405.3,4818.5,5678.5,5892.5,6967.8];
-const recv   = [36192.9,21735.0,38414.3,36414.4,45400.8,38249.1,37880.8,27358.7,8968.9];
-const issue  = [37387.1,21953.2,39229.9,36472.1,44632.5,37486.1,37724.9,26196.9,9783.3];
-const net    = recv.map((r,i)=>+(r-issue[i]).toFixed(1));
+const _stockE = [4914.5,4718.8,4051.5,4241.3,5173.7,5581.5,5834.3,7054.4,6153.4];
+const _stockS = [6108.7,4937.0,4867.1,4298.9,4405.3,4818.5,5678.5,5892.5,6967.8];
+const _recv   = [36192.9,21735.0,38414.3,36414.4,45400.8,38249.1,37880.8,27358.7,8968.9];
+const _issue  = [37387.1,21953.2,39229.9,36472.1,44632.5,37486.1,37724.9,26196.9,9783.3];
+const _net    = _recv.map((r,i)=>+(r-_issue[i]).toFixed(1));
+let stockE=[],stockS=[],recv=[],issue=[],net=[];
 
 /* Tồn hiện tại theo nhóm hàng — chỉ mã quy về KG, tổng 6.040,2 tấn */
 const GROUP = [
@@ -804,6 +971,26 @@ const IDLE = [
   {ma:'40200168', tr:877,  vq:0.74, ten:'PFWTNCREP 82% I 10%'},
   {ma:'40100042', tr:755,  vq:0.66, ten:'VCPTO4PP051/060R I'}
 ];
+
+/* ═══ TRẠNG THÁI THEO PHẠM VI ═══
+   Tồn kho chỉ có số chốt CUỐI THÁNG nên mọi thứ ở màn này cắt theo tháng.
+   Các biểu đồ nhóm hàng, kho, tuổi tồn, ABC là ẢNH CHỤP tại 16/09 — không lọc được. */
+let R=null, S={};
+function tinhLai(){
+  const mi = NTSF_RANGE.thangTrongKy(R);
+  const lay = a => mi.map(i=>a[i]);
+  M = mi.map(i=>M_ALL[i]);
+  stockE=lay(_stockE); stockS=lay(_stockS); recv=lay(_recv); issue=lay(_issue); net=lay(_net);
+  S.soThang  = mi.length;
+  S.thangCuoi= mi[mi.length-1];
+  S.tonCuoi  = _stockE[S.thangCuoi];
+  S.tonTruoc = S.thangCuoi>0 ? _stockE[S.thangCuoi-1] : null;
+  S.lapDay   = S.tonCuoi/CAP*100;
+  S.nhap     = Math.round(recv.reduce((a,b)=>a+b,0)*10)/10;
+  S.xuat     = Math.round(issue.reduce((a,b)=>a+b,0)*10)/10;
+  S.rong     = Math.round((S.nhap-S.xuat)*10)/10;
+  S.motThang = mi.length < 2;
+}
 
 /* ═══ TIỆN ÍCH ═══ */
 const vi=(n,d=0)=>n.toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -910,26 +1097,35 @@ function drawStock(){
 }
 
 /* ═══ THẺ KPI ═══ */
-const KPI=[
-  {k:'ton',  lbl:'Tồn kho cuối kỳ', val:'6.153', unit:'tấn', tag:'Vận hành', tagType:'ops',
-   cmp:'▼ −901 t so tháng 8', cls:'up', prev:'1.846 mã vật tư',
-   formula:'Tồn cuối kỳ, chỉ mã quy về ki-lô-gam', sp:stockE, spc:'--c1'},
-  {k:'fill', lbl:'Mức lấp đầy kho', val:'95,5', unit:'%', tag:'CC-04', tagType:'kpi-code',
-   cmp:'▼ −14,0 điểm %', cls:'up', prev:'Tháng 8: 109,5%',
-   formula:'Tồn cuối kỳ ÷ sức chứa 6.444,6 t', sp:stockE.map(v=>v/CAP*100), spc:'--c1'},
+let KPI=[];
+function buildKpiData(){
+  const n=M.length;
+  const dTon=S.tonTruoc!=null?S.tonCuoi-S.tonTruoc:null;
+  const fillTr=S.tonTruoc!=null?S.tonTruoc/CAP*100:null;
+  const ph=v=>v.length>1?v:[v[0]||0,v[0]||0];
+  KPI=[
+  {k:'ton',  lbl:'Tồn kho cuối kỳ', val:vi(S.tonCuoi,0), unit:'tấn', tag:'Vận hành', tagType:'ops',
+   cmp:dTon!=null?(dTon>=0?'▲ +':'▼ ')+vi(dTon,0)+' t so tháng trước':'Chốt cuối tháng '+M[n-1],
+   cls:dTon!=null&&dTon<0?'up':'flat', prev:'Chốt cuối tháng '+M[n-1]+'/2026',
+   formula:'Tồn cuối kỳ, chỉ mã quy về ki-lô-gam', sp:ph(stockE), spc:'--c1'},
+  {k:'fill', lbl:'Mức lấp đầy kho', val:vi(S.lapDay,1), unit:'%', tag:'CC-04', tagType:'kpi-code',
+   cmp:fillTr!=null?(S.lapDay>=fillTr?'▲ +':'▼ ')+vi(S.lapDay-fillTr,1)+' điểm %':'Chốt cuối kỳ',
+   cls:fillTr!=null&&S.lapDay<fillTr?'up':'flat', prev:'Tháng trước: '+(fillTr!=null?vi(fillTr,1)+'%':'—'),
+   formula:'Tồn cuối kỳ ÷ sức chứa 6.444,6 t', sp:ph(stockE.map(v=>v/CAP*100)), spc:'--c1'},
   {k:'doh',  lbl:'Số ngày tồn kho TP', val:'48,6', unit:'ngày', tag:'CC-02', tagType:'kpi-code',
-   cmp:'▲ Trong ngưỡng', cls:'up', prev:'Chuẩn ngành: 30–60 ngày',
-   formula:'Tồn TP bình quân ÷ giá trị xuất mỗi ngày', mini:'doh'},
+   cmp:'▲ Trong ngưỡng', cls:'up', prev:'Chuẩn ngành: 30–60 ngày · số toàn kỳ',
+   formula:'Tồn TP bình quân ÷ giá trị xuất mỗi ngày · không đổi theo bộ lọc', mini:'doh'},
   {k:'idle', lbl:'Vốn đọng trong kho', val:'26,0', unit:'tỷ đồng', tag:'CC-03 · phần', tagType:'kpi-part',
-   cmp:'▲ 9,9% tồn bình quân', cls:'down', prev:'20 mã · vòng quay dưới 1',
-   formula:'Mã trên 500 triệu nhưng gần như không luân chuyển', mini:'idle'},
-  {k:'old',  lbl:'Tồn trên 90 ngày', val:'520,5', unit:'tấn', tag:'Vận hành', tagType:'ops',
-   cmp:'▲ 20,1% phần ghép được', cls:'down', prev:'2.942 lô hàng',
-   formula:'Lô có ngày nhập cách đây quá 90 ngày', mini:'age'},
-  {k:'abc',  lbl:'Mức tập trung giá trị', val:'71,3', unit:'%', tag:'Vận hành', tagType:'ops',
-   cmp:'chỉ 105 mã', cls:'flat', prev:'trên tổng 3.468 mã',
-   formula:'Tỷ trọng giá trị của nhóm 3% mã đầu bảng', mini:'abc'}
-];
+   cmp:'▲ 9,9% tồn bình quân', cls:'down', prev:'20 mã · ảnh chụp 16/09',
+   formula:'Mã trên 500 triệu nhưng gần như không luân chuyển · không đổi theo bộ lọc', mini:'idle'},
+  {k:'old',  lbl:'Tồn trên 90 ngày', val:'520,5', unit:'tấn', tag:'Toàn kỳ', tagType:'ops',
+   cmp:'▲ 20,1% phần ghép được', cls:'down', prev:'2.942 lô · ảnh chụp 16/09',
+   formula:'Lô có ngày nhập cách đây quá 90 ngày · không đổi theo bộ lọc', mini:'age'},
+  {k:'abc',  lbl:'Mức tập trung giá trị', val:'71,3', unit:'%', tag:'Toàn kỳ', tagType:'ops',
+   cmp:'chỉ 105 mã', cls:'flat', prev:'trên tổng 3.468 mã · ảnh chụp 16/09',
+   formula:'Tỷ trọng giá trị của nhóm 3% mã đầu bảng · không đổi theo bộ lọc', mini:'abc'}
+  ];
+}
 function spark(vals,color){
   const w=150,h=26,mn=Math.min(...vals),mx=Math.max(...vals),sp=(mx-mn)||1;
   const X=i=>2+(w-4)*i/(vals.length-1),Y=v=>h-3-(h-8)*(v-mn)/sp;
@@ -957,15 +1153,20 @@ function miniFor(kind){
   }
   return '';
 }
-document.getElementById('kpis').innerHTML=KPI.map(k=>`
-  <button class="kpi" data-drill="${k.k}">
-    <span class="kpi-head"><span class="lbl">${k.lbl}</span><span class="tag ${k.tagType}">${k.tag}</span></span>
-    <span class="val num">${k.val}<span class="unit">${k.unit}</span></span>
-    <span class="cmp ${k.cls}">${k.cmp}</span>
-    <span class="prev num">${k.prev}</span>
-    <span class="spark"></span>
-    <span class="formula">${k.formula}</span>
-  </button>`).join('');
+function renderKpis(){
+  buildKpiData();
+  document.getElementById('kpis').innerHTML=KPI.map(k=>`
+    <button class="kpi" data-drill="${k.k}">
+      <span class="kpi-head"><span class="lbl">${k.lbl}</span><span class="tag ${k.tagType}">${k.tag}</span></span>
+      <span class="val num">${k.val}<span class="unit">${k.unit}</span></span>
+      <span class="cmp ${k.cls}">${k.cmp}</span>
+      <span class="prev num">${k.prev}</span>
+      <span class="spark"></span>
+      <span class="formula">${k.formula}</span>
+    </button>`).join('');
+  document.querySelectorAll('.kpi .spark').forEach((s,i)=>{
+    s.innerHTML=KPI[i].mini?miniFor(KPI[i].mini):spark(KPI[i].sp,css(KPI[i].spc));});
+}
 
 document.getElementById('idleBody').innerHTML=IDLE.map(x=>{
   const lv=x.vq<0.2?'bad':x.vq<0.5?'warn':'good';
@@ -1072,19 +1273,29 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&scrim.classList.contains('on'))closeDrill();});
 
-/* ═══ BỘ LỌC ═══ */
-const note=document.getElementById('filterNote');
-const setNote=n=>note.innerHTML=`Kỳ đang xem: <b>${n===9?'01/2026 → 16/09/2026':'tháng '+M[9-n]+'/2026 → 16/09/2026'}</b> · ${n} tháng · khối lượng tính bằng tấn, giá trị bằng tỷ đồng · chỉ gộp mã quy về ki-lô-gam.`;
-setNote(9);
-document.getElementById('rangeChips').addEventListener('click',e=>{
-  const b=e.target.closest('.chip'); if(!b)return;
-  [...e.currentTarget.children].forEach(c=>c.setAttribute('aria-pressed','false'));
-  b.setAttribute('aria-pressed','true'); setNote(+b.dataset.n);});
+/* ═══ CHỮ THEO PHẠM VI ═══ */
+function capNhatChu(){
+  document.getElementById('filterNote').innerHTML =
+    `Kỳ đang xem: <b>${R.nhan}</b> · ${R.ten} · biểu đồ theo tháng hiển thị <b>${vi(S.soThang)}</b> tháng`
+    + (S.motThang ? ` — <b>phạm vi ngắn hơn một tháng nên chỉ còn một cột</b>, vì tồn kho chỉ có số chốt cuối tháng` : '')
+    + ` · khối lượng tính bằng tấn, giá trị bằng tỷ đồng · chỉ gộp mã quy về ki-lô-gam.`;
+
+  document.getElementById('bannerSub').innerHTML =
+    `${vi(S.tonCuoi,1)} tấn tồn chốt cuối tháng ${M[M.length-1]} · 440,3 tỷ đồng giá trị tại 16/09 · `
+    + `nhập ${vi(S.nhap/1000,1)} nghìn tấn, xuất ${vi(S.xuat/1000,1)} nghìn tấn trong kỳ · `
+    + `<b>ròng ${S.rong>=0?'+':''}${vi(S.rong,1)} tấn</b>`;
+
+  document.getElementById('heroSub').textContent =
+    vi(S.tonCuoi,1)+' tấn · chốt cuối tháng '+M[M.length-1]+'/2026';
+}
 
 /* ═══ VẼ ═══ */
 function drawAll(){
+  if(!R) return;
+  capNhatChu(); renderKpis();
   drawStock();
-  bars('chNet',net,M.map(m=>'T'+m),(v,lbl)=>lbl?(v>=0?'+':'')+vi(v):(v>0?'+':'')+vi(v),1400,
+  const limNet=Math.max(400,Math.ceil(Math.max(...net.map(Math.abs))/200)*200);
+  bars('chNet',net,M.map(m=>'T'+m),(v,lbl)=>lbl?(v>=0?'+':'')+vi(v):(v>0?'+':'')+vi(v),limNet,
     (i,v)=>v>=0?css('--warn'):css('--c2'),
     i=>({t:'Tháng '+M[i]+'/2026',rows:[['Nhập',vi(recv[i]/1000,1)+' nghìn t'],['Xuất',vi(issue[i]/1000,1)+' nghìn t'],
       ['Ròng',(net[i]>=0?'+':'')+vi(net[i])+' t'],['Diễn giải',net[i]>=0?'Tích luỹ thêm':'Giải phóng bớt']]}),null,true);
@@ -1104,11 +1315,9 @@ function drawAll(){
     lbl:vi(d.ngay,1)+' ngày · '+vi(d.ty,2)+' tỷ',
     tip:[['Số ngày tồn',vi(d.ngay,1)],['Vòng quay',vi(d.vq,2)],['Giá trị',vi(d.ty,2)+' tỷ'],['Số mã',vi(d.ma)]]})),450,
     {padL:240,padR:220,rowH:40});
-  document.querySelectorAll('.kpi .spark').forEach((s,i)=>{
-    s.innerHTML=KPI[i].mini?miniFor(KPI[i].mini):spark(KPI[i].sp,css(KPI[i].spc));});
 }
 window.drawAll=drawAll;
-drawAll();
+NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); } });
 addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(drawAll,180);});
 </script>
 </body>

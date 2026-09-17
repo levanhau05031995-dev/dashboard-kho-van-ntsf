@@ -189,6 +189,18 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
 
    ĐỔI MẬT KHẨU: xem hướng dẫn trong tệp DOI-MAT-KHAU.md
    ═══════════════════════════════════════════════════════ */
+/* ── Khôi phục giao diện sáng/tối đã chọn ──────────────
+   Đặt ở ĐÂY chứ không ở app.js là có lý do: auth.js là script đồng bộ
+   đầu tiên trong <head>, chạy trước khi trang vẽ lần đầu. app.js dùng
+   defer nên chạy sau khi trang đã vẽ — để ở đó thì mỗi lần chuyển trang
+   sẽ loé trắng một nhịp rồi mới chuyển sang nền tối. */
+(function () {
+  try {
+    var t = localStorage.getItem('ntsf_theme');
+    if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+  } catch (e) { /* trình duyệt chặn bộ nhớ cục bộ thì bỏ qua, dùng mặc định */ }
+})();
+
 (function (root) {
   'use strict';
 
