@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard-ntsf",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        ".claude/serve.ps1",
+        "-Root",
+        "20260916_Dashboard NTSF",
+        "-Port",
+        "8810",
+        "-TimeoutMinutes",
+        "480"
+      ],
+      "port": 8810
+    }
+  ]
+}
