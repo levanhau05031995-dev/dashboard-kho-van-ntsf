@@ -463,7 +463,7 @@ tbody tr:hover{background:var(--surface-tint)}
 /* ═══ GHI CHÚ TẠI CHỖ ═══ */
 .note-pin{margin-left:8px;border:0;background:transparent;color:var(--ink-3);cursor:pointer;
   font-size:13px;line-height:1;padding:2px 5px;border-radius:5px;opacity:.45;transition:opacity .15s,background .15s}
-.note-pin:hover{opacity:1;background:var(--panel);color:var(--blue)}
+.note-pin:hover{opacity:1;background:var(--surface-tint);color:var(--blue)}
 .card:hover .note-pin,.insight:hover .note-pin,.banner:hover .note-pin{opacity:.8}
 .banner .note-pin{color:rgba(255,255,255,.75)}
 .banner .note-pin:hover{background:rgba(255,255,255,.16);color:#fff}
@@ -476,21 +476,31 @@ tbody tr:hover{background:var(--surface-tint)}
   background:var(--brand-red);color:#fff;font:800 11px/20px Roboto,sans-serif;padding:0 5px}
 .note-count:empty{display:none}
 
+/* Man mo phia sau, de khung ghi chu khong chim vao bieu do */
+.note-veil{position:fixed;inset:0;z-index:59;background:rgba(9,26,50,.34);
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:none}
+.note-veil.on{display:block}
 .note-panel{position:fixed;right:20px;bottom:82px;z-index:61;width:min(380px,calc(100vw - 40px));
-  max-height:min(640px,calc(100vh - 120px));overflow:auto;background:var(--card);border:1px solid var(--line);
-  border-radius:var(--r-card);box-shadow:0 20px 50px rgba(9,54,112,.22);padding:14px 16px 16px;display:none}
+  max-height:min(640px,calc(100vh - 120px));overflow:auto;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-card);box-shadow:var(--sh-float);padding:14px 16px 16px;display:none}
 .note-panel.on{display:block}
+/* Man hinh hep: khung an ra gan full be rong, day len tren nut tron */
+@media (max-width:560px){
+  .note-panel{right:10px;left:10px;width:auto;bottom:76px;max-height:calc(100vh - 100px)}
+  .note-fab{right:14px;bottom:14px}
+}
 .note-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .note-head b{font:800 14px/1.3 Mulish,sans-serif;color:var(--ink)}
 .note-x{border:0;background:transparent;color:var(--ink-3);cursor:pointer;font-size:15px;padding:3px 6px;border-radius:6px}
-.note-x:hover{background:var(--panel);color:var(--ink)}
+.note-x:hover{background:var(--surface-tint);color:var(--ink)}
 .note-lb{display:block;font:800 9px/1 Roboto,sans-serif;letter-spacing:.13em;text-transform:uppercase;
   color:var(--ink-3);margin:10px 0 5px}
-.note-at{background:var(--panel);border-left:3px solid var(--c5);border-radius:6px;padding:7px 10px;
+.note-at{background:var(--surface-tint);border-left:3px solid var(--c5);border-radius:6px;padding:7px 10px;
   font:600 11.5px/1.45 Roboto,sans-serif;color:var(--ink-2)}
 .note-panel select,.note-panel textarea{width:100%;border:1.5px solid var(--line);border-radius:8px;
   padding:8px 10px;font:400 12.5px/1.5 Roboto,sans-serif;color:var(--ink);background:var(--bg);outline:none;resize:vertical}
-.note-panel select:focus,.note-panel textarea:focus{border-color:var(--blue);background:var(--card)}
+.note-panel select:focus,.note-panel textarea:focus{border-color:var(--blue);background:var(--surface)}
 .note-save{width:100%;margin-top:10px;padding:10px;border:0;border-radius:8px;cursor:pointer;
   background:linear-gradient(135deg,#0B4183,#093670);color:#fff;font:800 12.5px/1 Mulish,sans-serif}
 .note-save:hover{filter:brightness(1.08)}
@@ -499,10 +509,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .note-list-head{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;
   padding-top:12px;border-top:1px solid var(--line)}
 .note-list-head b{font:800 12px/1 Mulish,sans-serif;color:var(--ink)}
-.note-mini{border:1px solid var(--line);background:var(--card);color:var(--ink-2);cursor:pointer;
+.note-mini{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;
   font:700 10px/1 Roboto,sans-serif;padding:5px 8px;border-radius:var(--r-pill);margin-left:5px}
-.note-mini:hover{background:var(--panel);color:var(--ink)}
-.note-item{background:var(--panel);border-radius:8px;padding:9px 11px;margin-bottom:7px}
+.note-mini:hover{background:var(--surface-tint);color:var(--ink)}
+.note-item{background:var(--surface-tint);border-radius:8px;padding:9px 11px;margin-bottom:7px}
 .note-item-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
 .note-tag{font:800 9px/1 Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;
   background:rgba(0,70,132,.12);color:var(--blue);padding:3px 6px;border-radius:var(--r-pill)}
@@ -512,11 +522,11 @@ tbody tr:hover{background:var(--surface-tint)}
 .note-where{font:700 10px/1.35 Roboto,sans-serif;color:var(--ink-2);margin-bottom:3px}
 .note-body{font:400 11.5px/1.55 Roboto,sans-serif;color:var(--ink);white-space:pre-wrap}
 .note-empty{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-3)}
-@media print{.note-fab,.note-panel,.note-pin{display:none !important}}
+@media print{.note-fab,.note-panel,.note-veil,.note-pin{display:none !important}}
 </style>
 <style>
 /* ── Từ điển chỉ số — chỉ dùng ở màn này ── */
-.search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);
   border-radius:var(--r-pill);padding:7px 14px;max-width:420px;margin-top:10px}
 .search input{border:0;background:transparent;flex:1;font:400 12.5px/1.4 Roboto,sans-serif;color:var(--ink);outline:none;min-width:0}
 .search input::placeholder{color:var(--ink-3)}
@@ -524,7 +534,7 @@ tbody tr:hover{background:var(--surface-tint)}
 .count{font:700 10.5px/1.4 Roboto,sans-serif;color:var(--ink-3);margin-top:8px}
 .dgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
 @media(max-width:900px){.dgrid{grid-template-columns:1fr}}
-.dcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r-panel);padding:13px 15px 12px;
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-panel);padding:13px 15px 12px;
   display:flex;flex-direction:column;gap:7px}
 .dcard.hide{display:none}
 .d-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
@@ -534,7 +544,7 @@ tbody tr:hover{background:var(--surface-tint)}
 .d-row{display:flex;gap:9px;font:400 11.5px/1.55 Roboto,sans-serif;color:var(--ink-2)}
 .d-row b{flex:none;width:62px;font:700 9px/1.75 Roboto,sans-serif;letter-spacing:.06em;
   text-transform:uppercase;color:var(--ink-3)}
-.d-ct{background:var(--panel);border-radius:6px;padding:7px 10px;
+.d-ct{background:var(--surface-tint);border-radius:6px;padding:7px 10px;
   font:500 11.5px/1.55 Roboto,sans-serif;color:var(--ink);border-left:3px solid var(--c3)}
 .d-ct code{font:inherit;font-weight:700}
 .d-warn{background:rgba(183,121,31,.10);border-left:3px solid var(--warn);border-radius:6px;padding:7px 10px;
@@ -543,7 +553,7 @@ tbody tr:hover{background:var(--surface-tint)}
 .conv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:10px}
 @media(max-width:1180px){.conv{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.conv{grid-template-columns:1fr}}
-.conv>div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel);padding:10px 12px}
+.conv>div{background:var(--surface-tint);border:1px solid var(--line);border-radius:var(--r-panel);padding:10px 12px}
 .conv h5{margin:0 0 3px;font:800 10px/1.3 Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .conv p{margin:0;font:400 11.5px/1.5 Roboto,sans-serif;color:var(--ink-2)}
 .conv b{color:var(--ink)}
@@ -691,7 +701,8 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
     var wrap = document.createElement('div');
     wrap.innerHTML =
       '<button class="note-fab" id="noteFab" type="button" title="Ghi chú">✎<span class="note-count" id="noteCount"></span></button>'
-      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-label="Ghi chú">'
+      + '<div class="note-veil" id="noteVeil"></div>'
+      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-modal="true" aria-label="Ghi chú">'
       +   '<div class="note-head"><b>Ghi chú khi xem báo cáo</b>'
       +     '<button class="note-x" id="noteClose" type="button" aria-label="Đóng">✕</button></div>'
       +   '<div class="note-form">'
@@ -716,14 +727,16 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
     var msg = document.getElementById('noteMsg');
     var viTri = 'Toàn trang';
 
+    var veil = document.getElementById('noteVeil');
     function moPanel(muc) {
       viTri = muc || 'Toàn trang';
       atEl.textContent = tenMan() + ' › ' + viTri;
-      panel.classList.add('on');
+      panel.classList.add('on'); veil.classList.add('on');
       msg.textContent = '';
       document.getElementById('noteText').focus();
     }
-    function dongPanel() { panel.classList.remove('on'); }
+    function dongPanel() { panel.classList.remove('on'); veil.classList.remove('on'); }
+    veil.addEventListener('click', dongPanel);
 
     function veDanhSach() {
       var list = docGhiChu();
@@ -752,7 +765,11 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
         b.title = 'Ghi chú cho mục này'; b.textContent = '✎';
         b.addEventListener('click', function (e) {
           e.stopPropagation();
-          moPanel(h.textContent.replace('✎', '').trim());
+          /* Bỏ nhãn tag và chính nút ✎ ra khỏi tên vị trí, nếu không
+             chuỗi sẽ dính thêm chữ như "Toàn kỳ" hay "CC-04". */
+          var c = h.cloneNode(true);
+          Array.prototype.forEach.call(c.querySelectorAll('.tag, .note-pin'), function (x) { x.remove(); });
+          moPanel(c.textContent.replace('✎', '').replace(/\s+/g, ' ').trim());
         });
         h.appendChild(b);
       });
@@ -762,7 +779,7 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
     setTimeout(ganNut, 1200);
 
     document.getElementById('noteFab').addEventListener('click', function () {
-      panel.classList.contains('on') ? dongPanel() : moPanel('Toàn trang');
+      if (panel.classList.contains('on')) dongPanel(); else moPanel('Toàn trang');
     });
     document.getElementById('noteClose').addEventListener('click', dongPanel);
 

@@ -137,7 +137,8 @@
     var wrap = document.createElement('div');
     wrap.innerHTML =
       '<button class="note-fab" id="noteFab" type="button" title="Ghi chú">✎<span class="note-count" id="noteCount"></span></button>'
-      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-label="Ghi chú">'
+      + '<div class="note-veil" id="noteVeil"></div>'
+      + '<div class="note-panel" id="ghiChuPanel" role="dialog" aria-modal="true" aria-label="Ghi chú">'
       +   '<div class="note-head"><b>Ghi chú khi xem báo cáo</b>'
       +     '<button class="note-x" id="noteClose" type="button" aria-label="Đóng">✕</button></div>'
       +   '<div class="note-form">'
@@ -162,14 +163,16 @@
     var msg = document.getElementById('noteMsg');
     var viTri = 'Toàn trang';
 
+    var veil = document.getElementById('noteVeil');
     function moPanel(muc) {
       viTri = muc || 'Toàn trang';
       atEl.textContent = tenMan() + ' › ' + viTri;
-      panel.classList.add('on');
+      panel.classList.add('on'); veil.classList.add('on');
       msg.textContent = '';
       document.getElementById('noteText').focus();
     }
-    function dongPanel() { panel.classList.remove('on'); }
+    function dongPanel() { panel.classList.remove('on'); veil.classList.remove('on'); }
+    veil.addEventListener('click', dongPanel);
 
     function veDanhSach() {
       var list = docGhiChu();
@@ -198,7 +201,11 @@
         b.title = 'Ghi chú cho mục này'; b.textContent = '✎';
         b.addEventListener('click', function (e) {
           e.stopPropagation();
-          moPanel(h.textContent.replace('✎', '').trim());
+          /* Bỏ nhãn tag và chính nút ✎ ra khỏi tên vị trí, nếu không
+             chuỗi sẽ dính thêm chữ như "Toàn kỳ" hay "CC-04". */
+          var c = h.cloneNode(true);
+          Array.prototype.forEach.call(c.querySelectorAll('.tag, .note-pin'), function (x) { x.remove(); });
+          moPanel(c.textContent.replace('✎', '').replace(/\s+/g, ' ').trim());
         });
         h.appendChild(b);
       });
@@ -208,7 +215,7 @@
     setTimeout(ganNut, 1200);
 
     document.getElementById('noteFab').addEventListener('click', function () {
-      panel.classList.contains('on') ? dongPanel() : moPanel('Toàn trang');
+      if (panel.classList.contains('on')) dongPanel(); else moPanel('Toàn trang');
     });
     document.getElementById('noteClose').addEventListener('click', dongPanel);
 
