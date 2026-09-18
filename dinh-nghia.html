@@ -1019,7 +1019,7 @@ window.NTSF_RANGE = (function () {
 
       <section class="banner">
         <h2>Mọi con số trên dashboard được tính như thế nào</h2>
-        <p>29 chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ</p>
+        <p><span id="bannerSo">—</span> chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ</p>
       </section>
 
       <!-- QUY ƯỚC CHUNG -->
@@ -1126,9 +1126,14 @@ const DEFS=[
  luu:'Nằm trong khoảng cam kết 30–60 ngày. Nhóm <b>Z401 thức ăn</b> có nhịp luân chuyển rất khác thành phẩm, nên tách riêng khi báo cáo để không kéo lệch số chung.'},
 
 {g:'ton', n:'Giá trị tồn kho', ma:null, val:'440,3', u:'tỷ đồng', man:'Màn 1 · Màn 3',
- ct:'Tổng giá trị sổ sách của hàng tồn tại thời điểm chốt',
- ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV',
- luu:'Là <b>giá trị sổ sách</b> theo phương pháp tính giá của SAP, không phải giá bán. Bình quân cả kỳ chỉ <b>263,0 tỷ</b> — cuối kỳ đang cao hơn bình quân <b>67%</b>.'},
+ ct:'Tổng giá trị sổ sách của hàng tồn, ảnh chụp tại 16/09/2026',
+ ng:'C_STOCKQUANTITYVALUEBYTYPE, bắt buộc lọc Plant = P100',
+ luu:'Là <b>giá trị sổ sách</b> theo phương pháp tính giá của SAP, không phải giá bán.<br><br><b>Gồm toàn bộ 64 kho của plant P100</b>, kể cả trại nuôi, vật tư, bao bì và kho ngoài — không phải chỉ 9 kho lạnh. Ước tính phân bổ theo đơn giá: kho lạnh thành phẩm <b>~84%</b>, kho ngoài ~5%, trại nuôi ~5%, vật tư và bao bì ~4,5%.<br><br><b>Không bóc chính xác được theo kho</b> vì cả hai báo cáo giá trị đều không có cột kho — chỉ có mã hàng. Con số theo kho ở trên là ước tính bằng đơn giá bình quân.'},
+
+{g:'ton', n:'Giá trị tồn kho bình quân cả kỳ', ma:null, val:'263,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+ ct:'Bình quân giá trị tồn kho trong kỳ 01/01 → 16/09/2026',
+ ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, cột avg_stock_value_vnd của 3.468 mã',
+ luu:'<b>Đây là bình quân của CẢ KỲ 9 tháng, không phải riêng tháng 9.</b> Nhãn cũ ghi "Bình quân 9 tháng" gây hiểu nhầm, đã sửa ngày 18/09/2026.<br><br>Thấp hơn ảnh chụp 440,3 tỷ tới <b>67%</b> vì ba lý do cộng lại: tồn kho lạnh tăng <b>+27,8%</b> trong kỳ, cơ cấu dịch sang hàng giá trị cao (tỷ trọng thành phẩm trong tổng tồn tăng từ 60,7% lên 70,1%), và <b>hai con số đến từ hai báo cáo SAP khác nhau</b> với cơ sở định giá khác nhau.<br><br>Mẫu số của chỉ tiêu vốn đọng (26,02 ÷ 263,02 = 9,9%) dùng con số này, nên đừng thay bằng 440,3.'},
 
 {g:'ton', n:'Vốn đọng trong kho', ma:'CC-03 · phần', val:'26,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
  ct:'Tổng giá trị 20 mã có giá trị trên 500 triệu nhưng vòng quay dưới 1',
@@ -1157,9 +1162,14 @@ const DEFS=[
 
 /* ── GIAO HÀNG ── */
 {g:'giao', n:'Giao hàng đúng hạn', ma:'SX-05', val:'52,7', u:'% tháng 9', man:'Màn 1 · Màn 2',
- ct:'Dòng lệnh xuất trễ không quá 24 giờ ÷ tổng số dòng đã xuất, nhóm theo tháng kế hoạch',
- ng:'odo_item.csv ← API_WHSE_OUTB_DLV_ORDER',
- luu:'Toàn kỳ là <b>16,6%</b> (1.757 trên 10.610 dòng), tháng 9 là <b>52,7%</b> — khác nhau vì khác kỳ, không phải số nào sai. <b>Trước khi công bố ra ngoài Khối cần nghiệp vụ xác nhận:</b> mốc kế hoạch đang lấy từ trường ngày giao dự kiến trên lệnh xuất; nếu trường này được đặt theo ngày khách yêu cầu thì đây là OTD thật, nếu chỉ là ngày tạo lệnh thì đang đo sai đối tượng.'},
+ ct:'Dòng lệnh xuất ĐÚNG NGÀY kế hoạch ÷ tổng số dòng đã xuất, nhóm theo tháng kế hoạch',
+ ng:'odo_item.csv ← API_WHSE_OUTB_DLV_ORDER, trường PlndGoodsIssueStartUTCDateTime và ActlGoodsIssueStartUTCDateTime',
+ luu:'<b>Quy tắc chốt ngày 18/09/2026:</b> kho xuất đúng ngày kế hoạch thì tính đúng hạn, lệch ngày nào — kể cả xuất sớm — đều không tính. Toàn kỳ <b>15,3%</b> (1.621 trên 10.610 dòng), tháng 9 <b>52,7%</b>.<br><br><b>Mốc kế hoạch là ngày dự kiến RA KHỎI BÃI</b> (<code>planned_out_of_yard</code>), đúng 10.610/10.610 dòng — không phải ngày giao tới khách. Đây là cam kết của chính kho, nên hợp với một chỉ tiêu của Khối Kho vận.<br><br><b>Phải quy đổi múi giờ.</b> SAP trả về giờ UTC — tên trường có sẵn chữ <code>UTC</code>. Mốc kế hoạch luôn là 17:00 UTC ở 100% số dòng, tức 00:00 giờ Việt Nam hôm sau; đó là dấu hiệu của một trường chỉ nhập ngày. Nếu so ngày thô không quy đổi thì OTD chỉ còn <b>0,2%</b> và đỉnh phân bố rơi vào "trễ đúng 1 ngày" — một hình dạng không có thật trong vận hành.<br><br>Quy tắc cũ "trễ không quá 24 giờ" cho <b>16,6%</b>, đúng bằng "đúng ngày hoặc sớm hơn".'},
+
+{g:'giao', n:'Lệch trung vị', ma:null, val:'0', u:'ngày tháng 9', man:'Màn 2',
+ ct:'Số ngày lệch của dòng nằm giữa dãy, đã sắp xếp',
+ ng:'odo_item.csv',
+ luu:'Đo bằng <b>ngày</b>, không phải giờ, cho khớp quy tắc đúng hạn. 0 nghĩa là dòng ở giữa xuất đúng ngày kế hoạch. Đi từ <b>20 ngày</b> tháng 1 xuống <b>0 ngày</b> tháng 9 — đây là chỉ số cho thấy mức cải thiện rõ nhất trong cả bộ.'},
 
 {g:'giao', n:'Sản lượng giao cho khách', ma:null, val:'20.392', u:'tấn', man:'Màn 2',
  ct:'Tổng khối lượng trên các dòng lệnh xuất đã ghi nhận xuất kho thực tế',
@@ -1176,15 +1186,10 @@ const DEFS=[
  ng:'odo_head.csv',
  luu:'Danh sách có cả <b>điểm đến nội bộ</b> như Kho CTY NTSF, nên đây không phải 66 khách hàng bên ngoài. Cần lọc lại nếu dùng cho báo cáo thương mại.'},
 
-{g:'giao', n:'Độ trễ trung vị', ma:null, val:'16,7', u:'giờ tháng 9', man:'Màn 2',
- ct:'Giá trị nằm giữa của độ trễ trên các dòng đã xuất trong tháng',
+{g:'giao', n:'Giao trong 7 ngày', ma:null, val:'39,7', u:'%', man:'Màn 2',
+ ct:'Dòng lệnh xuất trong vòng 7 ngày kể từ ngày kế hoạch ÷ tổng số dòng đã xuất',
  ng:'odo_item.csv',
- luu:'Dùng <b>trung vị</b> thay vì trung bình vì một số đơn trễ rất nặng sẽ kéo lệch trung bình. Tháng 9 đã giảm từ 42,1 giờ xuống 16,7 giờ.'},
-
-{g:'giao', n:'Giao trong 7 ngày', ma:null, val:'37,2', u:'%', man:'Màn 2',
- ct:'Dòng lệnh trễ không quá 7 ngày ÷ tổng số dòng đã xuất',
- ng:'odo_item.csv',
- luu:'Ngưỡng nới rộng hơn OTD, dùng để thấy phần đuôi trễ nặng. Còn <b>62,8%</b> số dòng trễ quá 7 ngày.'},
+ luu:'Ngưỡng nới rộng hơn chỉ tiêu đúng hạn, dùng để thấy phần đuôi trễ nặng. Còn <b>60,3%</b> số dòng lệch quá 7 ngày, trong đó <b>22,0%</b> lệch trên 30 ngày.'},
 
 {g:'giao', n:'Lệnh xuất còn treo', ma:null, val:'18.923', u:'tấn', man:'Màn 1',
  ct:'Khối lượng trên các dòng lệnh xuất chưa ghi nhận mốc xuất kho thực tế',
@@ -1304,6 +1309,8 @@ document.querySelector('#tblTerm tbody').innerHTML=TERM.map(t=>`
 
 document.querySelector('#tblGap tbody').innerHTML=GAP.map(t=>`
   <tr><td><b>${t[0]}</b></td><td>${t[1]}</td><td>${t[2]}</td></tr>`).join('');
+
+document.getElementById('bannerSo').textContent=DEFS.length;
 
 /* ═══ LỌC ═══ */
 const cards=[...document.querySelectorAll('.dcard')];
