@@ -139,31 +139,37 @@ body{
 .banner h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
 .banner p{margin:4px 0 0; font-size:10.5px; color:var(--on-navy); line-height:1.5}
 
-/* ═══ HERO + KPI ═══ */
-.hero-row{display:grid; grid-template-columns:minmax(230px,1fr) 2.15fr; gap:14px; align-items:stretch}
+/* ═══ HERO + KPI ═══
+   Hero cố định bề ngang hẹp để nhường chỗ cho lưới KPI dàn ngang — trước đây hero
+   chiếm 1/3 bề rộng và bị kéo cao theo lưới, để lại một khoảng trống lớn. */
+.hero-row{display:grid; grid-template-columns:minmax(186px,224px) minmax(0,1fr); gap:12px; align-items:stretch}
 .hero{
   background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--c5);
-  border-radius:var(--r-card); padding:16px; box-shadow:var(--sh-card);
+  border-radius:var(--r-card); padding:13px 14px; box-shadow:var(--sh-card);
   display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; font-family:inherit;
 }
 .hero:hover{border-color:var(--c2)}
 .hero:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .hero .lbl{font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .hero .kpi-head{margin-bottom:2px}
-.hero .big{font-size:52px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:7px 0 2px; color:var(--ink)}
-.hero .big small{font-size:20px; font-weight:800; margin-left:2px}
-.hero .sub{font-size:11px; color:var(--ink-2); font-weight:600}
-.hero .delta{margin-top:9px; font-size:11px; font-weight:800}
-.hero .foot{margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-3); line-height:1.5}
+.hero .big{font-size:38px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:6px 0 2px; color:var(--ink)}
+.hero .big small{font-size:15px; font-weight:800; margin-left:2px}
+.hero .sub{font-size:10.5px; color:var(--ink-2); font-weight:600; line-height:1.45}
+.hero .delta{margin-top:7px; font-size:10.5px; font-weight:800; line-height:1.4}
+.hero .foot{margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:9.5px; color:var(--ink-3); line-height:1.5}
 
-/* 9 thẻ → lưới 3 cột cho đủ 3 hàng bằng nhau, không để thẻ đứng lẻ */
-.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-@media (max-width:1180px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Lưới KPI dàn tối đa 4 cột để giảm số hàng — hero đã thu hẹp nên còn dư bề ngang.
+   Mốc ngắt tính theo bề rộng CỬA SỔ, mà vùng nội dung còn phải trừ 260px thanh bên
+   và 224px thẻ hero — nên ngưỡng phải rộng hơn bề rộng thẻ mong muốn khá nhiều. */
+.kpis{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px}
+@media (max-width:1560px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1360px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1040px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:620px){ .kpis{grid-template-columns:minmax(0,1fr)} }
 .kpi{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-kpi);
-  padding:11px 12px 10px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
-  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:2px;
+  padding:10px 11px 9px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
+  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:1px;
 }
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
@@ -258,8 +264,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .close:hover{background:var(--surface-tint); color:var(--ink)}
 .close:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* Dưới ngưỡng này lưới KPI chỉ còn 2 cột — để hero đứng cột hẹp bên cạnh sẽ bị kéo
+   cao lêu nghêu, nên cho hero trải hết bề ngang thành một dải ngắn phía trên. */
+@media (max-width:1040px){ .hero-row{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:960px){
-  .hero-row{grid-template-columns:1fr}
   .side{position:fixed; left:-260px; transition:left .2s; z-index:60}
   .side.open{left:0}
   .main{width:100%}

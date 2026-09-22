@@ -324,31 +324,37 @@ body{
 .banner h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
 .banner p{margin:4px 0 0; font-size:10.5px; color:var(--on-navy); line-height:1.5}
 
-/* ═══ HERO + KPI ═══ */
-.hero-row{display:grid; grid-template-columns:minmax(230px,1fr) 2.15fr; gap:14px; align-items:stretch}
+/* ═══ HERO + KPI ═══
+   Hero cố định bề ngang hẹp để nhường chỗ cho lưới KPI dàn ngang — trước đây hero
+   chiếm 1/3 bề rộng và bị kéo cao theo lưới, để lại một khoảng trống lớn. */
+.hero-row{display:grid; grid-template-columns:minmax(186px,224px) minmax(0,1fr); gap:12px; align-items:stretch}
 .hero{
   background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--c5);
-  border-radius:var(--r-card); padding:16px; box-shadow:var(--sh-card);
+  border-radius:var(--r-card); padding:13px 14px; box-shadow:var(--sh-card);
   display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; font-family:inherit;
 }
 .hero:hover{border-color:var(--c2)}
 .hero:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .hero .lbl{font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .hero .kpi-head{margin-bottom:2px}
-.hero .big{font-size:52px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:7px 0 2px; color:var(--ink)}
-.hero .big small{font-size:20px; font-weight:800; margin-left:2px}
-.hero .sub{font-size:11px; color:var(--ink-2); font-weight:600}
-.hero .delta{margin-top:9px; font-size:11px; font-weight:800}
-.hero .foot{margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-3); line-height:1.5}
+.hero .big{font-size:38px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:6px 0 2px; color:var(--ink)}
+.hero .big small{font-size:15px; font-weight:800; margin-left:2px}
+.hero .sub{font-size:10.5px; color:var(--ink-2); font-weight:600; line-height:1.45}
+.hero .delta{margin-top:7px; font-size:10.5px; font-weight:800; line-height:1.4}
+.hero .foot{margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:9.5px; color:var(--ink-3); line-height:1.5}
 
-/* 9 thẻ → lưới 3 cột cho đủ 3 hàng bằng nhau, không để thẻ đứng lẻ */
-.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-@media (max-width:1180px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Lưới KPI dàn tối đa 4 cột để giảm số hàng — hero đã thu hẹp nên còn dư bề ngang.
+   Mốc ngắt tính theo bề rộng CỬA SỔ, mà vùng nội dung còn phải trừ 260px thanh bên
+   và 224px thẻ hero — nên ngưỡng phải rộng hơn bề rộng thẻ mong muốn khá nhiều. */
+.kpis{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px}
+@media (max-width:1560px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1360px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1040px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:620px){ .kpis{grid-template-columns:minmax(0,1fr)} }
 .kpi{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-kpi);
-  padding:11px 12px 10px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
-  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:2px;
+  padding:10px 11px 9px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
+  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:1px;
 }
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
@@ -443,8 +449,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .close:hover{background:var(--surface-tint); color:var(--ink)}
 .close:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* Dưới ngưỡng này lưới KPI chỉ còn 2 cột — để hero đứng cột hẹp bên cạnh sẽ bị kéo
+   cao lêu nghêu, nên cho hero trải hết bề ngang thành một dải ngắn phía trên. */
+@media (max-width:1040px){ .hero-row{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:960px){
-  .hero-row{grid-template-columns:1fr}
   .side{position:fixed; left:-260px; transition:left .2s; z-index:60}
   .side.open{left:0}
   .main{width:100%}
@@ -566,6 +574,91 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
    Dashboard Khối Kho Vận & Logistics — thành phần dùng chung
    Sidebar · logo · điều hướng · giao diện sáng-tối
    ═══════════════════════════════════════════════════════ */
+/* ═══ KHUNG BIỂU ĐỒ DÙNG CHUNG ═══
+   Mọi SVG phải vẽ theo ĐÚNG bề rộng pixel của thẻ chứa nó, tức viewBox = pixel,
+   để tỷ lệ luôn là 1:1.
+
+   Trước đây mỗi hàm vẽ tự đặt viewBox cố định — 470, 640 hoặc 900 — rồi để SVG
+   kéo giãn theo bề rộng thẻ. Hậu quả: cùng một cỡ chữ 11,5 đơn vị lại hiện ra
+   ~11px trong thẻ nửa màn (viewBox 640 → 612px) nhưng ~16px trong thẻ toàn màn
+   (viewBox 900 → 1.271px). Nhìn vào thấy biểu đồ chỗ to chỗ nhỏ, chữ chỗ đậm
+   chỗ mảnh, dù cùng một bộ mã vẽ.
+
+   CAO  = chiều cao chuẩn của biểu đồ theo thời gian (cột, đường) — mọi màn dùng chung.
+   DONG = chiều cao một dòng của biểu đồ thanh ngang.
+   Vì vẽ 1:1 nên hai hằng số này là PIXEL THẬT, không còn là đơn vị co giãn. */
+window.NTSF_CH = {
+  CAO: 250,
+  DONG: 34,
+  /* Bề rộng vẽ = bề rộng trong lòng thẻ. Chặn dưới 320 để không vỡ trên điện thoại. */
+  rong: function (hop) {
+    var box = (typeof hop === 'string') ? document.getElementById(hop) : hop;
+    if (!box) return 640;
+    var w = box.clientWidth || box.getBoundingClientRect().width;
+    return Math.max(320, Math.round(w));
+  },
+  /* Lề trái/phải của biểu đồ thanh ngang không được nuốt hết chỗ vẽ thanh:
+     giữ tối thiểu 26% bề rộng cho phần thanh. */
+  le: function (W, trai, phai) {
+    var l = Math.min(trai, Math.round(W * 0.40));
+    var r = Math.min(phai, Math.round(W * 0.34));
+    if (W - l - r < W * 0.26) { var du = (W * 0.26) - (W - l - r); l -= du * 0.6; r -= du * 0.4; }
+    return { l: Math.max(48, Math.round(l)), r: Math.max(40, Math.round(r)) };
+  },
+  /* Cắt bớt nhãn theo bề rộng lề thật, thay vì cắt cứng ở 28 ký tự */
+  catNhan: function (chu, rongLe, cx) {
+    var n = Math.max(8, Math.floor((rongLe - 14) / (cx || 6.1)));
+    return chu.length > n ? chu.slice(0, n - 1) + '…' : chu;
+  },
+
+  /* Cho bấm vào cả khung biểu đồ để mở bảng phân tích sâu.
+     Dùng cho biểu đồ chưa có chỗ bấm riêng trên từng cột hay từng thanh.
+     Chỉ gắn thuộc tính data-drill — bộ xử lý click sẵn có của trang sẽ mở đúng bảng,
+     nên hành vi giống hệt khi bấm vào thẻ KPI, không phát sinh đường đi thứ hai.
+     ⚠️ Đừng gắn cho biểu đồ đã có click trên từng phần tử: sự kiện nổi bọt lên
+     khung sẽ mở thêm một bảng nữa. */
+  bamThe: function (id, khoa) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.setAttribute('data-drill', khoa);
+    box.style.cursor = 'pointer';
+    var card = box.closest('.card');
+    var how = card ? card.querySelector('.how') : null;
+    if (how && how.dataset.goiY !== '1') {
+      how.dataset.goiY = '1';
+      how.insertAdjacentHTML('beforeend', ' · <b>▸ bấm để xem phân tích sâu</b>');
+    }
+  },
+
+  /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
+     Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
+     getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
+  gonNhan: function () {
+    document.querySelectorAll('.chart svg').forEach(function (s) {
+      var vb = s.viewBox.baseVal;
+      if (!vb || !vb.width) return;
+      s.querySelectorAll('text').forEach(function (tx) {
+        var b;
+        try { b = tx.getBBox(); } catch (e) { return; }
+        if (!b.width) return;
+        /* nhãn dài hơn cả khung thì thu nhỏ cỡ chữ trước, rồi mới ép về mép */
+        if (b.width > vb.width - 8) {
+          var cu = parseFloat(tx.getAttribute('font-size')) || 11;
+          tx.setAttribute('font-size', Math.max(7.5, cu * (vb.width - 8) / b.width).toFixed(1));
+          try { b = tx.getBBox(); } catch (e) { return; }
+        }
+        if (b.x + b.width > vb.width - 2) {
+          tx.setAttribute('text-anchor', 'end');
+          tx.setAttribute('x', vb.width - 4);
+        } else if (b.x < 0) {
+          tx.setAttribute('text-anchor', 'start');
+          tx.setAttribute('x', 2);
+        }
+      });
+    });
+  }
+};
+
 (function () {
   'use strict';
 
@@ -1085,9 +1178,9 @@ window.NTSF_RANGE = (function () {
       <section class="insight">
         <h4>Ba chỗ dễ đọc nhầm nhất</h4>
         <p><span class="formula">Tổng luân chuyển kho 37.387 tấn ≠ Sản lượng giao khách 2.570 tấn — chênh 14,5 lần</span></p>
-        <p><b>Một — luân chuyển kho và giao khách là hai thứ khác nhau.</b> Màn 1 có biểu đồ <b>Tổng luân chuyển kho</b> gồm toàn bộ 46 kho, tính cả nguyên liệu vào sản xuất và thức ăn ra trại. Màn 2 có <b>Sản lượng giao cho khách</b> chỉ tính hàng đi khách. Hai biểu đồ này không bao giờ khớp nhau và không nên khớp.</p>
+        <p><b>Một — luân chuyển kho và giao khách là hai thứ khác nhau.</b> Màn 1 có biểu đồ <b>Tổng luân chuyển kho</b> gồm cả 20 kho của Khối, tính cả bao bì và phụ gia ra xưởng. Màn 2 có <b>Sản lượng giao cho khách</b> chỉ tính hàng đi khách. Hai biểu đồ này không bao giờ khớp nhau và không nên khớp.</p>
         <p><b>Hai — cùng một chỉ số nhưng khác kỳ.</b> Màn 1 là màn điều hành nên hiển thị <b>tháng gần nhất</b>: giao đúng hạn 52,7%, sản lượng xử lý 103 tấn mỗi ngày. Các màn chuyên đề hiển thị <b>toàn kỳ</b>: giao đúng hạn 16,6%, sản lượng xử lý 144 tấn mỗi ngày. Không phải số nào sai, chỉ là khác kỳ — nhãn trên mỗi thẻ đều ghi rõ.</p>
-        <p><b>Ba — con số đẹp chưa chắc là tin tốt.</b> <b>Chính xác soạn hàng 100%</b> không chứng minh thao tác chính xác, vì hệ thống tự xác nhận lệnh ngay khi tạo. <b>Mức lấp đầy kho lạnh 66,9%</b> là số tổng của 9 kho — nó che mất việc Kho 4000 đang vượt trần 107,2% trong khi bốn kho A chỉ dùng 28–47%. Hai chỗ này đều đã ghi cảnh báo ngay trên thẻ.</p>
+        <p><b>Ba — con số đẹp chưa chắc là tin tốt.</b> <b>Chính xác soạn hàng 100%</b> không chứng minh thao tác chính xác, vì hệ thống tự xác nhận lệnh ngay khi tạo. <b>Mức lấp đầy kho lạnh 66,9%</b> là số tổng của 9 kho tự có — nó che mất việc Kho A (4000) đang vượt trần 103,3% trong khi bốn kho A nhỏ chỉ dùng 38–47%. Hai chỗ này đều đã ghi cảnh báo ngay trên thẻ.</p>
         <p class="act">Gợi ý hành động: khi bộ KPI chính thức của Khối được chốt, sửa lại đúng ba chỗ — mảng chỉ tiêu ở Màn 5, nhãn mã KPI trên các thẻ, và các mục tương ứng ở màn này. Toàn bộ biểu đồ và bảng còn lại tự cập nhật theo.</p>
       </section>
 
@@ -1100,55 +1193,60 @@ window.NTSF_RANGE = (function () {
 const G={ton:'Tồn kho',giao:'Giao hàng',cont:'Container',ns:'Năng suất',qt:'Quản trị'};
 const DEFS=[
 /* ── TỒN KHO ── */
-{g:'ton', n:'Tồn kho cuối kỳ', ma:null, val:'6.153,4', u:'tấn', man:'Màn 1 · Màn 3',
- ct:'Khối lượng tồn tại thời điểm chốt cuối tháng, chỉ cộng các dòng có đơn vị KG',
- ng:'stock_monthly.csv ← MMIM_STOCKINDATERANGE_SRV (tương đương MB5B / ZWM06)',
- luu:'Đây là số chốt cuối tháng 9. Ảnh chụp tồn tức thời trong stock.csv cho <b>6.040,2 tấn</b> — lệch vì khác thời điểm chốt, không phải một trong hai sai.'},
+{g:'ton', n:'Phạm vi kho của Khối', ma:null, val:'20', u:'kho', man:'Toàn bộ dashboard',
+ ct:'Danh sách 20 mã kho SAP do Khối Kho vận quản lý, chia hai nhóm',
+ ng:'Bảng quy hoạch kho của Khối Kho vận & Logistics, bản chốt 22/09/2026',
+ luu:'<b>Đây là ranh giới của toàn bộ báo cáo.</b> Mọi con số tồn kho, luân chuyển, tuổi tồn và giá trị trên dashboard đều đã lọc theo đúng 20 mã kho này.<br><br><b>Kho Thành Phẩm — 11 kho:</b> <code>5300</code> Kho A (4000) · <code>5301</code> Kho B · <code>5302</code> Kho C · <code>5303</code> Kho D · <code>5304</code> Kho E · <code>5201</code> 461-Kho A · <code>5202</code> 916-Kho A · <code>5101</code> 548-Kho A · <code>5102</code> 946-Kho A · <code>9005</code> Kho NCC Thế Khánh · <code>9006</code> Kho NCC AGIFISH. Hai kho 9005 và 9006 là <b>kho nhà cung cấp, thuê ngoài</b>, mới phát sinh từ tháng 7/2026.<br><br><b>Kho Vật Tư — 9 kho:</b> <code>2000</code> Kho vật tư tổng · <code>2100</code>/<code>2101</code> Kho Bao Bì Cá · <code>2102</code>/<code>2103</code> Kho B.Bì Tôm · <code>2200</code>/<code>2201</code> Kho PG/HC Cá · <code>2202</code>/<code>2203</code> Kho PGHC Tôm. Bốn kho <code>2101 · 2103 · 2201 · 2203</code> có trong quy hoạch nhưng <b>SAP chưa ghi nhận tồn nào</b> trong chín tháng.<br><br><b>Đã loại khỏi báo cáo — 44 kho khác của plant P100:</b> trại nuôi A00x–G00x, kho nguyên liệu 1000/1001, nhiên liệu 3000/3001, BTP 4000, kho xưởng 5103/5203/5204, phụ phẩm 6000/6001, kho cảng 9001, hàng ký gửi 9002/9003. Các kho này có số liệu trong SAP nhưng <b>không thuộc phạm vi điều hành của Khối</b>.'},
+
+{g:'ton', n:'Tồn kho cuối kỳ', ma:null, val:'4.937,1', u:'tấn', man:'Màn 1 · Màn 3',
+ ct:'Khối lượng tồn trong 20 kho của Khối tại thời điểm chốt cuối tháng, chỉ cộng các dòng có đơn vị KG',
+ ng:'stock_monthly_by_location.csv ← MMIM_STOCKINDATERANGE_SRV, lọc theo 20 mã kho',
+ luu:'Chốt cuối tháng 9: <b>Kho Thành Phẩm 4.563,4 t</b> và <b>Kho Vật Tư 373,7 t</b>.<br><br>Ảnh chụp tồn tức thời trong stock.csv ngày 16/09 cho <b>4.850,8 tấn</b> (Thành phẩm 4.516,0 · Vật tư 334,8) — lệch vì khác thời điểm chốt, không phải một trong hai sai. Các biểu đồ theo tháng dùng số chốt; các biểu đồ cơ cấu, tuổi tồn, nhóm hàng dùng ảnh chụp.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026.</b> Trước đó con số này là <b>6.153,4 t</b> của toàn bộ 64 kho plant P100.'},
 
 {g:'ton', n:'Mức lấp đầy kho lạnh', ma:'CC-04', val:'66,9', u:'%', man:'Màn 1 · Màn 3',
- ct:'Tồn 9 kho lạnh thành phẩm ÷ Sức chứa thiết kế 6.444,6 tấn',
- ng:'stock_monthly_by_location.csv (9 mã kho 5300–5304, 5101, 5102, 5201, 5202) + hồ sơ layout kho của Khối',
- luu:'<b>Đã sửa ngày 17/09/2026.</b> Trước đó tử số lấy nhầm là tồn của <b>toàn bộ 64 kho</b> — gồm cả trại nuôi, vật tư, kho ngoài — rồi đem chia cho sức chứa của riêng 9 kho lạnh, ra 95,5% và báo sai là "vượt sức chứa 109,5%" ở tháng 8. Số đúng là <b>66,9%</b>, và kho <b>chưa bao giờ vượt trần</b>.<br><br>Tổng số vẫn che mất lệch tải: <b>Kho 4000 đang ở 107,2%</b> trong khi bốn kho A nhỏ chỉ dùng 28–47%. Xem bảng chi tiết từng kho ở Màn 3.'},
+ ct:'Tồn 9 kho lạnh TỰ CÓ ÷ Sức chứa thiết kế 6.444,6 tấn',
+ ng:'stock_monthly_by_location.csv (9 mã kho tự có 5300–5304, 5101, 5102, 5201, 5202) + hồ sơ layout kho của Khối',
+ luu:'<b>Đã sửa ngày 17/09/2026.</b> Trước đó tử số lấy nhầm là tồn của <b>toàn bộ 64 kho</b> — gồm cả trại nuôi, vật tư, kho ngoài — rồi đem chia cho sức chứa của riêng 9 kho lạnh, ra 95,5% và báo sai là "vượt sức chứa 109,5%" ở tháng 8. Số đúng là <b>66,9%</b>, và kho <b>chưa bao giờ vượt trần</b>.<br><br>Tổng số vẫn che mất lệch tải: <b>Kho A (4000) đang ở 103,3%</b> trong khi bốn kho A nhỏ chỉ dùng 38–47%. Xem bảng chi tiết từng kho ở Màn 3.<br><br><b>Mẫu số chỉ gồm 9 kho lạnh TỰ CÓ.</b> Hai kho NCC 9005/9006 thuộc phạm vi Khối nhưng là kho thuê ngoài, hồ sơ layout không có sức chứa nên không đưa vào mẫu số — nếu cộng vào tử số mà không cộng mẫu số thì lại sai đúng kiểu cũ.'},
 
 {g:'ton', n:'Sức chứa thiết kế kho lạnh', ma:null, val:'6.444,6', u:'tấn', man:'Màn 3',
- ct:'Tổng sức chứa thiết kế của 9 kho lạnh thành phẩm tại NTSF Cần Thơ',
+ ct:'Tổng sức chứa thiết kế của 9 kho lạnh TỰ CÓ tại NTSF Cần Thơ',
  ng:'Hồ sơ layout kho của Khối Kho vận, không lấy từ SAP',
- luu:'Kèm theo: <b>13.633 m²</b> diện tích và <b>67 cửa</b>. Đây là <b>master data ngoài SAP</b> — SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng nên không cộng được. Nếu Khối sửa layout kho thì phải cập nhật lại mảng <code>WH</code> trong Màn 3, dashboard không tự biết.'},
+ luu:'Kèm theo: <b>13.633 m²</b> diện tích và <b>67 cửa</b>. Đây là <b>master data ngoài SAP</b> — SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng nên không cộng được. Nếu Khối sửa layout kho thì phải cập nhật lại mảng <code>WH</code> trong Màn 3, dashboard không tự biết.<br><br><b>Còn thiếu:</b> hồ sơ chưa khai diện tích và sức chứa cho <b>9 kho vật tư</b> và <b>2 kho NCC thuê ngoài</b> — tức 11 trên 20 kho trong phạm vi chưa đo được mức lấp đầy.'},
 
-{g:'ton', n:'Tồn theo loại kho', ma:null, val:null, u:null, man:'Màn 3',
- ct:'Gộp 64 kho thành 7 nhóm theo tên kho trong SAP',
- ng:'stock_monthly_by_location.csv',
- luu:'SAP <b>có</b> tách kho vật liệu và kho thành phẩm, ghi rõ ngay trong tên kho: <code>Kho NL cá</code>, <code>Kho vật tư tổng</code>, <code>461-Kho BaoBì Cá</code>, <code>TânLộc-K.ThứcĂn</code>… Chốt tháng 9: kho lạnh thành phẩm <b>4.312,2 t (70,1%)</b>, trại nuôi <b>1.035,3 t</b>, vật tư và bao bì <b>407,9 t</b>, kho ngoài <b>259,5 t</b>. Chỉ nhóm đầu mới thuộc phạm vi CC-04.'},
+{g:'ton', n:'Tồn theo nhóm kho', ma:null, val:'2', u:'nhóm', man:'Màn 3',
+ ct:'Gộp 20 kho của Khối thành 2 nhóm: Kho Thành Phẩm và Kho Vật Tư',
+ ng:'Bảng quy hoạch kho của Khối + stock.csv',
+ luu:'SAP <b>có</b> tách kho vật liệu và kho thành phẩm, ghi rõ ngay trong tên kho: <code>461-Kho BaoBì Cá</code>, <code>548-Kho PGHC Tôm</code>, <code>Kho A (4000)</code>… nhưng <b>việc xếp kho nào vào nhóm nào là quyết định của Khối</b>, không đọc tự động từ SAP.<br><br>Ảnh chụp 16/09: <b>Kho Thành Phẩm 4.516,0 t</b> (93,1% khối lượng, 96,3% giá trị) và <b>Kho Vật Tư 334,8 t</b> (6,9% khối lượng, 3,7% giá trị).<br><br>Chỉ <b>9 kho lạnh tự có</b> trong nhóm thành phẩm mới thuộc phạm vi CC-04.'},
 
-{g:'ton', n:'Số ngày tồn kho thành phẩm', ma:'CC-02', val:'48,6', u:'ngày', man:'Màn 1 · Màn 3',
- ct:'Tồn kho bình quân ÷ Lượng xuất bình quân mỗi ngày',
- ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV',
- luu:'Nằm trong khoảng cam kết 30–60 ngày. Nhóm <b>Z401 thức ăn</b> có nhịp luân chuyển rất khác thành phẩm, nên tách riêng khi báo cáo để không kéo lệch số chung.'},
+{g:'ton', n:'Số ngày tồn kho thành phẩm', ma:'CC-02', val:'49,0', u:'ngày', man:'Màn 1 · Màn 3',
+ ct:'Tồn kho bình quân ÷ Lượng xuất bình quân mỗi ngày, bình quân gia quyền Z402 + Z400 + Z401',
+ ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, lọc các mã đang nằm trong 20 kho của Khối',
+ luu:'Nằm trong khoảng cam kết 30–60 ngày, <b>nhưng con số tổng che một vấn đề lớn</b>: nhóm <code>Z401 Tôm PTO/PD</code> ở <b>423,2 ngày</b>, gấp 7 lần ngưỡng trên, giữ 20,45 tỷ. Phải tách tối thiểu bốn dòng khi báo cáo — cá fillet, tôm vỏ, tôm PTO/PD, và phụ gia bên kho vật tư.<br><br>Các nhóm <code>Z207 thức ăn nuôi</code> và <code>Z202 nguyên liệu tôm</code> <b>đã bị loại</b> vì thuộc trại nuôi, ngoài phạm vi Khối.'},
 
-{g:'ton', n:'Giá trị tồn kho', ma:null, val:'440,3', u:'tỷ đồng', man:'Màn 1 · Màn 3',
- ct:'Tổng giá trị sổ sách của hàng tồn, ảnh chụp tại 16/09/2026',
- ng:'C_STOCKQUANTITYVALUEBYTYPE, bắt buộc lọc Plant = P100',
- luu:'Là <b>giá trị sổ sách</b> theo phương pháp tính giá của SAP, không phải giá bán.<br><br><b>Gồm toàn bộ 64 kho của plant P100</b>, kể cả trại nuôi, vật tư, bao bì và kho ngoài — không phải chỉ 9 kho lạnh. Ước tính phân bổ theo đơn giá: kho lạnh thành phẩm <b>~84%</b>, kho ngoài ~5%, trại nuôi ~5%, vật tư và bao bì ~4,5%.<br><br><b>Không bóc chính xác được theo kho</b> vì cả hai báo cáo giá trị đều không có cột kho — chỉ có mã hàng. Con số theo kho ở trên là ước tính bằng đơn giá bình quân.'},
+{g:'ton', n:'Giá trị tồn kho', ma:null, val:'396,8', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+ ct:'ƯỚC TÍNH: đơn giá bình quân từng mã × lượng đang nằm trong 20 kho của Khối, ảnh chụp 16/09/2026',
+ ng:'stock.csv (lượng theo kho) × inventory_value.csv (đơn giá bình quân theo mã)',
+ luu:'<b>Đây là ƯỚC TÍNH, không phải số sổ sách.</b> SAP trả <code>current_stock_value = 0</code> ở toàn bộ 12.626 dòng tồn, nên <b>không có giá trị tiền theo từng kho</b>. Cách tính: lấy đơn giá bình quân từng mã trong báo cáo Vòng quay tồn kho nhân với lượng đang nằm trong 20 kho của Khối; mã không có đơn giá thì bù bằng đơn giá bình quân của chính nhóm hàng đó.<br><br>Tách theo nhóm: <b>Kho Thành Phẩm 382,0 tỷ (96,3%)</b> · <b>Kho Vật Tư 14,8 tỷ (3,7%)</b>.<br><br><b>Dùng để so tương quan giữa hai nhóm kho, không dùng để đối chiếu sổ sách.</b> Số sổ sách phải lấy từ Kế toán. Báo cáo <code>C_STOCKQUANTITYVALUEBYTYPE</code> cho <b>440,3 tỷ</b> nhưng đó là toàn bộ 64 kho của plant P100 và không bóc được theo kho.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026.</b>'},
 
-{g:'ton', n:'Giá trị tồn kho bình quân cả kỳ', ma:null, val:'263,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
- ct:'Bình quân giá trị tồn kho trong kỳ 01/01 → 16/09/2026',
- ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, cột avg_stock_value_vnd của 3.468 mã',
- luu:'<b>Đây là bình quân của CẢ KỲ 9 tháng, không phải riêng tháng 9.</b> Nhãn cũ ghi "Bình quân 9 tháng" gây hiểu nhầm, đã sửa ngày 18/09/2026.<br><br>Thấp hơn ảnh chụp 440,3 tỷ tới <b>67%</b> vì ba lý do cộng lại: tồn kho lạnh tăng <b>+27,8%</b> trong kỳ, cơ cấu dịch sang hàng giá trị cao (tỷ trọng thành phẩm trong tổng tồn tăng từ 60,7% lên 70,1%), và <b>hai con số đến từ hai báo cáo SAP khác nhau</b> với cơ sở định giá khác nhau.<br><br>Mẫu số của chỉ tiêu vốn đọng (26,02 ÷ 263,02 = 9,9%) dùng con số này, nên đừng thay bằng 440,3.'},
+{g:'ton', n:'Giá trị tồn kho bình quân cả kỳ', ma:null, val:'233,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+ ct:'Bình quân giá trị tồn kho trong kỳ 01/01 → 16/09/2026, của các mã đang có mặt trong 20 kho của Khối',
+ ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, cột avg_stock_value_vnd của 809 mã',
+ luu:'<b>Đây là bình quân của CẢ KỲ 9 tháng, không phải riêng tháng 9.</b><br><br>Chỉ cộng <b>809 mã đang có mặt trong 20 kho của Khối</b> tại ảnh chụp 16/09. Lưu ý: đây là con số ở <b>cấp MÃ HÀNG</b>, không phải cấp kho — một mã vừa nằm trong vừa nằm ngoài phạm vi sẽ được tính trọn, nên con số này hơi rộng hơn thực tế.<br><br>Mẫu số của chỉ tiêu vốn đọng (26,02 ÷ 233,00 = <b>11,2%</b>) và của biểu đồ phân loại ABC đều dùng con số này.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026</b> — trước đó là 263,0 tỷ của toàn bộ 3.468 mã.'},
 
 {g:'ton', n:'Vốn đọng trong kho', ma:'CC-03 · phần', val:'26,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
  ct:'Tổng giá trị 20 mã có giá trị trên 500 triệu nhưng vòng quay dưới 1',
  ng:'inventory_value.csv',
- luu:'Bằng <b>9,9%</b> giá trị tồn bình quân, so với chỉ tiêu CC-03 là dưới 5%. Mới là vế <b>chậm luân chuyển</b> của CC-03; vế <b>cận date</b> chưa đo được vì thiếu hạn sử dụng.'},
+ luu:'Bằng <b>11,2%</b> giá trị tồn bình quân, so với chỉ tiêu CC-03 là dưới 5%. Mới là vế <b>chậm luân chuyển</b> của CC-03; vế <b>cận date</b> chưa đo được vì thiếu hạn sử dụng.'},
 
 {g:'ton', n:'Tồn trên 90 ngày', ma:null, val:'520,5', u:'tấn', man:'Màn 3',
  ct:'Khối lượng các lô có tuổi trên 90 ngày tính từ ngày sản xuất',
  ng:'batch.csv ← API_BATCH_SRV',
  luu:'Đây là <b>tuổi lô</b>, không phải cận hạn sử dụng. Hàng đông lạnh có hạn dùng dài hơn 90 ngày rất nhiều — đừng đọc thành hàng sắp hỏng. Dùng để nhắc rà soát, không dùng để kết luận chất lượng.'},
 
-{g:'ton', n:'Mức tập trung giá trị', ma:null, val:'71,3', u:'%', man:'Màn 3',
- ct:'Tỷ trọng giá trị tồn kho nằm ở nhóm mã hàng đắt nhất theo phân loại ABC',
- ng:'inventory_value.csv',
- luu:'105 mã ở nhóm đầu đã chiếm <b>187,5 tỷ</b>. Dùng để chọn nhóm mã cần kiểm soát chặt và ưu tiên kiểm kê trước.'},
+{g:'ton', n:'Mức tập trung giá trị', ma:null, val:'75,3', u:'%', man:'Màn 1 · Màn 3',
+ ct:'Tỷ trọng giá trị tồn nằm ở nhóm "Top 3%" — nhóm mã đắt nhất theo phân loại của SAP',
+ ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, trường <code>AverageStockValueCategory</code>',
+ luu:'<b>Nhóm do SAP tự xếp, không phải cách chia của Khối.</b> SAP xếp toàn bộ <b>3.468 mã của nhà máy</b> theo giá trị tồn bình quân từ cao xuống thấp rồi cắt theo <b>phần trăm SỐ MÃ</b>, không phải theo phần trăm giá trị:<br><br>· <code>T03</code> Top 3% — 105 mã đầu bảng (3,03% danh mục)<br>· <code>T10</code> Top 10% — 242 mã kế tiếp (luỹ kế 10,01%)<br>· <code>T20</code> Top 20% — 347 mã (luỹ kế 20,02%)<br>· <code>T40</code> Top 40% — 693 mã (luỹ kế 40,00%)<br>· <code>T70</code> Top 70% — 1.040 mã (luỹ kế 69,99%)<br>· <code>REM</code> Remainder — 1.041 mã còn lại<br><br>Các nhóm không chồng lấn về giá trị: mã thấp nhất của Top 3% là <b>571,96 triệu</b>, cao nhất của Top 10% là <b>566,51 triệu</b>.<br><br>⚠️ <b>Không phải ABC kinh điển.</b> ABC truyền thống cắt theo giá trị luỹ kế (A = 80% giá trị). SAP ở đây cắt theo số lượng mã. Trùng hợp là nhóm 3% đầu giữ tới 71,3% giá trị trên toàn nhà máy, nên nhìn giống lớp A.<br><br>⚠️ <b>Tên nhóm là thứ hạng trên TOÀN NHÀ MÁY, không phải trên 20 kho của Khối.</b> Lọc về phạm vi Khối thì nhóm "Top 3%" còn <b>98 mã</b>, bằng <b>12,1%</b> trong 809 mã đang nằm trong kho — đọc nhãn "Top 3%" thành "3% danh mục của Khối" là sai.<br><br>Nhóm Remainder có mã giá trị <b>âm</b> (thấp nhất −4,12 triệu) do tồn âm hoặc bút toán điều chỉnh, nên tổng nhóm này hiện 0,00 tỷ.'},
 
 {g:'ton', n:'Biến động ròng theo tháng', ma:null, val:null, u:null, man:'Màn 1 · Màn 3',
  ct:'Lượng nhập trong tháng − Lượng xuất trong tháng',
@@ -1156,7 +1254,7 @@ const DEFS=[
  luu:'Cột hướng lên là kho phình ra, cột hướng xuống là kho vơi đi. Đọc cùng biểu đồ tồn kho để thấy tồn tăng do nhập nhiều hay do xuất chậm.'},
 
 {g:'ton', n:'Tổng luân chuyển kho theo tháng', ma:null, val:null, u:null, man:'Màn 1',
- ct:'Tổng khối lượng nhập cộng tổng khối lượng xuất trong tháng, tính trên toàn bộ 46 kho',
+ ct:'Tổng khối lượng nhập cộng tổng khối lượng xuất trong tháng, tính trên 20 kho thuộc Khối',
  ng:'stock_monthly.csv',
  luu:'<b>Không phải sản lượng giao khách.</b> Bao gồm cả nguyên liệu vào sản xuất và thức ăn ra trại. Tháng 1 luân chuyển 37.387 tấn nhưng chỉ giao khách 2.570 tấn — lệch <b>14,5 lần</b>.'},
 

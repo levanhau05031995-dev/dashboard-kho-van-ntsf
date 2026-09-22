@@ -2,6 +2,91 @@
    Dashboard Khối Kho Vận & Logistics — thành phần dùng chung
    Sidebar · logo · điều hướng · giao diện sáng-tối
    ═══════════════════════════════════════════════════════ */
+/* ═══ KHUNG BIỂU ĐỒ DÙNG CHUNG ═══
+   Mọi SVG phải vẽ theo ĐÚNG bề rộng pixel của thẻ chứa nó, tức viewBox = pixel,
+   để tỷ lệ luôn là 1:1.
+
+   Trước đây mỗi hàm vẽ tự đặt viewBox cố định — 470, 640 hoặc 900 — rồi để SVG
+   kéo giãn theo bề rộng thẻ. Hậu quả: cùng một cỡ chữ 11,5 đơn vị lại hiện ra
+   ~11px trong thẻ nửa màn (viewBox 640 → 612px) nhưng ~16px trong thẻ toàn màn
+   (viewBox 900 → 1.271px). Nhìn vào thấy biểu đồ chỗ to chỗ nhỏ, chữ chỗ đậm
+   chỗ mảnh, dù cùng một bộ mã vẽ.
+
+   CAO  = chiều cao chuẩn của biểu đồ theo thời gian (cột, đường) — mọi màn dùng chung.
+   DONG = chiều cao một dòng của biểu đồ thanh ngang.
+   Vì vẽ 1:1 nên hai hằng số này là PIXEL THẬT, không còn là đơn vị co giãn. */
+window.NTSF_CH = {
+  CAO: 250,
+  DONG: 34,
+  /* Bề rộng vẽ = bề rộng trong lòng thẻ. Chặn dưới 320 để không vỡ trên điện thoại. */
+  rong: function (hop) {
+    var box = (typeof hop === 'string') ? document.getElementById(hop) : hop;
+    if (!box) return 640;
+    var w = box.clientWidth || box.getBoundingClientRect().width;
+    return Math.max(320, Math.round(w));
+  },
+  /* Lề trái/phải của biểu đồ thanh ngang không được nuốt hết chỗ vẽ thanh:
+     giữ tối thiểu 26% bề rộng cho phần thanh. */
+  le: function (W, trai, phai) {
+    var l = Math.min(trai, Math.round(W * 0.40));
+    var r = Math.min(phai, Math.round(W * 0.34));
+    if (W - l - r < W * 0.26) { var du = (W * 0.26) - (W - l - r); l -= du * 0.6; r -= du * 0.4; }
+    return { l: Math.max(48, Math.round(l)), r: Math.max(40, Math.round(r)) };
+  },
+  /* Cắt bớt nhãn theo bề rộng lề thật, thay vì cắt cứng ở 28 ký tự */
+  catNhan: function (chu, rongLe, cx) {
+    var n = Math.max(8, Math.floor((rongLe - 14) / (cx || 6.1)));
+    return chu.length > n ? chu.slice(0, n - 1) + '…' : chu;
+  },
+
+  /* Cho bấm vào cả khung biểu đồ để mở bảng phân tích sâu.
+     Dùng cho biểu đồ chưa có chỗ bấm riêng trên từng cột hay từng thanh.
+     Chỉ gắn thuộc tính data-drill — bộ xử lý click sẵn có của trang sẽ mở đúng bảng,
+     nên hành vi giống hệt khi bấm vào thẻ KPI, không phát sinh đường đi thứ hai.
+     ⚠️ Đừng gắn cho biểu đồ đã có click trên từng phần tử: sự kiện nổi bọt lên
+     khung sẽ mở thêm một bảng nữa. */
+  bamThe: function (id, khoa) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.setAttribute('data-drill', khoa);
+    box.style.cursor = 'pointer';
+    var card = box.closest('.card');
+    var how = card ? card.querySelector('.how') : null;
+    if (how && how.dataset.goiY !== '1') {
+      how.dataset.goiY = '1';
+      how.insertAdjacentHTML('beforeend', ' · <b>▸ bấm để xem phân tích sâu</b>');
+    }
+  },
+
+  /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
+     Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
+     getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
+  gonNhan: function () {
+    document.querySelectorAll('.chart svg').forEach(function (s) {
+      var vb = s.viewBox.baseVal;
+      if (!vb || !vb.width) return;
+      s.querySelectorAll('text').forEach(function (tx) {
+        var b;
+        try { b = tx.getBBox(); } catch (e) { return; }
+        if (!b.width) return;
+        /* nhãn dài hơn cả khung thì thu nhỏ cỡ chữ trước, rồi mới ép về mép */
+        if (b.width > vb.width - 8) {
+          var cu = parseFloat(tx.getAttribute('font-size')) || 11;
+          tx.setAttribute('font-size', Math.max(7.5, cu * (vb.width - 8) / b.width).toFixed(1));
+          try { b = tx.getBBox(); } catch (e) { return; }
+        }
+        if (b.x + b.width > vb.width - 2) {
+          tx.setAttribute('text-anchor', 'end');
+          tx.setAttribute('x', vb.width - 4);
+        } else if (b.x < 0) {
+          tx.setAttribute('text-anchor', 'start');
+          tx.setAttribute('x', 2);
+        }
+      });
+    });
+  }
+};
+
 (function () {
   'use strict';
 

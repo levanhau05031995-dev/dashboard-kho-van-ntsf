@@ -324,31 +324,37 @@ body{
 .banner h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
 .banner p{margin:4px 0 0; font-size:10.5px; color:var(--on-navy); line-height:1.5}
 
-/* ═══ HERO + KPI ═══ */
-.hero-row{display:grid; grid-template-columns:minmax(230px,1fr) 2.15fr; gap:14px; align-items:stretch}
+/* ═══ HERO + KPI ═══
+   Hero cố định bề ngang hẹp để nhường chỗ cho lưới KPI dàn ngang — trước đây hero
+   chiếm 1/3 bề rộng và bị kéo cao theo lưới, để lại một khoảng trống lớn. */
+.hero-row{display:grid; grid-template-columns:minmax(186px,224px) minmax(0,1fr); gap:12px; align-items:stretch}
 .hero{
   background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--c5);
-  border-radius:var(--r-card); padding:16px; box-shadow:var(--sh-card);
+  border-radius:var(--r-card); padding:13px 14px; box-shadow:var(--sh-card);
   display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; font-family:inherit;
 }
 .hero:hover{border-color:var(--c2)}
 .hero:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .hero .lbl{font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .hero .kpi-head{margin-bottom:2px}
-.hero .big{font-size:52px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:7px 0 2px; color:var(--ink)}
-.hero .big small{font-size:20px; font-weight:800; margin-left:2px}
-.hero .sub{font-size:11px; color:var(--ink-2); font-weight:600}
-.hero .delta{margin-top:9px; font-size:11px; font-weight:800}
-.hero .foot{margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-3); line-height:1.5}
+.hero .big{font-size:38px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:6px 0 2px; color:var(--ink)}
+.hero .big small{font-size:15px; font-weight:800; margin-left:2px}
+.hero .sub{font-size:10.5px; color:var(--ink-2); font-weight:600; line-height:1.45}
+.hero .delta{margin-top:7px; font-size:10.5px; font-weight:800; line-height:1.4}
+.hero .foot{margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:9.5px; color:var(--ink-3); line-height:1.5}
 
-/* 9 thẻ → lưới 3 cột cho đủ 3 hàng bằng nhau, không để thẻ đứng lẻ */
-.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-@media (max-width:1180px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Lưới KPI dàn tối đa 4 cột để giảm số hàng — hero đã thu hẹp nên còn dư bề ngang.
+   Mốc ngắt tính theo bề rộng CỬA SỔ, mà vùng nội dung còn phải trừ 260px thanh bên
+   và 224px thẻ hero — nên ngưỡng phải rộng hơn bề rộng thẻ mong muốn khá nhiều. */
+.kpis{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px}
+@media (max-width:1560px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1360px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1040px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:620px){ .kpis{grid-template-columns:minmax(0,1fr)} }
 .kpi{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-kpi);
-  padding:11px 12px 10px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
-  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:2px;
+  padding:10px 11px 9px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
+  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:1px;
 }
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
@@ -443,8 +449,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .close:hover{background:var(--surface-tint); color:var(--ink)}
 .close:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* Dưới ngưỡng này lưới KPI chỉ còn 2 cột — để hero đứng cột hẹp bên cạnh sẽ bị kéo
+   cao lêu nghêu, nên cho hero trải hết bề ngang thành một dải ngắn phía trên. */
+@media (max-width:1040px){ .hero-row{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:960px){
-  .hero-row{grid-template-columns:1fr}
   .side{position:fixed; left:-260px; transition:left .2s; z-index:60}
   .side.open{left:0}
   .main{width:100%}
@@ -532,6 +540,91 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
    Dashboard Khối Kho Vận & Logistics — thành phần dùng chung
    Sidebar · logo · điều hướng · giao diện sáng-tối
    ═══════════════════════════════════════════════════════ */
+/* ═══ KHUNG BIỂU ĐỒ DÙNG CHUNG ═══
+   Mọi SVG phải vẽ theo ĐÚNG bề rộng pixel của thẻ chứa nó, tức viewBox = pixel,
+   để tỷ lệ luôn là 1:1.
+
+   Trước đây mỗi hàm vẽ tự đặt viewBox cố định — 470, 640 hoặc 900 — rồi để SVG
+   kéo giãn theo bề rộng thẻ. Hậu quả: cùng một cỡ chữ 11,5 đơn vị lại hiện ra
+   ~11px trong thẻ nửa màn (viewBox 640 → 612px) nhưng ~16px trong thẻ toàn màn
+   (viewBox 900 → 1.271px). Nhìn vào thấy biểu đồ chỗ to chỗ nhỏ, chữ chỗ đậm
+   chỗ mảnh, dù cùng một bộ mã vẽ.
+
+   CAO  = chiều cao chuẩn của biểu đồ theo thời gian (cột, đường) — mọi màn dùng chung.
+   DONG = chiều cao một dòng của biểu đồ thanh ngang.
+   Vì vẽ 1:1 nên hai hằng số này là PIXEL THẬT, không còn là đơn vị co giãn. */
+window.NTSF_CH = {
+  CAO: 250,
+  DONG: 34,
+  /* Bề rộng vẽ = bề rộng trong lòng thẻ. Chặn dưới 320 để không vỡ trên điện thoại. */
+  rong: function (hop) {
+    var box = (typeof hop === 'string') ? document.getElementById(hop) : hop;
+    if (!box) return 640;
+    var w = box.clientWidth || box.getBoundingClientRect().width;
+    return Math.max(320, Math.round(w));
+  },
+  /* Lề trái/phải của biểu đồ thanh ngang không được nuốt hết chỗ vẽ thanh:
+     giữ tối thiểu 26% bề rộng cho phần thanh. */
+  le: function (W, trai, phai) {
+    var l = Math.min(trai, Math.round(W * 0.40));
+    var r = Math.min(phai, Math.round(W * 0.34));
+    if (W - l - r < W * 0.26) { var du = (W * 0.26) - (W - l - r); l -= du * 0.6; r -= du * 0.4; }
+    return { l: Math.max(48, Math.round(l)), r: Math.max(40, Math.round(r)) };
+  },
+  /* Cắt bớt nhãn theo bề rộng lề thật, thay vì cắt cứng ở 28 ký tự */
+  catNhan: function (chu, rongLe, cx) {
+    var n = Math.max(8, Math.floor((rongLe - 14) / (cx || 6.1)));
+    return chu.length > n ? chu.slice(0, n - 1) + '…' : chu;
+  },
+
+  /* Cho bấm vào cả khung biểu đồ để mở bảng phân tích sâu.
+     Dùng cho biểu đồ chưa có chỗ bấm riêng trên từng cột hay từng thanh.
+     Chỉ gắn thuộc tính data-drill — bộ xử lý click sẵn có của trang sẽ mở đúng bảng,
+     nên hành vi giống hệt khi bấm vào thẻ KPI, không phát sinh đường đi thứ hai.
+     ⚠️ Đừng gắn cho biểu đồ đã có click trên từng phần tử: sự kiện nổi bọt lên
+     khung sẽ mở thêm một bảng nữa. */
+  bamThe: function (id, khoa) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.setAttribute('data-drill', khoa);
+    box.style.cursor = 'pointer';
+    var card = box.closest('.card');
+    var how = card ? card.querySelector('.how') : null;
+    if (how && how.dataset.goiY !== '1') {
+      how.dataset.goiY = '1';
+      how.insertAdjacentHTML('beforeend', ' · <b>▸ bấm để xem phân tích sâu</b>');
+    }
+  },
+
+  /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
+     Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
+     getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
+  gonNhan: function () {
+    document.querySelectorAll('.chart svg').forEach(function (s) {
+      var vb = s.viewBox.baseVal;
+      if (!vb || !vb.width) return;
+      s.querySelectorAll('text').forEach(function (tx) {
+        var b;
+        try { b = tx.getBBox(); } catch (e) { return; }
+        if (!b.width) return;
+        /* nhãn dài hơn cả khung thì thu nhỏ cỡ chữ trước, rồi mới ép về mép */
+        if (b.width > vb.width - 8) {
+          var cu = parseFloat(tx.getAttribute('font-size')) || 11;
+          tx.setAttribute('font-size', Math.max(7.5, cu * (vb.width - 8) / b.width).toFixed(1));
+          try { b = tx.getBBox(); } catch (e) { return; }
+        }
+        if (b.x + b.width > vb.width - 2) {
+          tx.setAttribute('text-anchor', 'end');
+          tx.setAttribute('x', vb.width - 4);
+        } else if (b.x < 0) {
+          tx.setAttribute('text-anchor', 'start');
+          tx.setAttribute('x', 2);
+        }
+      });
+    });
+  }
+};
+
 (function () {
   'use strict';
 
@@ -1022,10 +1115,10 @@ window.NTSF_RANGE = (function () {
       <section class="grid2">
         <article class="card">
           <h3>Tồn kho cuối kỳ theo tháng</h3>
-          <p class="how">Đường đậm = tồn <b>9 kho lạnh thành phẩm</b>, đây mới là phần so được với sức chứa · đường đứt nhạt = tồn toàn bộ 64 kho, gồm cả trại nuôi và vật tư nên <b>không so với sức chứa được</b> · nét đứt = sức chứa thiết kế 6.444,6 tấn theo hồ sơ layout kho · dải xanh = khoảng cam kết 80–90%</p>
+          <p class="how">Chỉ <b>9 kho lạnh tự có</b> mới so được với sức chứa · đường mờ là tổng 20 kho của Khối, có cả kho thuê ngoài và kho vật tư nên không so được · dải xanh = mức cam kết 80–90%</p>
           <div class="legend">
             <span><i class="swatch line" style="background:var(--c1)"></i>Kho lạnh thành phẩm</span>
-            <span><i class="swatch line" style="background:var(--c3)"></i>Toàn bộ 64 kho</span>
+            <span><i class="swatch line" style="background:var(--c3)"></i>Tổng 20 kho của Khối</span>
             <span><i class="swatch dash"></i>Sức chứa thiết kế</span>
           </div>
           <div class="chart" id="chStock"></div>
@@ -1033,7 +1126,7 @@ window.NTSF_RANGE = (function () {
 
         <article class="card">
           <h3>Tổng luân chuyển kho theo tháng</h3>
-          <p class="how"><b>Toàn bộ 46 kho của nhà máy, mọi loại hàng</b> — gồm cả nguyên liệu nhập cho sản xuất, thức ăn xuất cho vùng nuôi, bao bì, phụ phẩm. <b>Không phải chỉ hàng bán cho khách</b> — hàng giao khách xem ở màn Giao hàng, khoảng 2.500–2.900 tấn mỗi tháng. Hai cột cùng đơn vị tấn, không dùng hai trục.</p>
+          <p class="how">Tổng hàng ra vào <b>20 kho của Khối</b>, gồm cả bao bì và phụ gia · <b>không phải chỉ hàng bán cho khách</b> — phần đó xem ở màn Giao hàng</p>
           <div class="legend">
             <span><i class="swatch" style="background:var(--c1)"></i>Tổng nhập kho</span>
             <span><i class="swatch" style="background:var(--c3)"></i>Tổng xuất kho</span>
@@ -1069,7 +1162,7 @@ window.NTSF_RANGE = (function () {
       <section class="grid2">
         <article class="card">
           <h3>Container xuất theo tháng</h3>
-          <p class="how">SAP không lưu số hiệu container · mỗi lệnh xuất được tính là một container vì khối lượng từng lệnh cắt cụt đúng tại 26,0 tấn — trần container 40 feet lạnh · con số trên cột là bình quân mỗi ngày có xuất hàng</p>
+          <p class="how">SAP không lưu số container · mỗi lệnh xuất tính là một container, vì lệnh nào cũng dừng đúng ở 26,0 tấn — trần container 40 feet lạnh</p>
           <div class="legend">
             <span><i class="swatch" style="background:var(--c1)"></i>Container xuất</span>
             <span><i class="swatch" style="background:var(--c3)"></i>Tháng ít ngày vận hành</span>
@@ -1126,7 +1219,7 @@ window.NTSF_RANGE = (function () {
         <p><span class="formula">Δ Tồn kho T8 = +1.162 tấn = Nhập 27.359 t − Xuất 26.197 t</span></p>
         <p>Tồn kho lạnh thành phẩm tăng <b>4 tháng liên tiếp</b> từ tháng 5 đến tháng 8, đẩy mức lấp đầy từ <b>41,1%</b> (tháng 3) lên đỉnh <b>67,7%</b> (tháng 7) rồi đứng quanh mức đó. <b>Chưa tháng nào chạm ngưỡng cam kết dưới là 80%</b> — toàn khối 9 kho lạnh còn trống hơn 2.100 tấn. Nhưng riêng <b>Kho 4000 đang vượt trần 107,2%</b>: sức chứa còn dư nhưng không nằm đúng chỗ đang cần.</p>
         <p>Cùng lúc, giao hàng đúng hạn cải thiện mạnh từ <b>5,6%</b> lên <b>52,7%</b> — diễn biến điển hình của giai đoạn ổn định sau khi ERP đi vào vận hành, chưa phải mức chấp nhận được so với mục tiêu 95%.</p>
-        <p>Quy ra tiền, kho đang giữ <b>440,3 tỷ đồng</b> giá trị hàng. Mức độ tập trung rất cao: <b>105 mã</b> — đúng <b>3%</b> danh mục — chiếm <b>71,3%</b> giá trị. Trong đó có <b>26,0 tỷ</b> nằm ở <b>20 mã gần như không luân chuyển</b>, mã tệ nhất chỉ quay <b>0,04 vòng</b> trong 8,5 tháng.</p>
+        <p>Quy ra tiền, 20 kho của Khối đang giữ khoảng <b>396,8 tỷ đồng</b> giá trị hàng — trong đó <b>382,0 tỷ</b> nằm ở Kho Thành Phẩm và <b>14,8 tỷ</b> ở Kho Vật Tư. Mức độ tập trung rất cao: <b>98 mã</b> chiếm <b>75,3%</b> giá trị. Trong đó có <b>26,0 tỷ</b> nằm ở <b>20 mã gần như không luân chuyển</b>, mã tệ nhất chỉ quay <b>0,04 vòng</b> trong 8,5 tháng.</p>
         <p class="act">Gợi ý hành động: hai việc song song. Một, rà soát 1.086 lệnh xuất còn treo tương đương 18.923 tấn — gấp 3,1 lần tồn kho thực có, phần lớn nhiều khả năng là chứng từ chưa được đóng chứ không phải đơn chờ giao thật. Hai, xử lý 26,0 tỷ vốn đọng: giao Phòng Quản lý Kho và Kinh doanh phân loại từng mã trong tháng 10 thành đẩy giá, hạ phẩm cấp, hoặc thanh lý.</p>
       </section>
 
@@ -1167,13 +1260,18 @@ const ALL = NTSF_RANGE.parse(PACKED);
    Moi ham ve deu doc chung nen khong can sua rieng tung ham. */
 let M = M_ALL.slice();
 const CAP    = 6444.6;                    // sức chứa danh nghĩa (tấn) — KVL-KHO-DM-02
-const _stockE = [4914.5,4718.8,4051.5,4241.3,5173.7,5581.5,5834.3,7054.4,6153.4];
+/* PHAM VI: chi 20 kho do Khoi Kho van quan ly (11 Kho Thanh Pham + 9 Kho Vat Tu).
+   Cac kho khac cua plant P100 - trai nuoi, nguyen lieu, nhien lieu, phu pham,
+   kho xuong, ky gui - da bi loai khoi moi con so ton kho tren man nay. */
+const _stockTP = [2985.1,2688.5,2647.6,2621.2,2934.8,3488.5,4390.3,4666.7,4563.4];
+const _stockVT = [270.1,255.8,228.8,232.1,297.7,318.6,286.5,320.3,373.7];
+const _stockE  = _stockTP.map((v,i)=>+(v+_stockVT[i]).toFixed(1));
 /* Ton CHI trong 9 kho lanh thanh pham - tu so dung cua CC-04.
-   _stockE la ton toan bo 64 kho, gom ca trai nuoi va vat tu, KHONG so voi CAP duoc. */
+   _stockE la tong 20 kho cua Khoi; chi 9 kho lanh TU CO moi so duoc voi CAP. */
 const _stockFG = [2985.1,2688.5,2647.6,2621.2,2934.8,3488.5,4360.7,4334.4,4312.2];
-const _stockS = [6108.7,4937.0,4867.1,4298.9,4405.3,4818.5,5678.5,5892.5,6967.8];
-const _recv   = [36192.9,21735.0,38414.3,36414.4,45400.8,38249.1,37880.8,27358.7,8968.9];
-const _issue  = [37387.1,21953.2,39229.9,36472.1,44632.5,37486.1,37724.9,26196.9,9783.3];
+const _stockS = [3725.7,3406.9,3067.6,2903.0,2856.2,3202.5,3808.2,4756.8,4987.0];
+const _recv   = [9959.3,4638.5,10826.0,9847.7,11352.0,11520.5,12045.0,8872.2,3164.9];
+const _issue  = [10429.8,5101.0,11017.2,9897.5,10975.8,10915.9,11176.4,8642.0,3214.8];
 const _otd    = [11.5,4.5,5.3,11.4,11.2,17.8,26.5,33.2,52.7];
 const _otdN   = [1974,780,1646,1044,1091,1621,1391,951,112];
 const _otdOk  = [227,35,87,119,122,288,368,316,59];
@@ -1188,7 +1286,7 @@ const _net    = _recv.map((r,i)=>+(r-_issue[i]).toFixed(1));
 const _shipped= [2570.4,1442.0,2847.1,2647.6,2645.0,2895.5,2774.3,1941.4,628.7];
 
 /* Lát cắt động — tinhLai() gán lại mỗi khi đổi phạm vi */
-let stockFG=[];
+let stockFG=[], stockTP=[], stockVT=[];
 let stockE=[], stockS=[], recv=[], issue=[], otd=[], otdN=[], otdOk=[], otdMed=[],
     tasks=[], pick=[], trans=[], thru=[], days=[], shipped=[], net=[];
 
@@ -1196,15 +1294,16 @@ let stockE=[], stockS=[], recv=[], issue=[], otd=[], otdN=[], otdOk=[], otdMed=[
    Hai cơ sở khác nhau, không cộng vào nhau:
    · VAL_NOW  — ảnh chụp tồn kho hiện tại, nguồn C_STOCKQUANTITYVALUEBYTYPE
    · VAL_AVG  — tồn kho bình quân 01/01→16/09, nguồn báo cáo Vòng quay tồn kho   */
-const VAL_NOW = 440.28e9;
-const VAL_AVG = 263.02e9;
+const VAL_NOW = 396.76e9;     /* uoc tinh: don gia BQ tung ma x luong trong 20 kho cua Khoi */
+const VAL_TP  = 381.99e9, VAL_VT = 14.77e9;
+const VAL_AVG = 233.00e9;     /* gia tri BQ ca ky cua 809 ma dang co mat trong pham vi */
 const ABC = [
-  {k:'Top 3%',    ma:105,  ty:187.50, c:'--c1'},
-  {k:'Top 10%',   ma:242,  ty:54.82,  c:'--c2'},
-  {k:'Top 20%',   ma:347,  ty:16.13,  c:'--c3'},
-  {k:'Top 40%',   ma:693,  ty:4.15,   c:'--c5'},
-  {k:'Top 70%',   ma:1040, ty:0.43,   c:'--ink-3'},
-  {k:'Còn lại',   ma:1041, ty:0.00,   c:'--line'}
+  {k:'Top 3%',    ma:98,  ty:175.48, c:'--c1'},
+  {k:'Top 10%',   ma:196, ty:45.61,  c:'--c2'},
+  {k:'Top 20%',   ma:214, ty:10.39,  c:'--c3'},
+  {k:'Top 40%',   ma:217, ty:1.48,   c:'--c5'},
+  {k:'Top 70%',   ma:82,  ty:0.05,   c:'--ink-3'},
+  {k:'Còn lại',   ma:2,   ty:0.00,   c:'--line'}
 ];
 /* Vốn đọng: giá trị trên 500 triệu nhưng vòng quay dưới 1 vòng trong 8,5 tháng */
 const IDLE_TY = 26.02, IDLE_MA = 20;
@@ -1257,6 +1356,7 @@ function tinhLai(){
   const lay = a => mi.map(i=>a[i]);
   M = mi.map(i=>M_ALL[i]);
   stockE=lay(_stockE); stockS=lay(_stockS); recv=lay(_recv); issue=lay(_issue); stockFG=lay(_stockFG);
+  stockTP=lay(_stockTP); stockVT=lay(_stockVT);
   otd=lay(_otd); otdN=lay(_otdN); otdOk=lay(_otdOk); otdMed=lay(_otdMed);
   tasks=lay(_tasks); pick=lay(_pick); trans=lay(_trans); thru=lay(_thru);
   days=lay(_days); shipped=lay(_shipped); net=lay(_net);
@@ -1309,10 +1409,14 @@ function showTip(ev,title,rows){
 const hideTip = ()=>tip.classList.remove('on');
 
 /* ═══════════════ BỘ VẼ BIỂU ĐỒ ═══════════════ */
-const W=640, H=248, PAD={t:16,r:16,b:30,l:46};
-const IW = W-PAD.l-PAD.r, IH = H-PAD.t-PAD.b;
+/* W va IW doi theo be rong that cua tung the -> ve ti le 1:1, chu khong bi phong to */
+let W = 640;
+const H = NTSF_CH.CAO, PAD = {t:16,r:16,b:30,l:46};
+let IW = W-PAD.l-PAD.r;
+const IH = H-PAD.t-PAD.b;
 
-function frame(nY, fmt, maxV, minV=0){
+function frame(nY, fmt, maxV, minV=0, id){
+  if(id){ W = NTSF_CH.rong(id); IW = W-PAD.l-PAD.r; }
   const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   const g = el('g');
   const span = maxV-minV;
@@ -1412,7 +1516,7 @@ function moThang(i){
 /* Cột đơn giản dùng trong modal tháng */
 function barsMini(id,vals,nhan,buoc,ref,mau,tipFn){
   const box=document.getElementById(id); if(!box)return; box.innerHTML='';
-  const W=900,H=260,P={t:22,r:16,b:34,l:44},IW=W-P.l-P.r,IH=H-P.t-P.b;
+  const W=NTSF_CH.rong(box),H=NTSF_CH.CAO,P={t:22,r:16,b:34,l:44},IW=W-P.l-P.r,IH=H-P.t-P.b;
   const max=Math.max(1,Math.ceil(Math.max(...vals)/10)*10);
   const band=IW/vals.length, X=k=>P.l+band*(k+0.5), Y=v=>P.t+IH-IH*v/max;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
@@ -1437,20 +1541,20 @@ function barsMini(id,vals,nhan,buoc,ref,mau,tipFn){
 /* —— Tồn kho: đường + ngưỡng + vùng vượt —— */
 function drawStock(){
   const box = document.getElementById('chStock'); box.innerHTML='';
-  const max = Math.max(8000, Math.ceil(Math.max(...stockE,CAP)/1000)*1000);
-  const {svg,X,Y,band} = frame(4,v=>vi(v/1000,0)+'k',max);
+  const max = Math.max(7000, Math.ceil(Math.max(...stockE,CAP)/1000)*1000);
+  const {svg,X,Y,band} = frame(4,v=>vi(v/1000,0)+'k',max,0,box);
   // dải xanh = khoảng cam kết 80-90% sức chứa
   const y80=Y(CAP*0.8), y90=Y(CAP*0.9);
   svg.appendChild(el('rect',{x:PAD.l,y:y90,width:IW,height:y80-y90,fill:css('--good'),opacity:.10}));
-  // đường sức chứa thiết kế — chỉ áp cho 9 kho lạnh thành phẩm
+  // đường sức chứa thiết kế — chỉ áp cho 9 kho lạnh tự có
   const capY = Y(CAP);
   svg.appendChild(el('line',{x1:PAD.l,x2:W-PAD.r,y1:capY,y2:capY,stroke:css('--ink-3'),'stroke-width':2,'stroke-dasharray':'6 4'}));
   const ct = el('text',{x:PAD.l+5,y:capY-6,'text-anchor':'start','font-size':9,'font-weight':700,fill:css('--ink-2'),'font-family':'Roboto,sans-serif'});
   ct.textContent='Sức chứa kho lạnh 6.445 t'; svg.appendChild(ct);
-  // tồn toàn bộ 64 kho — tham chiếu, vẽ mờ, KHÔNG so với đường sức chứa
+  // tổng tồn 20 kho của Khối — tham chiếu, vẽ mờ, KHÔNG so với đường sức chứa
   let dAll=''; stockE.forEach((v,i)=> dAll += (i?' L ':'M ')+X(i)+' '+Y(v));
   svg.appendChild(el('path',{d:dAll,fill:'none',stroke:css('--c3'),'stroke-width':1.6,'stroke-dasharray':'4 3'}));
-  // tồn 9 kho lạnh thành phẩm — đường chính
+  // tồn 9 kho lạnh tự có — đường chính
   let area = `M ${X(0)} ${Y(stockFG[0])}`;
   stockFG.forEach((v,i)=>{ if(i) area += ` L ${X(i)} ${Y(v)}`; });
   area += ` L ${X(M.length-1)} ${Y(0)} L ${X(0)} ${Y(0)} Z`;
@@ -1473,8 +1577,8 @@ function drawStock(){
   hitzones(svg,X,band,(e,i)=>showTip(e,'Tháng '+M[i]+'/2026',[
     ['Kho lạnh thành phẩm', vi(stockFG[i],1)+' t'],
     ['Mức lấp đầy', vi(stockFG[i]/CAP*100,1)+'%'],
-    ['Tồn toàn bộ 64 kho', vi(stockE[i],1)+' t'],
-    ['Ngoài kho lạnh', vi(stockE[i]-stockFG[i],1)+' t']
+    ['Tổng 20 kho của Khối', vi(stockE[i],1)+' t'],
+    ['Kho NCC + kho vật tư', vi(stockE[i]-stockFG[i],1)+' t']
   ]));
   box.appendChild(svg);
 }
@@ -1483,7 +1587,7 @@ function drawStock(){
 function drawFlow(){
   const box = document.getElementById('chFlow'); box.innerHTML='';
   const max = Math.max(8000, Math.ceil(Math.max(...recv,...issue)/4000)*4000);
-  const {svg,X,Y,band} = frame(4,v=>vi(v/1000,0)+'k',max);
+  const {svg,X,Y,band} = frame(4,v=>vi(v/1000,0)+'k',max,0,box);
   const bw = Math.min(17, band/2-2);
   M.forEach((m,i)=>{
     const h1 = Math.max(2,Y(0)-Y(recv[i])), h2 = Math.max(2,Y(0)-Y(issue[i]));
@@ -1504,7 +1608,7 @@ function drawFlow(){
 function drawNet(){
   const box = document.getElementById('chNet'); box.innerHTML='';
   const lim = Math.max(400, Math.ceil(Math.max(...net.map(Math.abs))/200)*200);
-  const {svg,X,Y,band} = frame(4,v=>(v>0?'+':'')+vi(v,0),lim,-lim);
+  const {svg,X,Y,band} = frame(4,v=>(v>0?'+':'')+vi(v,0),lim,-lim,box);
   const zero = Y(0);
   svg.appendChild(el('line',{x1:PAD.l,x2:W-PAD.r,y1:zero,y2:zero,stroke:css('--ink-3'),'stroke-width':1.5}));
   const bw = Math.min(20, band-12);
@@ -1530,7 +1634,7 @@ function drawNet(){
 /* —— OTD: đường nhấn điểm cuối + mục tiêu —— */
 function drawOtd(){
   const box = document.getElementById('chOtd'); box.innerHTML='';
-  const {svg,X,Y,band} = frame(4,v=>vi(v,0)+'%',100);
+  const {svg,X,Y,band} = frame(4,v=>vi(v,0)+'%',100,0,box);
   const ty = Y(95);
   svg.appendChild(el('line',{x1:PAD.l,x2:W-PAD.r,y1:ty,y2:ty,stroke:css('--ink-3'),'stroke-width':2,'stroke-dasharray':'6 4'}));
   const tt = el('text',{x:W-PAD.r,y:ty+13,'text-anchor':'end','font-size':9,'font-weight':700,fill:css('--ink-2'),'font-family':'Roboto,sans-serif'});
@@ -1547,7 +1651,9 @@ function drawOtd(){
     svg.appendChild(el('circle',{cx:X(i),cy:Y(v),r:last?6:4,fill:last?css('--c5'):css('--surface'),
       stroke:last?css('--surface'):css('--c5'),'stroke-width':2.5}));
   });
-  [2,8].forEach(i=>{
+  /* Nhan diem dau va diem cuoi cua LAT CAT dang chon, khong gan cung chi so 2 va 8:
+     khi loc con it hon 9 thang thi otd[8] khong ton tai va vi() nem loi. */
+  [...new Set([0, otd.length-1])].filter(i=>i>=0 && otd[i]!=null).forEach(i=>{
     const t = el('text',{x:X(i),y:Y(otd[i])-13,'text-anchor':'middle','font-size':10,'font-weight':800,
       fill:css('--ink'),'font-family':'Roboto,sans-serif'});
     t.textContent=vi(otd[i],1)+'%'; svg.appendChild(t);
@@ -1564,7 +1670,7 @@ function drawOtd(){
 /* —— Sản lượng: cột —— */
 function drawThru(){
   const box = document.getElementById('chThru'); box.innerHTML='';
-  const W2=1000, H2=210, P={t:26,r:16,b:30,l:46};
+  const W2=NTSF_CH.rong(box), H2=NTSF_CH.CAO, P={t:26,r:16,b:30,l:46};
   const IW2=W2-P.l-P.r, IH2=H2-P.t-P.b, max=6000;
   const svg = el('svg',{viewBox:`0 0 ${W2} ${H2}`,role:'img'});
   const X=i=>P.l+IW2*(i+0.5)/M.length, Y=v=>P.t+IH2-IH2*v/max, band=IW2/M.length;
@@ -1582,13 +1688,15 @@ function drawThru(){
     t.textContent=vi(thru[i]/days[i],0)+' t/ngày'; svg.appendChild(t);
     const t2=el('text',{x:X(i),y:H2-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
     t2.textContent='T'+m; svg.appendChild(t2);
-    const r=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH2,fill:'transparent',class:'hitbox'});
+    const r=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH2,fill:'transparent',class:'hitbox',style:'cursor:pointer'});
     r.addEventListener('mousemove',e=>showTip(e,'Tháng '+m+'/2026',[
       ['Sản lượng', vi(thru[i],1)+' t'],
       ['Ngày vận hành', days[i]+' ngày'],
       ['Bình quân', vi(thru[i]/days[i],1)+' t/ngày'],
-      ['Tác nghiệp', vi(tasks[i])+' lệnh']
+      ['Tác nghiệp', vi(tasks[i])+' lệnh'],
+      ['▸ Bấm','để xem chi tiết từng ngày']
     ]));
+    r.addEventListener('click',()=>{ hideTip(); moThang(i); });
     r.addEventListener('mouseleave',hideTip);
     svg.appendChild(r);
   });
@@ -1598,7 +1706,7 @@ function drawThru(){
 /* —— Container xuất theo tháng —— */
 function drawCont(){
   const box=document.getElementById('chCont'); if(!box) return; box.innerHTML='';
-  const W2=640,H2=248,P={t:26,r:16,b:30,l:44},IW2=W2-P.l-P.r,IH2=H2-P.t-P.b,max=200;
+  const W2=NTSF_CH.rong(box),H2=NTSF_CH.CAO,P={t:26,r:16,b:30,l:44},IW2=W2-P.l-P.r,IH2=H2-P.t-P.b,max=200;
   const X=i=>P.l+IW2*(i+0.5)/M.length, Y=v=>P.t+IH2-IH2*v/max, band=IW2/M.length;
   const svg=el('svg',{viewBox:`0 0 ${W2} ${H2}`,role:'img'});
   for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);
@@ -1614,7 +1722,8 @@ function drawCont(){
     t.textContent=vi(cont[i]/contD[i],1)+'/ngày'; svg.appendChild(t);
     const lb=el('text',{x:X(i),y:H2-P.b+15,'text-anchor':'middle','font-size':9,fill:css('--ink-3'),'font-family':'Roboto,sans-serif'});
     lb.textContent='T'+m; svg.appendChild(lb);
-    const hz=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH2,fill:'transparent',class:'hitbox'});
+    const hz=el('rect',{x:X(i)-band/2,y:P.t,width:band,height:IH2,fill:'transparent',class:'hitbox',style:'cursor:pointer'});
+    hz.addEventListener('click',()=>{ hideTip(); moThang(i); });
     hz.addEventListener('mousemove',e=>showTip(e,'Tháng '+m+'/2026',[
       ['Container',vi(cont[i])],['Khối lượng',vi(contT[i],1)+' t'],
       ['Ngày có xuất',vi(contD[i])+' ngày'],['Bình quân',vi(cont[i]/contD[i],1)+' cont/ngày'],
@@ -1627,7 +1736,7 @@ function drawCont(){
 /* —— Bản đồ điểm đến —— */
 function drawMap(){
   const box=document.getElementById('chMap'); if(!box) return; box.innerHTML='';
-  const W2=640,H2=300,PADT=14,PADB=14;
+  const W2=NTSF_CH.rong(box),H2=NTSF_CH.CAO,PADT=10,PADB=10;
   /* phép chiếu hình chữ nhật đều, cắt bớt vùng cực để bản đồ đỡ trống */
   const LAT0=78, LAT1=-56;
   const px=lon=>(lon+180)/360*W2;
@@ -1696,23 +1805,23 @@ function buildKpiData(){
   const dTon = tr!=null ? S.tonCuoi-tr : null;
   const fill = S.lapDay, fillTr = tr!=null ? tr/CAP*100 : null;
   KPI = [
-  {k:'doh', lbl:'Số ngày tồn kho TP', val:'48,6', unit:'ngày',
+  {k:'doh', lbl:'Số ngày tồn kho TP', val:'49,0', unit:'ngày',
    tag:'CC-02', tagType:'kpi-code',
    prev:'Chuẩn ngành: 30–60 ngày', cmp:'▲ Trong ngưỡng', cls:'up',
    formula:'Tồn TP bình quân ÷ giá trị xuất mỗi ngày · số toàn kỳ',
    mini:'doh'},
   {k:'fill', lbl:'Mức lấp đầy kho lạnh', val:vi(fill,1), unit:'%',
    tag:'CC-04', tagType:'kpi-code',
-   prev:vi(S.tonFG,1)+' / 6.444,6 t · 9 kho lạnh',
+   prev:vi(S.tonFG,1)+' / 6.444,6 t · 9 kho lạnh tự có',
    cls:fill<80?'down':(fill>90?'down':'up'),
    cmp:fill<80?'▼ dưới ngưỡng 80%':(fill>90?'▲ trên ngưỡng 90%':'▲ Trong ngưỡng'),
-   formula:'Tồn 9 kho lạnh thành phẩm ÷ sức chứa thiết kế 6.444,6 t',
+   formula:'Tồn 9 kho lạnh TỰ CÓ ÷ sức chứa thiết kế 6.444,6 t · không gồm kho NCC thuê ngoài',
    sp:stockFG.length>1?stockFG.map(v=>v/CAP*100):[fill,fill], spc:'--c1'},
   {k:'stock', lbl:'Tồn kho cuối kỳ', val:vi(S.tonCuoi,0), unit:'tấn',
    tag:'Vận hành', tagType:'ops',
    prev:'Chốt cuối tháng '+M[n-1], cls:dTon!=null&&dTon<0?'up':'flat',
    cmp:dTon!=null?(dTon>=0?'▲ +':'▼ ')+vi(dTon,0)+' t so tháng trước':'Chốt cuối kỳ',
-   formula:'Tồn cuối kỳ toàn bộ kho, ĐVT gốc KG',
+   formula:'Tồn cuối kỳ 20 kho thuộc Khối Kho vận, ĐVT gốc KG',
    sp:stockE.length>1?stockE:[S.tonCuoi,S.tonCuoi], spc:'--c1'},
   {k:'thru', lbl:'Sản lượng xử lý', val:vi(S.tbTan,0), unit:'t/ngày',
    tag:'Vận hành', tagType:'ops',
@@ -1734,14 +1843,14 @@ function buildKpiData(){
    prev:'1.086 lệnh · 1.536 dòng', cmp:'Không đổi theo bộ lọc', cls:'down',
    formula:'Dòng lệnh có kế hoạch nhưng chưa xuất kho · số toàn kỳ',
    sp:[9,18], spc:'--bad'},
-  {k:'value', lbl:'Giá trị tồn kho', val:'440,3', unit:'tỷ đồng',
+  {k:'value', lbl:'Giá trị tồn kho', val:'396,8', unit:'tỷ đồng',
    tag:'Toàn kỳ', tagType:'ops',
-   prev:'Toàn bộ 64 kho · 84% ở kho lạnh', cmp:'Ảnh chụp 16/09 · không đổi', cls:'flat',
-   formula:'Giá trị sổ sách của tồn kho tại 16/09/2026, VND',
+   prev:'20 kho của Khối · 96,3% ở kho thành phẩm', cmp:'Ước tính · ảnh chụp 16/09', cls:'flat',
+   formula:'Ước tính: đơn giá bình quân từng mã nhân lượng trong 20 kho của Khối, VND',
    mini:'abc'},
   {k:'idle', lbl:'Vốn đọng trong kho', val:'26,0', unit:'tỷ đồng',
    tag:'CC-03 · phần', tagType:'kpi-part',
-   prev:'20 mã · vòng quay dưới 1', cmp:'▲ 9,9% tồn bình quân', cls:'down',
+   prev:'20 mã · vòng quay dưới 1', cmp:'▲ 11,2% tồn bình quân', cls:'down',
    formula:'Mã trên 500 triệu nhưng gần như không luân chuyển · số toàn kỳ',
    mini:'idle'}
   ];
@@ -1812,17 +1921,19 @@ const LAND = [
 ];
 
 /* ═══ SỐ NGÀY TỒN KHO (CC-02) — 258 ngày vận hành, 03/01→16/09/2026 ═══ */
-const DOH_FG = 48.6;          // thành phẩm Z400+Z401+Z402
-const DOH_ALL = 17.9;         // toàn bộ vật tư
+/* Chi cac ma dang nam trong 20 kho cua Khoi. Nhom Z207 thuc an nuoi va Z202 nguyen
+   lieu tom da bi loai vi thuoc trai nuoi, khong thuoc pham vi Khoi Kho van. */
+const DOH_FG = 49.0;          // thành phẩm Z400+Z401+Z402, bình quân gia quyền
+const DOH_ALL = 47.2;         // toàn bộ mã trong phạm vi Khối
 const DOH = [
-  {t:'Z402', ten:'Thành phẩm cá fillet',   ma:337,  ty:168.43, vq:5.92,   ngay:43.6},
-  {t:'Z400', ten:'Tôm HLSO',               ma:85,   ty:28.18,  vq:5.38,   ngay:47.9},
-  {t:'Z401', ten:'Tôm PTO / PD',           ma:288,  ty:22.08,  vq:0.60,   ngay:431.8},
-  {t:'Z207', ten:'Thức ăn nuôi',           ma:257,  ty:19.07,  vq:23.42,  ngay:11.0},
-  {t:'Z209', ten:'Phụ gia',                ma:121,  ty:11.34,  vq:3.61,   ngay:71.6},
-  {t:'Z208', ten:'Bao bì',                 ma:440,  ty:3.84,   vq:6.27,   ngay:41.2},
-  {t:'Z202', ten:'Nguyên liệu tôm',        ma:5,    ty:2.48,   vq:230.66, ngay:1.1},
-  {t:'Z203', ten:'Nguyên liệu cá',         ma:119,  ty:2.45,   vq:57.21,  ngay:4.5}
+  {t:'Z402', ten:'Thành phẩm cá fillet',   ma:306,  ty:167.42, vq:5.86,   ngay:44.2},
+  {t:'Z400', ten:'Tôm vỏ HLSO / BTP',      ma:65,   ty:28.18,  vq:5.24,   ngay:49.4},
+  {t:'Z401', ten:'Tôm PTO / PD',           ma:240,  ty:20.45,  vq:0.61,   ngay:423.2},
+  {t:'Z209', ten:'Phụ gia, hoá chất',      ma:63,   ty:11.21,  vq:3.55,   ngay:72.9},
+  {t:'Z503', ten:'Phụ phẩm cá tra',        ma:7,    ty:2.23,   vq:6.53,   ngay:39.7},
+  {t:'Z203', ten:'Nguyên liệu tôm mua',    ma:32,   ty:2.05,   vq:35.10,  ngay:7.4},
+  {t:'Z208', ten:'Bao bì',                 ma:78,   ty:1.27,   vq:7.09,   ngay:36.5},
+  {t:'Z212', ten:'Nguyên liệu tôm nội bộ', ma:2,    ty:0.18,   vq:6.12,   ngay:42.3}
 ];
 
 function renderKpis(){
@@ -1911,10 +2022,10 @@ const DRILL = {
     title:'Mức lấp đầy kho <span>tồn ÷ sức chứa</span>',
     build(){
       return attrs([
-        ['Sức chứa danh nghĩa','6.444,6','tấn'],['Tồn hiện tại',vi(stockE[8],0),'tấn'],
-        ['Mức lấp đầy',vi(stockE[8]/CAP*100,1)+'%'],['Đỉnh kỳ','109,5%','T8'],
-        ['Đáy kỳ','62,9%','T3'],['Ngưỡng tối ưu','80–90%'],
-        ['Tháng vượt sức chứa','1'],['Tình trạng','Sát trần']
+        ['Sức chứa thiết kế','6.444,6','tấn'],['Tồn 9 kho lạnh',vi(_stockFG[8],0),'tấn'],
+        ['Mức lấp đầy',vi(_stockFG[8]/CAP*100,1)+'%'],['Đỉnh kỳ','67,7%','T7'],
+        ['Đáy kỳ','40,7%','T4'],['Ngưỡng tối ưu','80–90%'],
+        ['Tháng vượt sức chứa','0'],['Tình trạng','Còn dư chỗ']
       ])
       + section('▦','Phần 1 — Diễn biến lấp đầy','mức lấp đầy từng tháng so với sức chứa danh nghĩa')
       + `<div class="grid2">
@@ -1925,19 +2036,20 @@ const DRILL = {
             <p class="how">Nhập trừ xuất mỗi tháng · dương = tích luỹ thêm vào kho</p>
             <div class="chart" id="dNet2"></div></div>
         </div>`
-      + miniTable(['Tháng','Tồn đầu kỳ','Tồn cuối kỳ','Nhập','Xuất','Lấp đầy'],
+      + miniTable(['Tháng','Tồn đầu kỳ','Tồn cuối kỳ','Nhập','Xuất','9 kho lạnh','Lấp đầy'],
           M.map((m,i)=>['Tháng '+m+'/2026',vi(stockS[i],0)+' t',vi(stockE[i],0)+' t',
-            vi(recv[i]/1000,1)+' k',vi(issue[i]/1000,1)+' k',vi(stockE[i]/CAP*100,1)+'%']))
+            vi(recv[i]/1000,1)+' k',vi(issue[i]/1000,1)+' k',vi(stockFG[i],0)+' t',
+            vi(stockFG[i]/CAP*100,1)+'%']))
       + `<div class="insight">
           <h4>Phân rã biến động</h4>
-          <p><span class="formula">Δ Tồn T5→T8 = +2.813 tấn = tổng nhập 148.889 t − tổng xuất 146.040 t</span></p>
-          <p>Bốn tháng liền nhập vượt xuất đã đẩy tồn kho từ <b>4.241 tấn</b> (T4) lên <b>7.054 tấn</b> (T8), vượt sức chứa danh nghĩa <b>9,5%</b>. Tháng 9 đảo chiều, xuất vượt nhập <b>814 tấn</b>, kéo mức lấp đầy về 95,5%.</p>
-          <p class="act">Gợi ý hành động: mức 95,5% vẫn nằm trên ngưỡng tối ưu 80–90%, rủi ro nghẽn khi vào mùa cao điểm. Cần rà kế hoạch nhập tháng 10 và ưu tiên giải phóng các lô tồn lâu.</p>
+          <p><span class="formula">Δ Tồn T5→T8 = +2.080 tấn = tổng nhập 43.790 t − tổng xuất 41.710 t</span></p>
+          <p>Bốn tháng liền nhập vượt xuất đã đẩy tồn 20 kho của Khối từ <b>2.853 tấn</b> (T4) lên <b>4.987 tấn</b> (T8). Riêng 9 kho lạnh tự có đi từ <b>2.621 tấn</b> lên <b>4.334 tấn</b>, tức mức lấp đầy từ <b>40,7%</b> lên <b>67,3%</b>. Tháng 9 gần như đứng yên.</p>
+          <p class="act">Gợi ý hành động: mức 66,9% vẫn <b>dưới</b> ngưỡng tối ưu 80–90%, tức kho còn dư chỗ ở cấp tổng. Vấn đề là lệch tải giữa các kho: Kho A (4000) đang vượt trần trong khi bốn kho A nhỏ chỉ dùng 38–47%. Ưu tiên san tải trước khi tính chuyện thuê thêm kho ngoài.</p>
         </div>`;
     },
     after(){
-      simpleBars('dFill',stockE.map(v=>v/CAP*100),v=>vi(v,0)+'%',120,'--c1',
-        (i)=>['Lấp đầy',vi(stockE[i]/CAP*100,1)+'%'],90,100);
+      simpleBars('dFill',stockFG.map(v=>v/CAP*100),v=>vi(v,0)+'%',120,'--c1',
+        (i)=>['Lấp đầy',vi(stockFG[i]/CAP*100,1)+'%'],90,100);
       simpleBars('dNet2',net,v=>vi(v,0),1400,'--warn',(i)=>['Ròng',(net[i]>=0?'+':'')+vi(net[i],0)+' t'],null,null,true);
     }
   },
@@ -1959,8 +2071,8 @@ const DRILL = {
           backlog.map(b=>[b.kh,vi(b.lenh),vi(b.dong),vi(b.tan,1)+' t',b.cu]))
       + `<div class="insight">
           <h4>Phân rã và cảnh báo</h4>
-          <p><span class="formula">18.923 tấn treo ÷ 6.153 tấn tồn thực = 3,1 lần</span></p>
-          <p>Khối lượng lệnh xuất còn treo <b>gấp 3,1 lần toàn bộ tồn kho thực có</b>. Về mặt vật lý kho không thể giao hết số này — nên phần lớn gần như chắc chắn là <b>chứng từ chưa được đóng</b> chứ không phải đơn hàng đang chờ giao thật.</p>
+          <p><span class="formula">18.923 tấn treo ÷ 4.937 tấn tồn thực trong 20 kho của Khối = 3,8 lần</span></p>
+          <p>Khối lượng lệnh xuất còn treo <b>gấp 3,8 lần toàn bộ tồn kho thực có</b>. Về mặt vật lý kho không thể giao hết số này — nên phần lớn gần như chắc chắn là <b>chứng từ chưa được đóng</b> chứ không phải đơn hàng đang chờ giao thật.</p>
           <p>Chỉ <b>281 dòng</b> phát sinh từ tháng 7 trở lại đây, tức phần tồn đọng thật sự gần đây chỉ chiếm <b>18%</b>. Còn lại là tồn dư từ giai đoạn đầu triển khai ERP.</p>
           <p class="act">Gợi ý hành động: giao Phòng Chứng từ Xuất khẩu rà soát và huỷ các lệnh không còn hiệu lực trong tháng 10. Trước khi làm xong việc này, mọi chỉ số tồn đọng đều không phản ánh đúng thực tế vận hành.</p>
         </div>`;
@@ -2035,12 +2147,13 @@ DRILL.acc = {eyebrow:'Chất lượng · NTSF · kho 520', title:'Độ chính x
 function hbar(id,items,max,padL,padR,rowH){
   const box=document.getElementById(id); if(!box) return; box.innerHTML='';
   rowH=rowH||30; padL=padL||150; padR=padR||190;
-  const W=900,P={t:8,r:padR,b:8,l:padL},H=P.t+P.b+items.length*rowH,IW=W-P.l-P.r;
+  const W=NTSF_CH.rong(box), LE=NTSF_CH.le(W,padL,padR);
+  const P={t:8,r:LE.r,b:8,l:LE.l}, H=P.t+P.b+items.length*rowH, IW=W-P.l-P.r;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   items.forEach((it,i)=>{
     const y=P.t+i*rowH, w=Math.max(3,IW*it.v/max);
     const nm=el('text',{x:P.l-10,y:y+rowH/2+4,'text-anchor':'end','font-size':11,'font-weight':600,fill:css('--ink-2')});
-    nm.textContent=it.k.length>26?it.k.slice(0,25)+'…':it.k; svg.appendChild(nm);
+    nm.textContent=NTSF_CH.catNhan(it.k,P.l); svg.appendChild(nm);
     const r=el('rect',{x:P.l,y:y+6,width:w,height:rowH-14,rx:3,fill:css(it.c||'--c1'),class:'hitbox'});
     if(it.tip){ r.addEventListener('mousemove',e=>showTip(e,it.k,it.tip)); r.addEventListener('mouseleave',hideTip); }
     svg.appendChild(r);
@@ -2056,10 +2169,10 @@ DRILL.value = {
   build(){
     const tyNow=VAL_NOW/1e9, tyAvg=VAL_AVG/1e9;
     return attrs([
-      ['Ảnh chụp 16/09',vi(tyNow,1),'tỷ'],['Bình quân cả kỳ 01–09',vi(tyAvg,1),'tỷ'],
-      ['Số mã có giá trị','3.166'],['Tổng số mã','3.468'],
-      ['Nhóm Top 3%','105','mã'],['Nhóm Top 3% chiếm','71,3%'],
-      ['Vốn đọng',vi(IDLE_TY,1),'tỷ'],['Tình trạng','Tập trung cao']
+      ['Tổng phạm vi Khối',vi(tyNow,1),'tỷ'],['Kho Thành Phẩm',vi(VAL_TP/1e9,1),'tỷ'],
+      ['Kho Vật Tư',vi(VAL_VT/1e9,2),'tỷ'],['Bình quân cả kỳ 01–09',vi(tyAvg,1),'tỷ'],
+      ['Số mã trong kho','909'],['Nhóm Top 3%','98','mã'],
+      ['Nhóm Top 3% chiếm','75,3%'],['Vốn đọng',vi(IDLE_TY,1),'tỷ']
     ])
     + section('◈','Phần 1 — Mức độ tập trung giá trị','giá trị tồn phân bổ thế nào giữa các nhóm mã hàng')
     + `<div class="card"><h3>Giá trị tồn theo nhóm phân loại</h3>
@@ -2073,10 +2186,11 @@ DRILL.value = {
         <p class="how">Con số bên phải là giá trị tồn bình quân và số vòng quay trong 8,5 tháng · vòng quay thấp mà giá trị cao là nơi vốn bị giữ lâu nhất</p>
         <div class="chart" id="dTopVal"></div></div>`
     + `<div class="insight"><h4>Phân rã và nhận định</h4>
-        <p><span class="formula">105 mã ÷ 3.468 mã = 3,0% số mã — nhưng chiếm 187,50 ÷ 263,02 = 71,3% giá trị</span></p>
-        <p>Phân bố cực kỳ tập trung. Muốn kiểm soát vốn nằm trong kho thì <b>chỉ cần siết đúng 105 mã</b> này, không phải quản đều cả 3.468 mã.</p>
-        <p>Ở chiều ngược lại, <b>1.041 mã</b> ở nhóm cuối có giá trị tồn gần bằng <b>không</b> — đây là nhóm nên rà soát để ngừng theo dõi hoặc xoá khỏi danh mục hoạt động.</p>
-        <p class="act">Gợi ý hành động: lập danh sách 105 mã nhóm đầu, giao Phòng Quản lý Kho theo dõi tồn hằng tuần thay vì hằng tháng. Với nhóm cuối, đề xuất rà soát danh mục trong quý 4.</p>
+        <p><span class="formula">98 mã ÷ 809 mã = 12,1% số mã — nhưng chiếm 175,48 ÷ 233,00 = 75,3% giá trị</span></p>
+        <p>Phân bố cực kỳ tập trung. Muốn kiểm soát vốn nằm trong 20 kho của Khối thì <b>chỉ cần siết đúng 98 mã</b> này, không phải quản đều cả danh mục.</p>
+        <p><b>Kho Thành Phẩm giữ 96,3% giá trị</b> dù chỉ hơn Kho Vật Tư 13 lần về khối lượng — chênh lệch đơn giá giữa cá fillet và bao bì là lý do. Nhóm vật tư nên quản bằng vòng quay và mức tồn tối thiểu, không quản bằng tiền.</p>
+        <p class="act">Gợi ý hành động: lập danh sách 98 mã nhóm đầu, giao Phòng Quản lý Kho theo dõi tồn hằng tuần thay vì hằng tháng.</p>
+        <p class="how"><b>Giới hạn:</b> SAP trả <code>current_stock_value = 0</code> ở toàn bộ dòng tồn nên không có giá trị tiền theo từng kho. Con số ở đây là <b>ước tính</b> từ đơn giá bình quân của từng mã — dùng để so tương quan, không phải số sổ sách.</p>
       </div>`;
   },
   after(){
@@ -2084,7 +2198,7 @@ DRILL.value = {
       tip:[['Giá trị',vi(a.ty,2)+' tỷ VND'],['Số mã',vi(a.ma)],['Tỷ trọng',vi(a.ty/(VAL_AVG/1e9)*100,1)+'%']]})),190,120,200,34);
     hbar('dTopVal',TOPVAL.map(t=>({k:t.ma+' · '+t.ten,v:t.tr,c:t.vq<1?'--bad':'--c1',
       lbl:vi(t.tr)+' tr · vòng quay '+vi(t.vq,1),
-      tip:[['Giá trị tồn',vi(t.tr)+' triệu VND'],['Vòng quay',vi(t.vq,1)+' vòng']]})),12000,250,190,30);
+      tip:[['Giá trị tồn',vi(t.tr)+' triệu VND'],['Vòng quay',vi(t.vq,1)+' vòng']]})),12000,250,190,34);
   }
 };
 
@@ -2094,9 +2208,9 @@ DRILL.doh = {
   build(){
     return attrs([
       ['Thành phẩm',vi(DOH_FG,1),'ngày'],['Chuẩn ngành','30–60','ngày'],
-      ['Toàn bộ vật tư',vi(DOH_ALL,1),'ngày'],['Vòng quay TP','5,31','vòng'],
-      ['Giá trị TP','218,7','tỷ'],['Tỷ trọng TP','83,1%'],
-      ['Kỳ đo','258','ngày'],['Đánh giá','Đạt']
+      ['Toàn phạm vi Khối',vi(DOH_ALL,1),'ngày'],['Vòng quay TP','5,28','vòng'],
+      ['Giá trị TP','216,1','tỷ'],['Tỷ trọng TP','92,7%'],
+      ['Kỳ đo','259','ngày'],['Đánh giá','Đạt']
     ])
     + section('▦','Phần 1 — Số ngày tồn theo nhóm hàng','nhóm nào giữ hàng lâu, nhóm nào quay nhanh')
     + `<div class="card"><h3>Số ngày tồn theo nhóm hàng</h3>
@@ -2105,18 +2219,18 @@ DRILL.doh = {
     + miniTable(['Nhóm','Tên','Số mã','Giá trị','Vòng quay','Số ngày tồn'],
         DOH.map(d=>[d.t,d.ten,vi(d.ma),vi(d.ty,2)+' tỷ',vi(d.vq,2),vi(d.ngay,1)+' ngày']))
     + `<div class="insight"><h4>Phân rã và cảnh báo</h4>
-        <p><span class="formula">Thành phẩm = 218,7 tỷ ÷ (1.161,9 tỷ ÷ 258 ngày) = 48,6 ngày</span></p>
-        <p>Nhìn tổng thể thì <b>48,6 ngày</b> nằm gọn trong ngưỡng lành mạnh <b>30–60 ngày</b> của ngành tôm đông lạnh. Chỉ số này <b>đạt</b>.</p>
-        <p><b>Nhưng con số tổng đang che một vấn đề lớn.</b> Tách theo nhóm thì <b>Z401 Tôm PTO/PD</b> có <b>431,8 ngày</b> — tức hơn <b>14 tháng</b>, gấp <b>7 lần</b> ngưỡng trên. Nhóm này giữ <b>22,08 tỷ</b> và chính là nơi tập trung phần lớn 26 tỷ vốn đọng.</p>
-        <p>Hai nhóm thành phẩm còn lại đều tốt: cá fillet <b>43,6 ngày</b>, tôm HLSO <b>47,9 ngày</b>.</p>
-        <p class="act">Gợi ý hành động: đừng báo cáo CC-02 bằng một con số tổng. Tách tối thiểu ba dòng — cá fillet, tôm HLSO, tôm PTO/PD — để nhóm 431 ngày không bị ẩn sau mức bình quân đạt chuẩn.</p>
+        <p><span class="formula">Thành phẩm = 216,1 tỷ ÷ (1.141,3 tỷ ÷ 259 ngày) = 49,0 ngày</span></p>
+        <p>Nhìn tổng thể thì <b>49,0 ngày</b> nằm gọn trong ngưỡng lành mạnh <b>30–60 ngày</b> của ngành thuỷ sản đông lạnh. Chỉ số này <b>đạt</b>.</p>
+        <p><b>Nhưng con số tổng đang che một vấn đề lớn.</b> Tách theo nhóm thì <b>Z401 Tôm PTO/PD</b> có <b>423,2 ngày</b> — tức gần <b>14 tháng</b>, gấp <b>7 lần</b> ngưỡng trên. Nhóm này giữ <b>20,45 tỷ</b> và chính là nơi tập trung phần lớn 26 tỷ vốn đọng.</p>
+        <p>Hai nhóm thành phẩm còn lại đều tốt: cá fillet <b>44,2 ngày</b>, tôm vỏ <b>49,4 ngày</b>. Bên Kho Vật Tư, <b>Z209 Phụ gia, hoá chất</b> ở <b>72,9 ngày</b> cũng vượt ngưỡng, giữ <b>11,21 tỷ</b>.</p>
+        <p class="act">Gợi ý hành động: đừng báo cáo CC-02 bằng một con số tổng. Tách tối thiểu bốn dòng — cá fillet, tôm vỏ, tôm PTO/PD, và phụ gia bên kho vật tư — để nhóm 423 ngày không bị ẩn sau mức bình quân đạt chuẩn.</p>
       </div>`;
   },
   after(){
     hbar('dDoh',DOH.map(d=>({k:d.t+' · '+d.ten,v:Math.min(d.ngay,450),
       c:d.ngay>90?'--bad':(d.ngay>=30&&d.ngay<=60)?'--good':'--c3',
       lbl:vi(d.ngay,1)+' ngày · '+vi(d.ty,2)+' tỷ',
-      tip:[['Số ngày tồn',vi(d.ngay,1)+' ngày'],['Vòng quay',vi(d.vq,2)],['Giá trị',vi(d.ty,2)+' tỷ VND'],['Số mã',vi(d.ma)]]})),450,230,190,32);
+      tip:[['Số ngày tồn',vi(d.ngay,1)+' ngày'],['Vòng quay',vi(d.vq,2)],['Giá trị',vi(d.ty,2)+' tỷ VND'],['Số mã',vi(d.ma)]]})),450,230,190,34);
   }
 };
 
@@ -2126,7 +2240,7 @@ DRILL.idle = {
   build(){
     return attrs([
       ['Số mã',vi(IDLE_MA)],['Tổng giá trị',vi(IDLE_TY,2),'tỷ'],
-      ['Tỷ trọng','9,9%','tồn bình quân'],['Mã nặng nhất','4.497','triệu'],
+      ['Tỷ trọng','11,2%','tồn bình quân'],['Mã nặng nhất','4.497','triệu'],
       ['Vòng quay thấp nhất','0,04','vòng'],['Kỳ đo','8,5','tháng'],
       ['Ngưỡng xét','> 500','triệu'],['Tình trạng','Cần xử lý']
     ])
@@ -2138,7 +2252,7 @@ DRILL.idle = {
         IDLE.map(x=>[x.ma,x.ten,vi(x.tr)+' tr',vi(x.vq,2),
           x.vq<0.2?'Gần như không luân chuyển':x.vq<0.5?'Rất chậm':'Chậm']))
     + `<div class="insight"><h4>Phân rã và cảnh báo</h4>
-        <p><span class="formula">26,02 tỷ ÷ 263,02 tỷ = 9,9% vốn tồn kho gần như không luân chuyển</span></p>
+        <p><span class="formula">26,02 tỷ ÷ 233,00 tỷ = 11,2% vốn tồn kho gần như không luân chuyển</span></p>
         <p>Vòng quay <b>0,04</b> của mã <b>40100031</b> nghĩa là lượng xuất trong 8,5 tháng chỉ bằng <b>4%</b> lượng tồn bình quân — với nhịp đó phải mất khoảng <b>17 năm</b> mới tiêu thụ hết lô hàng đang nằm trong kho.</p>
         <p>Bốn mã <b>40100031 · 40200186 · 40200019 · 40100141</b> đều có vòng quay dưới 0,1 và tổng giá trị <b>5,44 tỷ</b>. Đây là nhóm cần quyết định trước tiên.</p>
         <p class="act">Gợi ý hành động: yêu cầu Phòng Quản lý Kho và Kinh doanh rà từng mã trong danh sách này trong tháng 10, phân loại thành ba nhóm — còn bán được thì đẩy giá, hàng lỗi quy cách thì hạ phẩm cấp, hàng không còn nhu cầu thì lập phương án thanh lý. Mỗi tháng chậm là mỗi tháng 26 tỷ tiếp tục nằm im.</p>
@@ -2147,14 +2261,42 @@ DRILL.idle = {
   after(){
     hbar('dIdle',IDLE.map(x=>({k:x.ma+' · '+x.ten,v:x.tr,c:x.vq<0.2?'--bad':x.vq<0.5?'--warn':'--c5',
       lbl:vi(x.tr)+' tr · vòng quay '+vi(x.vq,2),
-      tip:[['Giá trị tồn',vi(x.tr)+' triệu VND'],['Vòng quay',vi(x.vq,2)+' vòng / 8,5 tháng']]})),4800,250,190,30);
+      tip:[['Giá trị tồn',vi(x.tr)+' triệu VND'],['Vòng quay',vi(x.vq,2)+' vòng / 8,5 tháng']]})),4800,250,190,34);
   }
+};
+
+/* Bấm vào bản đồ điểm đến — cùng nguồn DEST đang vẽ trên bản đồ */
+DRILL.dest = {
+  eyebrow:'Giao hàng · NTSF · kho 520',
+  title:'Điểm đến của hàng xuất <span>toàn kỳ 01–09/2026</span>',
+  build(){
+    const tongC=DEST.reduce((a,d)=>a+d.cont,0), tongT=DEST.reduce((a,d)=>a+d.tan,0);
+    const noi=DEST.filter(d=>d.noi).reduce((a,d)=>a+d.cont,0);
+    return attrs([
+        ['Tổng container',vi(tongC)],['Tổng khối lượng',vi(tongT,1),'tấn'],
+        ['Số điểm đến',vi(DEST.length-1)],['Bình quân',vi(tongT/tongC,1),'t/cont'],
+        ['Đi nước ngoài',vi(tongC-noi)],['Trong nước',vi(noi)],
+        ['Thị trường lớn nhất','Việt Nam'],['Xa nhất','Mỹ']])
+      + `<div class="card"><h3>Container theo điểm đến</h3>
+          <p class="how">Việt Nam gồm cả điều chuyển nội bộ giữa các nhà máy trong Khối, không phải hàng bán nội địa</p>
+          <div class="chart" id="dDest"></div></div>`
+      + miniTable(['Điểm đến','Container','Khối lượng','Tấn mỗi cont','Tỷ trọng'],
+          DEST.map(d=>[d.k,vi(d.cont),vi(d.tan,1)+' t',vi(d.cont?d.tan/d.cont:0,1),vi(d.cont/tongC*100,1)+'%']))
+      + `<div class="insight"><h4>Nhận định</h4>
+          <p><span class="formula">${vi(noi)} trên ${vi(tongC)} container = ${vi(noi/tongC*100,1)}% là điều chuyển trong nước</span></p>
+          <p>Gần <b>bốn trên mười chuyến</b> không ra khỏi Việt Nam — đây là hàng chạy giữa các nhà máy trong Khối, không phải hàng bán. Khi báo cáo sản lượng xuất khẩu phải trừ phần này ra, nếu không sẽ thổi phồng con số.</p>
+          <p>Ngoài nước thì <b>Mỹ</b> dẫn đầu với <b>${vi(DEST[1].cont)} container</b>, kế đến là <b>Trung Quốc ${vi(DEST[2].cont)}</b>. Hai thị trường này chiếm <b>${vi((DEST[1].cont+DEST[2].cont)/(tongC-noi)*100,1)}%</b> hàng xuất khẩu.</p>
+          <p class="act">Gợi ý hành động: tách riêng chỉ tiêu cho chuyến nội bộ và chuyến xuất khẩu. Hai loại này khác hẳn nhau về chứng từ, thời gian và rủi ro, gộp chung thì không điều hành được.</p></div>`;},
+  after(){ hbar('dDest',DEST.map(d=>({k:d.k,v:d.cont,c:d.noi?'--c5':'--c1',
+    lbl:vi(d.cont)+' cont · '+vi(d.tan,1)+' t',
+    tip:[['Container',vi(d.cont)],['Khối lượng',vi(d.tan,1)+' t'],
+         ['Loại',d.noi?'Điều chuyển nội bộ':'Xuất khẩu']]})),520,150,200,34); }
 };
 
 /* — bộ vẽ cột dùng chung trong modal — */
 function simpleBars(id,vals,fmt,max,color,tipFn,refVal,redAbove,diverge){
   const box=document.getElementById(id); if(!box) return; box.innerHTML='';
-  const W2=560,H2=210,P={t:22,r:14,b:28,l:44};
+  const W2=NTSF_CH.rong(box),H2=210,P={t:22,r:14,b:28,l:44};
   const IW2=W2-P.l-P.r,IH2=H2-P.t-P.b;
   const mn = diverge? -max : 0;
   const X=i=>P.l+IW2*(i+0.5)/vals.length, Y=v=>P.t+IH2-IH2*(v-mn)/(max-mn), band=IW2/vals.length;
@@ -2245,10 +2387,11 @@ function drawAll(){
   if(!R) return;
   capNhatChu(); renderKpis();
   drawStock(); drawFlow(); drawNet(); drawOtd(); drawThru(); drawCont(); drawMap();
+  NTSF_CH.bamThe('chMap','dest');
 }
 window.drawAll = drawAll;
-NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); } });
-addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(drawAll,180); });
+NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); NTSF_CH.gonNhan(); } });
+addEventListener('resize',()=>{ clearTimeout(window.__rz); window.__rz=setTimeout(()=>{drawAll();NTSF_CH.gonNhan();},180); });
 </script>
 </body>
 </html>

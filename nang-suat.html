@@ -324,31 +324,37 @@ body{
 .banner h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
 .banner p{margin:4px 0 0; font-size:10.5px; color:var(--on-navy); line-height:1.5}
 
-/* ═══ HERO + KPI ═══ */
-.hero-row{display:grid; grid-template-columns:minmax(230px,1fr) 2.15fr; gap:14px; align-items:stretch}
+/* ═══ HERO + KPI ═══
+   Hero cố định bề ngang hẹp để nhường chỗ cho lưới KPI dàn ngang — trước đây hero
+   chiếm 1/3 bề rộng và bị kéo cao theo lưới, để lại một khoảng trống lớn. */
+.hero-row{display:grid; grid-template-columns:minmax(186px,224px) minmax(0,1fr); gap:12px; align-items:stretch}
 .hero{
   background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--c5);
-  border-radius:var(--r-card); padding:16px; box-shadow:var(--sh-card);
+  border-radius:var(--r-card); padding:13px 14px; box-shadow:var(--sh-card);
   display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; font-family:inherit;
 }
 .hero:hover{border-color:var(--c2)}
 .hero:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .hero .lbl{font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .hero .kpi-head{margin-bottom:2px}
-.hero .big{font-size:52px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:7px 0 2px; color:var(--ink)}
-.hero .big small{font-size:20px; font-weight:800; margin-left:2px}
-.hero .sub{font-size:11px; color:var(--ink-2); font-weight:600}
-.hero .delta{margin-top:9px; font-size:11px; font-weight:800}
-.hero .foot{margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-3); line-height:1.5}
+.hero .big{font-size:38px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:6px 0 2px; color:var(--ink)}
+.hero .big small{font-size:15px; font-weight:800; margin-left:2px}
+.hero .sub{font-size:10.5px; color:var(--ink-2); font-weight:600; line-height:1.45}
+.hero .delta{margin-top:7px; font-size:10.5px; font-weight:800; line-height:1.4}
+.hero .foot{margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:9.5px; color:var(--ink-3); line-height:1.5}
 
-/* 9 thẻ → lưới 3 cột cho đủ 3 hàng bằng nhau, không để thẻ đứng lẻ */
-.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-@media (max-width:1180px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Lưới KPI dàn tối đa 4 cột để giảm số hàng — hero đã thu hẹp nên còn dư bề ngang.
+   Mốc ngắt tính theo bề rộng CỬA SỔ, mà vùng nội dung còn phải trừ 260px thanh bên
+   và 224px thẻ hero — nên ngưỡng phải rộng hơn bề rộng thẻ mong muốn khá nhiều. */
+.kpis{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px}
+@media (max-width:1560px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1360px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1040px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:620px){ .kpis{grid-template-columns:minmax(0,1fr)} }
 .kpi{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-kpi);
-  padding:11px 12px 10px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
-  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:2px;
+  padding:10px 11px 9px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
+  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:1px;
 }
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
@@ -443,8 +449,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .close:hover{background:var(--surface-tint); color:var(--ink)}
 .close:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* Dưới ngưỡng này lưới KPI chỉ còn 2 cột — để hero đứng cột hẹp bên cạnh sẽ bị kéo
+   cao lêu nghêu, nên cho hero trải hết bề ngang thành một dải ngắn phía trên. */
+@media (max-width:1040px){ .hero-row{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:960px){
-  .hero-row{grid-template-columns:1fr}
   .side{position:fixed; left:-260px; transition:left .2s; z-index:60}
   .side.open{left:0}
   .main{width:100%}
@@ -532,6 +540,91 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
    Dashboard Khối Kho Vận & Logistics — thành phần dùng chung
    Sidebar · logo · điều hướng · giao diện sáng-tối
    ═══════════════════════════════════════════════════════ */
+/* ═══ KHUNG BIỂU ĐỒ DÙNG CHUNG ═══
+   Mọi SVG phải vẽ theo ĐÚNG bề rộng pixel của thẻ chứa nó, tức viewBox = pixel,
+   để tỷ lệ luôn là 1:1.
+
+   Trước đây mỗi hàm vẽ tự đặt viewBox cố định — 470, 640 hoặc 900 — rồi để SVG
+   kéo giãn theo bề rộng thẻ. Hậu quả: cùng một cỡ chữ 11,5 đơn vị lại hiện ra
+   ~11px trong thẻ nửa màn (viewBox 640 → 612px) nhưng ~16px trong thẻ toàn màn
+   (viewBox 900 → 1.271px). Nhìn vào thấy biểu đồ chỗ to chỗ nhỏ, chữ chỗ đậm
+   chỗ mảnh, dù cùng một bộ mã vẽ.
+
+   CAO  = chiều cao chuẩn của biểu đồ theo thời gian (cột, đường) — mọi màn dùng chung.
+   DONG = chiều cao một dòng của biểu đồ thanh ngang.
+   Vì vẽ 1:1 nên hai hằng số này là PIXEL THẬT, không còn là đơn vị co giãn. */
+window.NTSF_CH = {
+  CAO: 250,
+  DONG: 34,
+  /* Bề rộng vẽ = bề rộng trong lòng thẻ. Chặn dưới 320 để không vỡ trên điện thoại. */
+  rong: function (hop) {
+    var box = (typeof hop === 'string') ? document.getElementById(hop) : hop;
+    if (!box) return 640;
+    var w = box.clientWidth || box.getBoundingClientRect().width;
+    return Math.max(320, Math.round(w));
+  },
+  /* Lề trái/phải của biểu đồ thanh ngang không được nuốt hết chỗ vẽ thanh:
+     giữ tối thiểu 26% bề rộng cho phần thanh. */
+  le: function (W, trai, phai) {
+    var l = Math.min(trai, Math.round(W * 0.40));
+    var r = Math.min(phai, Math.round(W * 0.34));
+    if (W - l - r < W * 0.26) { var du = (W * 0.26) - (W - l - r); l -= du * 0.6; r -= du * 0.4; }
+    return { l: Math.max(48, Math.round(l)), r: Math.max(40, Math.round(r)) };
+  },
+  /* Cắt bớt nhãn theo bề rộng lề thật, thay vì cắt cứng ở 28 ký tự */
+  catNhan: function (chu, rongLe, cx) {
+    var n = Math.max(8, Math.floor((rongLe - 14) / (cx || 6.1)));
+    return chu.length > n ? chu.slice(0, n - 1) + '…' : chu;
+  },
+
+  /* Cho bấm vào cả khung biểu đồ để mở bảng phân tích sâu.
+     Dùng cho biểu đồ chưa có chỗ bấm riêng trên từng cột hay từng thanh.
+     Chỉ gắn thuộc tính data-drill — bộ xử lý click sẵn có của trang sẽ mở đúng bảng,
+     nên hành vi giống hệt khi bấm vào thẻ KPI, không phát sinh đường đi thứ hai.
+     ⚠️ Đừng gắn cho biểu đồ đã có click trên từng phần tử: sự kiện nổi bọt lên
+     khung sẽ mở thêm một bảng nữa. */
+  bamThe: function (id, khoa) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.setAttribute('data-drill', khoa);
+    box.style.cursor = 'pointer';
+    var card = box.closest('.card');
+    var how = card ? card.querySelector('.how') : null;
+    if (how && how.dataset.goiY !== '1') {
+      how.dataset.goiY = '1';
+      how.insertAdjacentHTML('beforeend', ' · <b>▸ bấm để xem phân tích sâu</b>');
+    }
+  },
+
+  /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
+     Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
+     getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
+  gonNhan: function () {
+    document.querySelectorAll('.chart svg').forEach(function (s) {
+      var vb = s.viewBox.baseVal;
+      if (!vb || !vb.width) return;
+      s.querySelectorAll('text').forEach(function (tx) {
+        var b;
+        try { b = tx.getBBox(); } catch (e) { return; }
+        if (!b.width) return;
+        /* nhãn dài hơn cả khung thì thu nhỏ cỡ chữ trước, rồi mới ép về mép */
+        if (b.width > vb.width - 8) {
+          var cu = parseFloat(tx.getAttribute('font-size')) || 11;
+          tx.setAttribute('font-size', Math.max(7.5, cu * (vb.width - 8) / b.width).toFixed(1));
+          try { b = tx.getBBox(); } catch (e) { return; }
+        }
+        if (b.x + b.width > vb.width - 2) {
+          tx.setAttribute('text-anchor', 'end');
+          tx.setAttribute('x', vb.width - 4);
+        } else if (b.x < 0) {
+          tx.setAttribute('text-anchor', 'start');
+          tx.setAttribute('x', 2);
+        }
+      });
+    });
+  }
+};
+
 (function () {
   'use strict';
 
@@ -1025,7 +1118,7 @@ window.NTSF_RANGE = (function () {
       <section class="grid2">
         <article class="card" style="border-top:3px solid var(--c5)">
           <h3>Nhịp tác nghiệp theo giờ trong ngày <span class="tag ops">Toàn kỳ</span></h3>
-          <p class="how"><b>Biểu đồ này không đổi theo bộ lọc</b> — dữ liệu giờ chỉ được SAP kết xuất ở mức cộng dồn cả kỳ, không tách theo ngày. Số lệnh theo giờ Việt Nam · lộ rõ hai ca làm việc và quãng nghỉ trưa · dùng để bố trí ca và giờ giao ca</p>
+          <p class="how"><b>Không đổi theo bộ lọc</b> — SAP chỉ trả số cộng dồn cả kỳ, không tách theo ngày · thấy rõ hai ca và quãng nghỉ trưa · dùng để bố trí ca</p>
           <div class="legend">
             <span><i class="swatch" style="background:var(--bad)"></i>Giờ cao điểm</span>
             <span><i class="swatch" style="background:var(--c1)"></i>Giờ thường</span>
@@ -1161,7 +1254,7 @@ const hideTip=()=>tip.classList.remove('on');
 
 function bars(id,vals,labels,fmt,max,colorFn,tipFn,ref,opt={}){
   const box=document.getElementById(id); if(!box)return; box.innerHTML='';
-  const W=opt.W||640,H=opt.H||250,P={t:26,r:16,b:opt.b||40,l:opt.l||50},IW=W-P.l-P.r,IH=H-P.t-P.b;
+  const W=NTSF_CH.rong(box),H=opt.H||NTSF_CH.CAO,P={t:26,r:16,b:opt.b||40,l:opt.l||50},IW=W-P.l-P.r,IH=H-P.t-P.b;
   const X=i=>P.l+IW*(i+0.5)/vals.length, Y=v=>P.t+IH-IH*v/max, band=IW/vals.length;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);
@@ -1187,13 +1280,13 @@ function bars(id,vals,labels,fmt,max,colorFn,tipFn,ref,opt={}){
 
 function hbars(id,items,max,opt={}){
   const box=document.getElementById(id); if(!box)return; box.innerHTML='';
-  const rowH=opt.rowH||34, W=opt.W||900, P={t:8,r:opt.padR||200,b:8,l:opt.padL||200};
+  const rowH=opt.rowH||NTSF_CH.DONG, W=NTSF_CH.rong(box), LE=NTSF_CH.le(W,opt.padL||200,opt.padR||200), P={t:8,r:LE.r,b:8,l:LE.l};
   const H=P.t+P.b+items.length*rowH, IW=W-P.l-P.r;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   items.forEach((it,i)=>{
     const y=P.t+i*rowH, w=Math.max(3,IW*it.v/max);
     const nm=el('text',{x:P.l-10,y:y+rowH/2+4,'text-anchor':'end','font-size':11.5,'font-weight':600,fill:css('--ink-2')});
-    nm.textContent=it.k.length>30?it.k.slice(0,29)+'…':it.k; svg.appendChild(nm);
+    nm.textContent=NTSF_CH.catNhan(it.k,P.l); svg.appendChild(nm);
     const r=el('rect',{x:P.l,y:y+rowH*0.2,width:w,height:rowH*0.6,rx:3,fill:css(it.c||'--c1'),class:'hitbox'});
     if(it.tip){r.addEventListener('mousemove',e=>showTip(e,it.k,it.tip));r.addEventListener('mouseleave',hideTip);}
     svg.appendChild(r);
@@ -1216,7 +1309,7 @@ function drawSeries(){
   const box=document.getElementById('chDaily'); box.innerHTML='';
   const SER = S.duongNgay ? BD : B;               /* biểu đồ này luôn ưu tiên mức ngày */
   if(!SER.length){ box.innerHTML='<p class="how">Không có ngày nào phát sinh trong phạm vi này.</p>'; return; }
-  const CW=1000,H=280,P={t:24,r:18,b:34,l:48},IW=CW-P.l-P.r,IH=H-P.t-P.b;
+  const CW=NTSF_CH.rong(box),H=NTSF_CH.CAO+30,P={t:24,r:18,b:34,l:48},IW=CW-P.l-P.r,IH=H-P.t-P.b;
   const max=S.tranTan, n=SER.length;
   const Y=v=>P.t+IH-IH*v/max;
   const svg=el('svg',{viewBox:`0 0 ${CW} ${H}`,role:'img'});
@@ -1275,7 +1368,7 @@ function drawSeries(){
 function drawMix(){
   const box=document.getElementById('chMix'); box.innerHTML='';
   if(!B.length){ box.innerHTML='<p class="how">Không có dữ liệu trong phạm vi này.</p>'; return; }
-  const CW=470,H=250,P={t:26,r:14,b:40,l:44},IW=CW-P.l-P.r,IH=H-P.t-P.b;
+  const CW=NTSF_CH.rong(box),H=NTSF_CH.CAO,P={t:26,r:14,b:40,l:44},IW=CW-P.l-P.r,IH=H-P.t-P.b;
   const n=B.length, max=S.tranLenh;
   const band=IW/n, X=i=>P.l+band*(i+0.5), Y=v=>P.t+IH-IH*v/max;
   const svg=el('svg',{viewBox:`0 0 ${CW} ${H}`,role:'img'});
@@ -1446,7 +1539,7 @@ const DRILL={
     after(){bars('dHour',HOUR,HOUR.map((_,i)=>i+'h'),(v,lbl)=>lbl?(v>=1000?vi(v):''):vi(v/1000,1)+'k',7000,
       (i,v)=>v>=4000?css('--bad'):v>=1500?css('--c1'):css('--c3'),
       i=>({t:i+' giờ (giờ Việt Nam)',rows:[['Số lệnh',vi(HOUR[i])],['Tỷ trọng',vi(HOUR[i]/TONG_LENH*100,1)+'%']]}),
-      null,{W:900,H:280,bw:26,gap:6});}},
+      null,{H:280,bw:26,gap:6});}},
 
   dow:{eye:'Năng suất · NTSF · kho 520', title:'Nhịp theo thứ trong tuần <span>bố trí nhân lực</span>',
     build(){
@@ -1471,7 +1564,7 @@ const DRILL={
       bars('dDow',DOW.map(d=>d.tbTan||0),DOW.map(d=>d.k),
       (v,lbl)=>lbl?(v?vi(v,1):''):vi(v,0),tran,(i,v)=>v>=S.tbTan?css('--bad'):css('--c2'),
       i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tbTan,1)],['Lệnh mỗi ngày',vi(DOW[i].tbLenh,0)],
-        ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{W:900,H:280});}},
+        ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{H:280});}},
 
   mix:{eye:'Năng suất · NTSF · kho 520', title:'Cơ cấu tác nghiệp <span>soạn hàng và điều chuyển</span>',
     build(){return attrs([
@@ -1491,7 +1584,7 @@ const DRILL={
     after(){hbars('dRoute',ROUTE.map(r=>({k:r.k,v:r.lenh,c:r.lenh>10000?'--bad':r.lenh>3000?'--c5':'--c2',
       lbl:vi(r.lenh)+' lệnh · '+vi(r.tan,1)+' t',
       tip:[['Số lệnh',vi(r.lenh)],['Khối lượng',vi(r.tan,1)+' t'],['Tỷ trọng',vi(r.lenh/TONG_LENH*100,1)+'%']]})),14000,
-      {padL:250,padR:220,rowH:38});}},
+      {padL:250,padR:220,rowH:34});}},
 
   acc:{eye:'Chất lượng · NTSF · kho 520', title:'Độ chính xác soạn hàng <span>đọc kỹ trước khi dùng</span>',
     build(){return attrs([
@@ -1542,7 +1635,7 @@ function moMatHang(i){
   hbars('dMh',PROD.map((x,k)=>({k:x.ma,v:x.tan,c:k===i?'--bad':'--c3',
     lbl:vi(x.tan,1)+' t · '+vi(x.lenh)+' lệnh',
     tip:[['Sản lượng',vi(x.tan,1)+' t'],['Số lệnh',vi(x.lenh)],['Tấn mỗi lệnh',vi(x.tan/x.lenh,2)]]})),2000,
-    {padL:110,padR:200,rowH:32});
+    {padL:110,padR:200,rowH:34});
   document.getElementById('mClose').focus();
 }
 
@@ -1580,7 +1673,7 @@ function moLuong(i){
   hbars('dLu',ROUTE.map((x,k)=>({k:x.s,v:x.lenh,c:k===i?'--bad':(nguoc&&x.k===nguoc.k?'--c5':'--c3'),
     lbl:vi(x.lenh)+' lệnh · '+vi(x.tan,1)+' t',
     tip:[['Số lệnh',vi(x.lenh)],['Khối lượng',vi(x.tan,1)+' t'],['Tấn mỗi lệnh',vi(x.tan/x.lenh,2)]]})),14000,
-    {padL:220,padR:220,rowH:32});
+    {padL:220,padR:220,rowH:34});
   document.getElementById('mClose').focus();
 }
 document.addEventListener('click',e=>{
@@ -1652,31 +1745,38 @@ function drawAll(){
   capNhatChu();
   renderKpis();
   drawSeries(); drawMix();
+  ganBamNangSuat();
   bars('chHour',HOUR,HOUR.map((_,i)=>i+'h'),(v,lbl)=>lbl?(v>=4000?vi(v):''):vi(v/1000,1)+'k',7000,
     (i,v)=>v>=4000?css('--bad'):v>=1500?css('--c1'):css('--c3'),
     i=>({t:i+' giờ (giờ Việt Nam)',rows:[['Số lệnh',vi(HOUR[i])],['Tỷ trọng',vi(HOUR[i]/TONG_LENH*100,1)+'%']]}),
-    null,{W:470,H:250,bw:13,gap:3,l:40,everyOther:2});
+    null,{H:250,bw:13,gap:3,l:40,everyOther:2});
   const tranDow=Math.max(20,Math.ceil(Math.max(...DOW.map(d=>d.tbTan||0))/20)*20);
   bars('chDow',DOW.map(d=>d.tbTan||0),DOW.map(d=>d.s),
     (v,lbl)=>lbl?(v?vi(v,1):''):vi(v,0),tranDow,(i,v)=>v>=S.tbTan?css('--bad'):css('--c2'),
     i=>({t:DOW[i].k,rows:[['Tấn mỗi ngày',vi(DOW[i].tbTan,1)],['Lệnh mỗi ngày',vi(DOW[i].tbLenh,0)],
-      ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{W:470,H:250,bw:34,l:42});
+      ['Tổng khối lượng',vi(DOW[i].tan,1)+' t'],['Số ngày',vi(DOW[i].ngay)]]}),S.tbTan,{H:250,bw:34,l:42});
   hbars('chRoute',ROUTE.map(r=>({k:r.s,v:r.lenh,c:r.lenh>10000?'--bad':r.lenh>3000?'--c5':'--c2',
     lbl:vi(r.lenh)+' lệnh',
     tip:[['Số lệnh',vi(r.lenh)],['Khối lượng',vi(r.tan,1)+' t'],['Tỷ trọng',vi(r.lenh/TONG_LENH*100,1)+'%'],
          ['▸ Bấm','để xem phân tích luồng']]})),14000,
-    {W:470,padL:172,padR:78,rowH:30,click:moLuong});
+    {padL:172,padR:78,rowH:34,click:moLuong});
   hbars('chProd',PROD.map(p=>({k:p.ma+' · '+p.ten,v:p.tan,c:'--c1',
     lbl:vi(p.tan,1)+' t · '+vi(p.lenh)+' lệnh',
     tip:[['Sản lượng',vi(p.tan,1)+' t'],['Số lệnh',vi(p.lenh)],['Tấn mỗi lệnh',vi(p.tan/p.lenh,2)],
          ['▸ Bấm','để xem phân tích mã hàng']]})),2000,
-    {W:900,padL:280,padR:200,rowH:36,click:moMatHang});
+    {padL:280,padR:200,rowH:34,click:moMatHang});
+}
+function ganBamNangSuat(){
+  NTSF_CH.bamThe('chDaily','thru');
+  NTSF_CH.bamThe('chHour','hour');
+  NTSF_CH.bamThe('chDow','dow');
+  NTSF_CH.bamThe('chMix','mix');
 }
 window.drawAll=drawAll;
 
 /* ═══ BỘ LỌC ═══ */
-NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); } });
-addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(drawAll,180);});
+NTSF_RANGE.init({ def:'y', onChange:r=>{ R=r; tinhLai(); drawAll(); NTSF_CH.gonNhan(); } });
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{drawAll();NTSF_CH.gonNhan();},180);});
 </script>
 </body>
 </html>

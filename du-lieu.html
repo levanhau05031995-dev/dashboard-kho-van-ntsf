@@ -324,31 +324,37 @@ body{
 .banner h2{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
 .banner p{margin:4px 0 0; font-size:10.5px; color:var(--on-navy); line-height:1.5}
 
-/* ═══ HERO + KPI ═══ */
-.hero-row{display:grid; grid-template-columns:minmax(230px,1fr) 2.15fr; gap:14px; align-items:stretch}
+/* ═══ HERO + KPI ═══
+   Hero cố định bề ngang hẹp để nhường chỗ cho lưới KPI dàn ngang — trước đây hero
+   chiếm 1/3 bề rộng và bị kéo cao theo lưới, để lại một khoảng trống lớn. */
+.hero-row{display:grid; grid-template-columns:minmax(186px,224px) minmax(0,1fr); gap:12px; align-items:stretch}
 .hero{
   background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--c5);
-  border-radius:var(--r-card); padding:16px; box-shadow:var(--sh-card);
+  border-radius:var(--r-card); padding:13px 14px; box-shadow:var(--sh-card);
   display:flex; flex-direction:column; justify-content:center; cursor:pointer; text-align:left; font-family:inherit;
 }
 .hero:hover{border-color:var(--c2)}
 .hero:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .hero .lbl{font-size:9px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3)}
 .hero .kpi-head{margin-bottom:2px}
-.hero .big{font-size:52px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:7px 0 2px; color:var(--ink)}
-.hero .big small{font-size:20px; font-weight:800; margin-left:2px}
-.hero .sub{font-size:11px; color:var(--ink-2); font-weight:600}
-.hero .delta{margin-top:9px; font-size:11px; font-weight:800}
-.hero .foot{margin-top:10px; padding-top:9px; border-top:1px dashed var(--line); font-size:10px; color:var(--ink-3); line-height:1.5}
+.hero .big{font-size:38px; font-weight:900; line-height:1; letter-spacing:-.03em; margin:6px 0 2px; color:var(--ink)}
+.hero .big small{font-size:15px; font-weight:800; margin-left:2px}
+.hero .sub{font-size:10.5px; color:var(--ink-2); font-weight:600; line-height:1.45}
+.hero .delta{margin-top:7px; font-size:10.5px; font-weight:800; line-height:1.4}
+.hero .foot{margin-top:8px; padding-top:7px; border-top:1px dashed var(--line); font-size:9.5px; color:var(--ink-3); line-height:1.5}
 
-/* 9 thẻ → lưới 3 cột cho đủ 3 hàng bằng nhau, không để thẻ đứng lẻ */
-.kpis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
-@media (max-width:1180px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Lưới KPI dàn tối đa 4 cột để giảm số hàng — hero đã thu hẹp nên còn dư bề ngang.
+   Mốc ngắt tính theo bề rộng CỬA SỔ, mà vùng nội dung còn phải trừ 260px thanh bên
+   và 224px thẻ hero — nên ngưỡng phải rộng hơn bề rộng thẻ mong muốn khá nhiều. */
+.kpis{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:9px}
+@media (max-width:1560px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (max-width:1360px){ .kpis{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:1040px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:620px){ .kpis{grid-template-columns:minmax(0,1fr)} }
 .kpi{
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-kpi);
-  padding:11px 12px 10px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
-  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:2px;
+  padding:10px 11px 9px; box-shadow:var(--sh-kpi); cursor:pointer; text-align:left;
+  font-family:inherit; color:inherit; display:flex; flex-direction:column; gap:1px;
 }
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
@@ -443,8 +449,10 @@ tbody tr:hover{background:var(--surface-tint)}
 .close:hover{background:var(--surface-tint); color:var(--ink)}
 .close:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* Dưới ngưỡng này lưới KPI chỉ còn 2 cột — để hero đứng cột hẹp bên cạnh sẽ bị kéo
+   cao lêu nghêu, nên cho hero trải hết bề ngang thành một dải ngắn phía trên. */
+@media (max-width:1040px){ .hero-row{grid-template-columns:minmax(0,1fr)} }
 @media (max-width:960px){
-  .hero-row{grid-template-columns:1fr}
   .side{position:fixed; left:-260px; transition:left .2s; z-index:60}
   .side.open{left:0}
   .main{width:100%}
@@ -566,6 +574,91 @@ window.NTSF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN0AAADOCAYAAA
    Dashboard Khối Kho Vận & Logistics — thành phần dùng chung
    Sidebar · logo · điều hướng · giao diện sáng-tối
    ═══════════════════════════════════════════════════════ */
+/* ═══ KHUNG BIỂU ĐỒ DÙNG CHUNG ═══
+   Mọi SVG phải vẽ theo ĐÚNG bề rộng pixel của thẻ chứa nó, tức viewBox = pixel,
+   để tỷ lệ luôn là 1:1.
+
+   Trước đây mỗi hàm vẽ tự đặt viewBox cố định — 470, 640 hoặc 900 — rồi để SVG
+   kéo giãn theo bề rộng thẻ. Hậu quả: cùng một cỡ chữ 11,5 đơn vị lại hiện ra
+   ~11px trong thẻ nửa màn (viewBox 640 → 612px) nhưng ~16px trong thẻ toàn màn
+   (viewBox 900 → 1.271px). Nhìn vào thấy biểu đồ chỗ to chỗ nhỏ, chữ chỗ đậm
+   chỗ mảnh, dù cùng một bộ mã vẽ.
+
+   CAO  = chiều cao chuẩn của biểu đồ theo thời gian (cột, đường) — mọi màn dùng chung.
+   DONG = chiều cao một dòng của biểu đồ thanh ngang.
+   Vì vẽ 1:1 nên hai hằng số này là PIXEL THẬT, không còn là đơn vị co giãn. */
+window.NTSF_CH = {
+  CAO: 250,
+  DONG: 34,
+  /* Bề rộng vẽ = bề rộng trong lòng thẻ. Chặn dưới 320 để không vỡ trên điện thoại. */
+  rong: function (hop) {
+    var box = (typeof hop === 'string') ? document.getElementById(hop) : hop;
+    if (!box) return 640;
+    var w = box.clientWidth || box.getBoundingClientRect().width;
+    return Math.max(320, Math.round(w));
+  },
+  /* Lề trái/phải của biểu đồ thanh ngang không được nuốt hết chỗ vẽ thanh:
+     giữ tối thiểu 26% bề rộng cho phần thanh. */
+  le: function (W, trai, phai) {
+    var l = Math.min(trai, Math.round(W * 0.40));
+    var r = Math.min(phai, Math.round(W * 0.34));
+    if (W - l - r < W * 0.26) { var du = (W * 0.26) - (W - l - r); l -= du * 0.6; r -= du * 0.4; }
+    return { l: Math.max(48, Math.round(l)), r: Math.max(40, Math.round(r)) };
+  },
+  /* Cắt bớt nhãn theo bề rộng lề thật, thay vì cắt cứng ở 28 ký tự */
+  catNhan: function (chu, rongLe, cx) {
+    var n = Math.max(8, Math.floor((rongLe - 14) / (cx || 6.1)));
+    return chu.length > n ? chu.slice(0, n - 1) + '…' : chu;
+  },
+
+  /* Cho bấm vào cả khung biểu đồ để mở bảng phân tích sâu.
+     Dùng cho biểu đồ chưa có chỗ bấm riêng trên từng cột hay từng thanh.
+     Chỉ gắn thuộc tính data-drill — bộ xử lý click sẵn có của trang sẽ mở đúng bảng,
+     nên hành vi giống hệt khi bấm vào thẻ KPI, không phát sinh đường đi thứ hai.
+     ⚠️ Đừng gắn cho biểu đồ đã có click trên từng phần tử: sự kiện nổi bọt lên
+     khung sẽ mở thêm một bảng nữa. */
+  bamThe: function (id, khoa) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    box.setAttribute('data-drill', khoa);
+    box.style.cursor = 'pointer';
+    var card = box.closest('.card');
+    var how = card ? card.querySelector('.how') : null;
+    if (how && how.dataset.goiY !== '1') {
+      how.dataset.goiY = '1';
+      how.insertAdjacentHTML('beforeend', ' · <b>▸ bấm để xem phân tích sâu</b>');
+    }
+  },
+
+  /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
+     Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
+     getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
+  gonNhan: function () {
+    document.querySelectorAll('.chart svg').forEach(function (s) {
+      var vb = s.viewBox.baseVal;
+      if (!vb || !vb.width) return;
+      s.querySelectorAll('text').forEach(function (tx) {
+        var b;
+        try { b = tx.getBBox(); } catch (e) { return; }
+        if (!b.width) return;
+        /* nhãn dài hơn cả khung thì thu nhỏ cỡ chữ trước, rồi mới ép về mép */
+        if (b.width > vb.width - 8) {
+          var cu = parseFloat(tx.getAttribute('font-size')) || 11;
+          tx.setAttribute('font-size', Math.max(7.5, cu * (vb.width - 8) / b.width).toFixed(1));
+          try { b = tx.getBBox(); } catch (e) { return; }
+        }
+        if (b.x + b.width > vb.width - 2) {
+          tx.setAttribute('text-anchor', 'end');
+          tx.setAttribute('x', vb.width - 4);
+        } else if (b.x < 0) {
+          tx.setAttribute('text-anchor', 'start');
+          tx.setAttribute('x', 2);
+        }
+      });
+    });
+  }
+};
+
 (function () {
   'use strict';
 
@@ -1171,7 +1264,7 @@ const KPIS = [
 
  {ma:'CC-04', ten:'Hiệu suất sử dụng kho lạnh', muc:'80 – 90%', tt:'du', rc:null,
   val:'66,9', unit:'%', man:'Màn 1 · Màn 3', nguon:'IGROUP KPI Library v1.0',
-  ct:'Tồn 9 kho lạnh thành phẩm ÷ Sức chứa thiết kế 6.444,6 tấn',
+  ct:'Tồn 9 kho lạnh TỰ CÓ ÷ Sức chứa thiết kế 6.444,6 tấn · không gồm 2 kho NCC thuê ngoài',
   vuong:null,
   chitiet:'<b>Đã gỡ xong ngày 17/09/2026</b> nhờ Khối cung cấp hồ sơ layout 9 kho lạnh: diện tích 13.633 m², sức chứa thiết kế <b>6.444,6 tấn</b>, 67 cửa. Tử số lấy từ SAP theo đúng 9 mã kho tương ứng (5300–5304, 5101, 5102, 5201, 5202).<br><br>Kết quả <b>66,9%</b> — <b>dưới ngưỡng cam kết 80–90%</b>. Chuỗi cả kỳ đi từ 46,3% lên đỉnh 67,7% tháng 7, <b>chưa tháng nào chạm 80%</b>.<br><br>Nhưng tổng số che mất lệch tải: <b>Kho 4000 vượt trần 107,2%</b> trong khi bốn kho A nhỏ chỉ dùng 28–47%. Sức chứa còn dư nhưng không nằm đúng chỗ đang cần.',
   go:null, ai:null},
@@ -1302,8 +1395,8 @@ const COL_API={ok:'--good',warn:'--warn',todo:'--c3',bad:'--bad'};
 
 /* Sáu chỉ số ngoài bộ KPI */
 const OPS=[
- ['Tồn kho cuối kỳ','6.153,4 tấn','Màn 1 · Màn 3','Cho biết kho đang giữ bao nhiêu hàng, nền của mọi chỉ tiêu tồn kho'],
- ['Giá trị tồn kho','440,3 tỷ đồng','Màn 1 · Màn 3','Quy đổi tồn kho ra tiền, để thấy mức vốn đang nằm trong kho'],
+ ['Tồn kho cuối kỳ','4.937,1 tấn','Màn 1 · Màn 3','Tồn 20 kho thuộc Khối — nền của mọi chỉ tiêu tồn kho'],
+ ['Giá trị tồn kho','396,8 tỷ đồng','Màn 1 · Màn 3','Ước tính giá trị tồn trong 20 kho của Khối — Thành phẩm 382,0 tỷ, Vật tư 14,8 tỷ'],
  ['Sản lượng xử lý','144 tấn mỗi ngày','Màn 1 · Màn 4','Đo năng lực xử lý thực tế của kho, chưa có chỉ tiêu chính thức nào phủ'],
  ['Tác nghiệp kho','45.861 lệnh','Màn 1 · Màn 4','Cơ sở để bố trí nhân lực theo giờ và theo ngày'],
  ['Chính xác soạn hàng','100,0%','Màn 1 · Màn 4','Cần đọc kèm cảnh báo: hệ thống tự xác nhận lệnh nên lệch không có cơ hội phát sinh'],
@@ -1329,7 +1422,7 @@ const hideTip=()=>tip.classList.remove('on');
 
 function bars(id,vals,labels,fmt,max,colorFn,tipFn,ref,opt={}){
   const box=document.getElementById(id); if(!box)return; box.innerHTML='';
-  const W=opt.W||640,H=opt.H||250,P={t:26,r:16,b:opt.b||46,l:opt.l||40},IW=W-P.l-P.r,IH=H-P.t-P.b;
+  const W=NTSF_CH.rong(box),H=opt.H||NTSF_CH.CAO,P={t:26,r:16,b:opt.b||46,l:opt.l||40},IW=W-P.l-P.r,IH=H-P.t-P.b;
   const X=i=>P.l+IW*(i+0.5)/vals.length, Y=v=>P.t+IH-IH*v/max, band=IW/vals.length;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   for(let i=0;i<=4;i++){const v=max*i/4,y=Y(v);
@@ -1355,13 +1448,13 @@ function bars(id,vals,labels,fmt,max,colorFn,tipFn,ref,opt={}){
 
 function hbars(id,items,max,opt={}){
   const box=document.getElementById(id); if(!box)return; box.innerHTML='';
-  const rowH=opt.rowH||34, W=opt.W||900, P={t:8,r:opt.padR||200,b:8,l:opt.padL||200};
+  const rowH=opt.rowH||NTSF_CH.DONG, W=NTSF_CH.rong(box), LE=NTSF_CH.le(W,opt.padL||200,opt.padR||200), P={t:8,r:LE.r,b:8,l:LE.l};
   const H=P.t+P.b+items.length*rowH, IW=W-P.l-P.r;
   const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img'});
   items.forEach((it,i)=>{
     const y=P.t+i*rowH, w=Math.max(3,IW*it.v/max);
     const nm=el('text',{x:P.l-10,y:y+rowH/2+4,'text-anchor':'end','font-size':11.5,'font-weight':600,fill:css('--ink-2')});
-    nm.textContent=it.k; svg.appendChild(nm);
+    nm.textContent=NTSF_CH.catNhan(it.k,P.l); svg.appendChild(nm);
     const r=el('rect',{x:P.l,y:y+rowH*0.2,width:w,height:rowH*0.6,rx:3,fill:css(it.c||'--c1'),class:'hitbox'});
     if(it.tip){r.addEventListener('mousemove',e=>showTip(e,it.k,it.tip));r.addEventListener('mouseleave',hideTip);}
     svg.appendChild(r);
@@ -1515,7 +1608,7 @@ const DRILL={
     after(){bars('dWave',WAVE.map(w=>w.n),WAVE.map(w=>w.k+'\n'+w.sub),(v,i)=>vi(v)+(WAVE[i].add?' (+'+WAVE[i].add+')':''),
       15,(i)=>i?css('--c2'):css('--good'),
       i=>({t:WAVE[i].k+' · '+WAVE[i].ten,rows:[['Cộng dồn',WAVE[i].n+' / 14'],['Thêm',WAVE[i].add?'+'+WAVE[i].add:'—'],
-        ['Thời gian',WAVE[i].mo],['Độ phủ',vi(WAVE[i].n/14*100,1)+'%']]}),14,{W:900,H:290,bw:74});}},
+        ['Thời gian',WAVE[i].mo],['Độ phủ',vi(WAVE[i].n/14*100,1)+'%']]}),14,{H:290,bw:74});}},
 
   du:{eye:'Quản trị dữ liệu · NTSF', title:'Chỉ tiêu đo được <span>đủ dữ liệu, không kèm điều kiện</span>',
     build(){const l=KPIS.filter(k=>k.tt==='du');
@@ -1561,7 +1654,7 @@ const DRILL={
           <p class="act">Gợi ý hành động: làm theo đúng thứ tự dễ trước — quyền API, rồi master data, rồi quy trình. Riêng cycle counting nên khởi động sớm vì cần thời gian tích luỹ dữ liệu mới có số.</p></div>`;},
     after(){hbars('dBlock',['api','master','fi'].map(r=>({k:LBL_RC[r],v:nRC(r),c:COL_RC[r],
       lbl:nRC(r)+' chỉ tiêu · '+codesOf(r).join(', '),
-      tip:inRC(r).map(k=>[k.ma||'KVL-07',k.ten])})),5,{W:900,padL:250,padR:320,rowH:40});}},
+      tip:inRC(r).map(k=>[k.ma||'KVL-07',k.ten])})),5,{padL:250,padR:320,rowH:40});}},
 
   api:{eye:'Quản trị dữ liệu · NTSF', title:'Việc gỡ rẻ nhất <span>một yêu cầu xin quyền</span>',
     build(){return attrs([
@@ -1613,17 +1706,19 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&scrim.classList.con
 
 /* ═══ VẼ ═══ */
 function drawAll(){
+  NTSF_CH.bamThe('chWave','tongquan');
+  NTSF_CH.bamThe('chBlock','nguon');
   bars('chWave',WAVE.map(w=>w.n),WAVE.map(w=>w.k+'\n'+w.sub),(v,i)=>vi(v)+(WAVE[i].add?' (+'+WAVE[i].add+')':''),
     15,(i)=>i?css('--c2'):css('--good'),
     i=>({t:WAVE[i].k+' · '+WAVE[i].ten,rows:[['Cộng dồn',WAVE[i].n+' / 14'],['Thêm',WAVE[i].add?'+'+WAVE[i].add:'—'],
-      ['Thời gian',WAVE[i].mo],['Độ phủ',vi(WAVE[i].n/14*100,1)+'%']]}),14,{W:470,H:250,bw:52,l:34});
+      ['Thời gian',WAVE[i].mo],['Độ phủ',vi(WAVE[i].n/14*100,1)+'%']]}),14,{H:250,bw:52,l:34});
   hbars('chBlock',['api','master','fi'].map(r=>({k:SHORT_RC[r],
     v:nRC(r),c:COL_RC[r],lbl:nRC(r)+' chỉ tiêu',
-    tip:inRC(r).map(k=>[k.ma||'KVL-07',k.ten])})),5,{W:470,padL:180,padR:86,rowH:34});
+    tip:inRC(r).map(k=>[k.ma||'KVL-07',k.ten])})),5,{padL:180,padR:86,rowH:34});
 }
 window.drawAll=drawAll;
-drawAll();
-addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(drawAll,180);});
+drawAll(); NTSF_CH.gonNhan();
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(()=>{drawAll();NTSF_CH.gonNhan();},180);});
 </script>
 </body>
 </html>
