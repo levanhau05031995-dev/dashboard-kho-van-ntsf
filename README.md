@@ -4,65 +4,71 @@ Dashboard quản trị cho Giám đốc Khối Kho vận & Logistics, Nha Trang 
 Dữ liệu lấy từ **SAP S/4HANA** (plant P100, kho EWM 520 — NTSF Cần Thơ),
 kỳ **03/01/2026 → 16/09/2026**, trích ngày 16/09/2026.
 
-## Sáu màn hình
+Chạy thật: <https://levanhau05031995-dev.github.io/dashboard-kho-van-ntsf/>
 
-| Màn | Tệp | Nội dung |
+## Sáu màn hình — ba cấp quyết định cộng ba màn quản trị
+
+Cấu trúc dựng lại ngày 30/09/2026 theo **ba cấp quyết định**. Mỗi cấp trả lời một
+câu hỏi khác nhau và có nhịp đọc khác nhau, nên không gộp chung màn được.
+
+| Cấp | Tệp | Ai đọc · nhịp | Câu hỏi nó trả lời |
+|---|---|---|---|
+| ① Chiến lược | `chien-luoc.html` | Ban điều hành · quý và năm | Có nên đầu tư, có nên cam kết gì |
+| ② Quản lý | `index.html` | Giám đốc Khối · tháng và tuần | Tháng này lệch ở đâu, sửa cái nào |
+| ③ Vận hành | `van-hanh.html` | Trưởng phòng · ngày và ca | Hôm nay làm gì trước |
+
+| Màn quản trị | Tệp | Nội dung |
 |---|---|---|
-| 1 | `index.html` | Tổng quan điều hành — 9 thẻ KPI, tồn kho, luân chuyển, OTD, container, bản đồ điểm đến |
-| 2 | `giao-hang.html` | Giao hàng & Khách hàng — OTD, phân bố độ trễ, top khách, Incoterms, cảng |
-| 3 | `ton-kho.html` | Tồn kho — giá trị, biến động ròng, nhóm hàng, tuổi tồn, phân loại ABC |
-| 4 | `nang-suat.html` | Năng suất kho — sản lượng ngày, nhịp theo giờ và theo thứ, luồng di chuyển |
-| 5 | `du-lieu.html` | Tình trạng dữ liệu KPI — 14 chỉ tiêu, rào cản, lộ trình mở khoá |
-| 6 | `dinh-nghia.html` | Định nghĩa chỉ số — công thức, nguồn, và những gì chưa đo được |
+| Tình trạng dữ liệu KPI | `du-lieu.html` | 23 chỉ tiêu Kho vận, rào cản từng chỉ tiêu, lộ trình mở khoá |
+| Mô hình & dữ liệu | `mo-hinh-du-lieu.html` | Sơ đồ bảng dữ liệu, bấm tiêu đề bảng để bung dữ liệu chi tiết |
+| Định nghĩa chỉ số | `dinh-nghia.html` | Công thức, nguồn, quy tắc chọn biểu đồ, và những gì chưa đo được |
 
-Mỗi màn có tính năng **đào sâu**: bấm vào một chỉ số hoặc một cột sẽ mở màn
-phân tích chi tiết kèm bảng số liệu và hộp kết luận.
+`login.html` là cổng đăng nhập. Đây **chỉ là cổng chặn phía trình duyệt**, không
+phải lớp bảo mật — toàn bộ dữ liệu nằm sẵn trong tệp HTML.
+
+## Bộ chỉ tiêu
+
+Mã chỉ tiêu theo **IGROUP KPI Library v1.1**, phần Kho vận có 23 chỉ tiêu.
+Mỗi thẻ trên dashboard ghi rõ đang tính chỉ tiêu nào, bốn dạng nhãn:
+
+| Nhãn | Nghĩa |
+|---|---|
+| `KPI-150` | đo đủ theo công thức chính thức |
+| `KPI-154 · phần` | mới đo được một phần, phần thiếu ghi ở màn Định nghĩa chỉ số |
+| `KPI-065 · chưa đo` | chỉ tiêu có thật nhưng chưa có dữ liệu |
+| `Ngoài bộ KPI` | chỉ số vận hành, không có trong thư viện 23 chỉ tiêu |
+
+Mỗi chỉ tiêu và mỗi biểu đồ còn gắn một **quyết định** — bấm nút *⟶ Quyết định*
+cạnh tiêu đề để xem câu hỏi cần trả lời, ngưỡng hành động và ai là người quyết.
+
+## Quy tắc biểu đồ
+
+Màn *Định nghĩa chỉ số* có bảng **12 quy tắc chọn biểu đồ**: dạng dữ liệu quyết
+định dạng biểu đồ, không phải chỗ trống trên màn quyết định. Tra bảng đó trước
+khi thêm biểu đồ mới.
 
 ## Cách chạy
 
 Trang **tự chứa hoàn toàn** — mọi CSS, JavaScript và logo đã gộp thẳng vào từng
 tệp HTML. Không cần cài đặt, không cần máy chủ, không phụ thuộc thư viện ngoài.
+Mở thẳng tệp `.html` bằng trình duyệt là chạy.
 
-- **Trên GitHub Pages:** mở đường dẫn Pages của repo
-- **Trên máy:** nháy đúp `index.html`
-- **Qua máy chủ cục bộ:** trỏ bất kỳ static server nào vào thư mục này
+Muốn xem thử tại chỗ bằng máy chủ nhỏ: `.claude/serve.ps1`, cổng mặc định 8810.
 
-Cần mật khẩu để mở. Mật khẩu do Khối Kho vận cấp riêng, không đặt trong repo.
+## Dựng lại từ nguồn
 
-## Tệp nguồn và cách sửa
+`styles.css`, `app.js`, `auth.js`, `logo.js` là **tệp nguồn**. Script dựng sẽ nhồi
+chúng vào từng trang HTML qua các mốc `<script data-src="…">`, nên sửa tệp nguồn
+rồi dựng lại là mọi màn đều cập nhật theo. Riêng `mo-hinh-du-lieu.html` còn nhồi
+thêm `bang-du-lieu.js` (~3,6 MB dữ liệu bảng) — tệp đó không để trong repo này.
 
-| Tệp | Vai trò |
-|---|---|
-| `styles.css` | Toàn bộ token màu, bo góc, thang chữ |
-| `app.js` | Dựng thanh điều hướng bên trái, đổi giao diện sáng/tối, nút thoát |
-| `auth.js` | Băm mật khẩu, giữ phiên, cổng chặn |
-| `logo.js` | Logo thương hiệu dạng base64 |
+## Giới hạn dữ liệu cần biết trước khi đọc số
 
-> **Quan trọng:** sau khi sửa bất kỳ tệp nào ở trên phải chạy lại script `Build.ps1`
-> để gộp chúng vào từng trang HTML. Không chạy lại thì các trang vẫn dùng bản cũ.
-
-Biểu đồ đều **tự vẽ bằng SVG**, không dùng thư viện. Không có biểu đồ hai trục tung.
-
-## Phạm vi và giới hạn
-
-- Chỉ có số liệu của **NTSF Cần Thơ**. Các nhà máy khác chưa triển khai SAP.
-- Số liệu là **bản trích thủ công** ngày 16/09/2026, chưa nối tự động.
-- Bộ KPI của Khối có 14 chỉ tiêu, hiện **theo dõi được 4**. Mười chỉ tiêu còn lại
-  thiếu dữ liệu nguồn chứ không phải thiếu biểu đồ — chi tiết ở màn 5.
-- Một số con số cần đọc kèm chú thích (mức lấp đầy kho, độ chính xác soạn hàng,
-  hàng cận date). Màn 6 ghi rõ từng trường hợp.
-
-## ⚠️ Về bảo mật
-
-Repo này ở chế độ **công khai** theo yêu cầu của chủ sở hữu dữ liệu.
-
-Trang đăng nhập chỉ là **cổng chặn phía trình duyệt, không phải khoá**. Toàn bộ số
-liệu nằm ngay trong mã nguồn tệp HTML, nên bất kỳ ai xem mã nguồn cũng đọc được
-mà không cần mật khẩu. Đừng nhầm cổng này với bảo vệ thật.
-
-Muốn bảo vệ thật thì phải chặn ở phía máy chủ (phân quyền SharePoint, IIS, Nginx)
-hoặc mã hoá nội dung trang.
-
----
-
-Nha Trang Seafoods · Khối Kho vận & Logistics · 2026
+- **Giá trị tồn kho là ƯỚC TÍNH.** SAP trả `current_stock_value = 0` ở toàn bộ
+  12.626 dòng tồn, nên con số tiền được suy ra từ đơn giá bình quân từng mã.
+- **KPI-152 và KPI-100 để trống** — công thức chính thức chia cho giá vốn hàng
+  bán, Khối chưa có số này từ Kế toán.
+- **Dữ liệu đứng yên tại 16/09/2026**, trích thủ công một lần. Màn Vận hành phục
+  vụ nhịp ngày nhưng số liệu là ảnh chụp — màn đó có băng cảnh báo riêng.
+- Phạm vi chỉ gồm **20 kho do Khối quản lý** (11 Kho Thành Phẩm + 9 Kho Vật Tư),
+  đã loại trại nuôi, kho nguyên liệu, nhiên liệu, phụ phẩm, kho xưởng, ký gửi.

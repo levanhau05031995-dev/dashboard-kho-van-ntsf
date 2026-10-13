@@ -174,8 +174,12 @@ body{
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .kpi .lbl{font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
-/* nhãn cho biết chỉ số thuộc bộ KPI nào */
-.kpi-head{display:flex; align-items:center; justify-content:space-between; gap:6px}
+/* nhãn cho biết chỉ số thuộc bộ KPI nào.
+   flex-wrap: từ 13/10/2026 nhãn mang nguyên mã chỉ tiêu ("Thay cho KPI-152",
+   "KPI-150 · quy tiền") nên dài hơn nhãn cũ ("Vận hành"). Không cho xuống dòng
+   thì tên chỉ tiêu bị ép còn một hai chữ mỗi dòng, thẻ cao lêu nghêu. */
+.kpi-head{display:flex; align-items:center; justify-content:space-between;
+  gap:6px; flex-wrap:wrap; row-gap:4px}
 .tag{
   font-size:8px; font-weight:800; letter-spacing:.06em; padding:2px 6px;
   border-radius:var(--r-pill); white-space:nowrap; flex:none;
@@ -190,6 +194,11 @@ body{
 .kpi .formula{font-size:9px; color:var(--ink-3); margin-top:5px; padding-top:5px; border-top:1px dashed var(--line-soft); line-height:1.4}
 .kpi .spark{margin-top:5px; height:26px}
 .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--ink-3)}
+
+/* ═══ NHÃN CHỈ TIÊU CẠNH TIÊU ĐỀ ═══
+   Hệ mã dashboard cũ (.ma-code — QL2-B07, CL1-K01, đuôi -CT) đã bỏ ngày 11/10/2026.
+   Cạnh tiêu đề giờ chỉ còn nhãn .tag mang mã thư viện KPI, chèn bằng NTSF_MA.gan(). */
+.card>h3>.tag, .insight>h4>.tag{ margin-left:8px; vertical-align:middle }
 
 /* ═══ THẺ BIỂU ĐỒ ═══ */
 .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:14px}
@@ -346,3 +355,95 @@ tbody tr:hover{background:var(--surface-tint)}
 .note-body{font:400 11.5px/1.55 Roboto,sans-serif;color:var(--ink);white-space:pre-wrap}
 .note-empty{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-3)}
 @media print{.note-fab,.note-panel,.note-veil,.note-pin{display:none !important}}
+/* ══ THANH LỌC PHẠM VI ═══════════════════════════════════════════
+   Một hàng nút nhanh + một hàng ô chọn. Thay cho cây phân cấp cũ vì
+   quá nhiều bước bấm mới tới được kỳ cần xem. */
+.pv{display:flex;flex-direction:column;gap:10px}
+.pv-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pv-tog{border:0;background:transparent;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;
+  font:800 14px/1.3 Mulish,sans-serif;color:var(--ink)}
+.pv-mui{color:var(--ink-3);font-size:11px}
+.pv-badge{background:var(--surface-tint);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:2px 10px;font:700 10.5px/1.6 Roboto,sans-serif;color:var(--ink-2);white-space:nowrap}
+.pv-grow{flex:1}
+.pv-reset{color:var(--ink-3)}
+.pv-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.pv-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pv-f>span{font:700 9px/1.6 Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.pv-f select,.pv-f input{width:100%;min-width:0;box-sizing:border-box;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-ctl);
+  padding:7px 10px;font:500 12.5px/1.3 Roboto,sans-serif;color:var(--ink);outline:none}
+.pv-f select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:26px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 14px,calc(100% - 10px) 14px;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.pv-f select:focus,.pv-f input:focus{border-color:var(--blue)}
+.pv-q{grid-column:span 2}
+@media(max-width:760px){.pv-q{grid-column:span 1}}
+.pv-ip{position:relative;display:block}
+.pv-ip i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--ink-3);font-size:13px}
+.pv-ip input{padding-left:27px}
+.rb-note{margin:0;font:400 11px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.rb-note b{color:var(--ink)}
+.rb-warn{background:var(--warn-bg);border-left:3px solid var(--warn);border-radius:6px;padding:7px 10px}
+/* bảng so sánh hai kỳ */
+.ss-wrap td.d-up{color:var(--good);font-weight:800}
+.ss-wrap td.d-down{color:var(--bad);font-weight:800}
+.ss-wrap td.d-flat{color:var(--ink-3)}
+/* ══ KHUNG CHỜ DỮ LIỆU VÀ CÔNG TẮC DỮ LIỆU MẪU ═══════════════════
+   Chỉ tiêu chưa có dữ liệu vẫn vẽ khung trục thật, hộp giữa khung nói rõ
+   thiếu gì. Bật dữ liệu mẫu thì in chìm chữ lên biểu đồ để ảnh chụp màn
+   hình không bị đọc nhầm thành số SAP. */
+.kho-du{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+  width:min(88%,420px);background:var(--surface);border:1px dashed var(--warn);
+  border-radius:var(--r-panel);padding:10px 14px;text-align:center;box-shadow:var(--sh-kpi)}
+.kho-du>b{display:block;font:800 12.5px/1.4 Mulish,sans-serif;color:var(--warn);margin-bottom:4px}
+.kho-du>span{display:block;font:400 11px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.kho-du>span b{color:var(--ink)}
+.kho-du code{font-size:10px}
+.demo-nut{margin-left:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;
+  border-radius:var(--r-pill);padding:2px 11px;font:700 10px/1.7 Roboto,sans-serif;color:var(--ink-3);
+  vertical-align:middle}
+.demo-nut:hover{border-color:var(--ink-3)}
+.demo-nut[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.demo-bang{background:var(--bad-bg);border:1px solid var(--bad);border-left-width:4px;border-radius:6px;
+  padding:7px 11px;margin:0 0 8px;font:400 10.5px/1.55 Roboto,sans-serif;color:var(--ink-2)}
+.demo-bang b{color:var(--bad)}
+/* ══ QUYẾT ĐỊNH GẮN VÀO TỪNG CHỈ SỐ ══════════════════════════════
+   Sau workshop ERP 01-02/10/2026. Bỏ bảng liệt kê quyết định riêng ngày
+   11/10 và bỏ nốt khối "thẻ người dùng" (.qd-the) ngày 13/10: quyết định
+   phải nằm thẳng trong chỉ số, mở chỉ số ra là thấy — không khối nào ở
+   cấp màn chen giữa tiêu đề và con số nữa. */
+/* dòng quyết định trên mặt thẻ chỉ tiêu — thay cho dòng công thức */
+.qd-dong{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);
+  font:700 10.5px/1.5 Roboto,sans-serif;color:var(--blue);text-align:left}
+.qd-v-chua{color:var(--bad)}
+.qd-v-phan{color:var(--warn)}
+/* nút mã QĐ cạnh tiêu đề biểu đồ */
+.qd-ma{border:1px solid var(--blue);background:var(--surface);color:var(--blue);cursor:pointer;
+  border-radius:var(--r-pill);padding:1px 9px;font:800 10px/1.7 Roboto,sans-serif;
+  white-space:nowrap;vertical-align:middle;margin-left:8px}
+.qd-ma:hover{background:var(--blue);color:#fff}
+/* khối quyết định chèn lên đầu bảng phân tích sâu */
+.qd-khoi{background:var(--surface-tint);border:1px solid var(--line);
+  border-left:4px solid var(--c2);border-radius:var(--r-panel);padding:13px 16px;margin-bottom:14px}
+.qd-khoi-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.qd-khoi-top b{font:800 14px/1.35 Mulish,sans-serif;color:var(--ink)}
+.qd-khoi-luoi{display:grid;grid-template-columns:1.1fr 1.4fr .8fr;gap:14px}
+@media(max-width:900px){.qd-khoi-luoi{grid-template-columns:1fr}}
+.qd-khoi-luoi h5{margin:0 0 3px;font:800 9px/1.5 Roboto,sans-serif;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3)}
+.qd-khoi-luoi h5 i{font-style:normal;text-transform:none;letter-spacing:0;color:var(--warn)}
+.qd-khoi-luoi p{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.qd-khoi-luoi b{color:var(--ink)}
+.qd-khoi-thieu{margin:10px 0 0;background:var(--warn-bg);border-left:3px solid var(--warn);
+  border-radius:6px;padding:7px 10px;font:400 10.5px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.qd-khoi-thieu b{color:var(--ink)}
+.qd-tt{display:inline-block;font:800 9px/1.6 Roboto,sans-serif;letter-spacing:.04em;
+  text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);white-space:nowrap}
+.qd-du{background:var(--good-bg);color:var(--good);border:1px solid var(--good)}
+.qd-phan{background:var(--warn-bg);color:var(--warn);border:1px solid var(--amber-line)}
+.qd-chua{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+/* nhãn Dẫn dắt / Kết quả trên thẻ chỉ tiêu */
+.tag.lead{background:var(--good-bg);color:var(--good);border:1px solid var(--good)}
+.tag.lag{background:var(--surface-tint);color:var(--ink-2);border:1px solid var(--line)}

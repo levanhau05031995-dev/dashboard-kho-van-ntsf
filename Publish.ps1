@@ -10,11 +10,11 @@ param([string]$m = "")
 
 $ErrorActionPreference = 'Stop'
 
-$App  = "D:\I GROUP CORPORATION\SP.Khối Kho Vận & Logistics - Documents\05. Bao cao & Phan tich\03. Phan tich chuyen de\20260916_Dashboard NTSF"
+$App  = "D:\I GROUP CORPORATION\SP.Kh?i Kho V?n & Logistics - Documents\05. Bao cao & Phan tich\03. Phan tich chuyen de\20260916_Dashboard NTSF"
 $Repo = $PSScriptRoot
 
 $Files = @(
-  'index.html','giao-hang.html','ton-kho.html','nang-suat.html','du-lieu.html','dinh-nghia.html','login.html',
+  'index.html','chien-luoc.html','van-hanh.html','du-lieu.html','dinh-nghia.html','mo-hinh-du-lieu.html','login.html',
   'styles.css','app.js','auth.js','logo.js','logo.png'
 )
 

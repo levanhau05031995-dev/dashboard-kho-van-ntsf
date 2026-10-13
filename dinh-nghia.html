@@ -359,8 +359,12 @@ body{
 .kpi:hover{border-color:var(--c2)}
 .kpi:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .kpi .lbl{font-size:9px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3)}
-/* nhãn cho biết chỉ số thuộc bộ KPI nào */
-.kpi-head{display:flex; align-items:center; justify-content:space-between; gap:6px}
+/* nhãn cho biết chỉ số thuộc bộ KPI nào.
+   flex-wrap: từ 13/10/2026 nhãn mang nguyên mã chỉ tiêu ("Thay cho KPI-152",
+   "KPI-150 · quy tiền") nên dài hơn nhãn cũ ("Vận hành"). Không cho xuống dòng
+   thì tên chỉ tiêu bị ép còn một hai chữ mỗi dòng, thẻ cao lêu nghêu. */
+.kpi-head{display:flex; align-items:center; justify-content:space-between;
+  gap:6px; flex-wrap:wrap; row-gap:4px}
 .tag{
   font-size:8px; font-weight:800; letter-spacing:.06em; padding:2px 6px;
   border-radius:var(--r-pill); white-space:nowrap; flex:none;
@@ -375,6 +379,11 @@ body{
 .kpi .formula{font-size:9px; color:var(--ink-3); margin-top:5px; padding-top:5px; border-top:1px dashed var(--line-soft); line-height:1.4}
 .kpi .spark{margin-top:5px; height:26px}
 .up{color:var(--good)} .down{color:var(--bad)} .flat{color:var(--ink-3)}
+
+/* ═══ NHÃN CHỈ TIÊU CẠNH TIÊU ĐỀ ═══
+   Hệ mã dashboard cũ (.ma-code — QL2-B07, CL1-K01, đuôi -CT) đã bỏ ngày 11/10/2026.
+   Cạnh tiêu đề giờ chỉ còn nhãn .tag mang mã thư viện KPI, chèn bằng NTSF_MA.gan(). */
+.card>h3>.tag, .insight>h4>.tag{ margin-left:8px; vertical-align:middle }
 
 /* ═══ THẺ BIỂU ĐỒ ═══ */
 .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:14px}
@@ -531,6 +540,98 @@ tbody tr:hover{background:var(--surface-tint)}
 .note-body{font:400 11.5px/1.55 Roboto,sans-serif;color:var(--ink);white-space:pre-wrap}
 .note-empty{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-3)}
 @media print{.note-fab,.note-panel,.note-veil,.note-pin{display:none !important}}
+/* ══ THANH LỌC PHẠM VI ═══════════════════════════════════════════
+   Một hàng nút nhanh + một hàng ô chọn. Thay cho cây phân cấp cũ vì
+   quá nhiều bước bấm mới tới được kỳ cần xem. */
+.pv{display:flex;flex-direction:column;gap:10px}
+.pv-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pv-tog{border:0;background:transparent;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;
+  font:800 14px/1.3 Mulish,sans-serif;color:var(--ink)}
+.pv-mui{color:var(--ink-3);font-size:11px}
+.pv-badge{background:var(--surface-tint);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:2px 10px;font:700 10.5px/1.6 Roboto,sans-serif;color:var(--ink-2);white-space:nowrap}
+.pv-grow{flex:1}
+.pv-reset{color:var(--ink-3)}
+.pv-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.pv-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pv-f>span{font:700 9px/1.6 Roboto,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.pv-f select,.pv-f input{width:100%;min-width:0;box-sizing:border-box;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-ctl);
+  padding:7px 10px;font:500 12.5px/1.3 Roboto,sans-serif;color:var(--ink);outline:none}
+.pv-f select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:26px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 14px,calc(100% - 10px) 14px;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.pv-f select:focus,.pv-f input:focus{border-color:var(--blue)}
+.pv-q{grid-column:span 2}
+@media(max-width:760px){.pv-q{grid-column:span 1}}
+.pv-ip{position:relative;display:block}
+.pv-ip i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-style:normal;color:var(--ink-3);font-size:13px}
+.pv-ip input{padding-left:27px}
+.rb-note{margin:0;font:400 11px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.rb-note b{color:var(--ink)}
+.rb-warn{background:var(--warn-bg);border-left:3px solid var(--warn);border-radius:6px;padding:7px 10px}
+/* bảng so sánh hai kỳ */
+.ss-wrap td.d-up{color:var(--good);font-weight:800}
+.ss-wrap td.d-down{color:var(--bad);font-weight:800}
+.ss-wrap td.d-flat{color:var(--ink-3)}
+/* ══ KHUNG CHỜ DỮ LIỆU VÀ CÔNG TẮC DỮ LIỆU MẪU ═══════════════════
+   Chỉ tiêu chưa có dữ liệu vẫn vẽ khung trục thật, hộp giữa khung nói rõ
+   thiếu gì. Bật dữ liệu mẫu thì in chìm chữ lên biểu đồ để ảnh chụp màn
+   hình không bị đọc nhầm thành số SAP. */
+.kho-du{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+  width:min(88%,420px);background:var(--surface);border:1px dashed var(--warn);
+  border-radius:var(--r-panel);padding:10px 14px;text-align:center;box-shadow:var(--sh-kpi)}
+.kho-du>b{display:block;font:800 12.5px/1.4 Mulish,sans-serif;color:var(--warn);margin-bottom:4px}
+.kho-du>span{display:block;font:400 11px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.kho-du>span b{color:var(--ink)}
+.kho-du code{font-size:10px}
+.demo-nut{margin-left:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;
+  border-radius:var(--r-pill);padding:2px 11px;font:700 10px/1.7 Roboto,sans-serif;color:var(--ink-3);
+  vertical-align:middle}
+.demo-nut:hover{border-color:var(--ink-3)}
+.demo-nut[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.demo-bang{background:var(--bad-bg);border:1px solid var(--bad);border-left-width:4px;border-radius:6px;
+  padding:7px 11px;margin:0 0 8px;font:400 10.5px/1.55 Roboto,sans-serif;color:var(--ink-2)}
+.demo-bang b{color:var(--bad)}
+/* ══ QUYẾT ĐỊNH GẮN VÀO TỪNG CHỈ SỐ ══════════════════════════════
+   Sau workshop ERP 01-02/10/2026. Bỏ bảng liệt kê quyết định riêng ngày
+   11/10 và bỏ nốt khối "thẻ người dùng" (.qd-the) ngày 13/10: quyết định
+   phải nằm thẳng trong chỉ số, mở chỉ số ra là thấy — không khối nào ở
+   cấp màn chen giữa tiêu đề và con số nữa. */
+/* dòng quyết định trên mặt thẻ chỉ tiêu — thay cho dòng công thức */
+.qd-dong{display:block;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);
+  font:700 10.5px/1.5 Roboto,sans-serif;color:var(--blue);text-align:left}
+.qd-v-chua{color:var(--bad)}
+.qd-v-phan{color:var(--warn)}
+/* nút mã QĐ cạnh tiêu đề biểu đồ */
+.qd-ma{border:1px solid var(--blue);background:var(--surface);color:var(--blue);cursor:pointer;
+  border-radius:var(--r-pill);padding:1px 9px;font:800 10px/1.7 Roboto,sans-serif;
+  white-space:nowrap;vertical-align:middle;margin-left:8px}
+.qd-ma:hover{background:var(--blue);color:#fff}
+/* khối quyết định chèn lên đầu bảng phân tích sâu */
+.qd-khoi{background:var(--surface-tint);border:1px solid var(--line);
+  border-left:4px solid var(--c2);border-radius:var(--r-panel);padding:13px 16px;margin-bottom:14px}
+.qd-khoi-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.qd-khoi-top b{font:800 14px/1.35 Mulish,sans-serif;color:var(--ink)}
+.qd-khoi-luoi{display:grid;grid-template-columns:1.1fr 1.4fr .8fr;gap:14px}
+@media(max-width:900px){.qd-khoi-luoi{grid-template-columns:1fr}}
+.qd-khoi-luoi h5{margin:0 0 3px;font:800 9px/1.5 Roboto,sans-serif;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3)}
+.qd-khoi-luoi h5 i{font-style:normal;text-transform:none;letter-spacing:0;color:var(--warn)}
+.qd-khoi-luoi p{margin:0;font:400 11.5px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.qd-khoi-luoi b{color:var(--ink)}
+.qd-khoi-thieu{margin:10px 0 0;background:var(--warn-bg);border-left:3px solid var(--warn);
+  border-radius:6px;padding:7px 10px;font:400 10.5px/1.6 Roboto,sans-serif;color:var(--ink-2)}
+.qd-khoi-thieu b{color:var(--ink)}
+.qd-tt{display:inline-block;font:800 9px/1.6 Roboto,sans-serif;letter-spacing:.04em;
+  text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);white-space:nowrap}
+.qd-du{background:var(--good-bg);color:var(--good);border:1px solid var(--good)}
+.qd-phan{background:var(--warn-bg);color:var(--warn);border:1px solid var(--amber-line)}
+.qd-chua{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+/* nhãn Dẫn dắt / Kết quả trên thẻ chỉ tiêu */
+.tag.lead{background:var(--good-bg);color:var(--good);border:1px solid var(--good)}
+.tag.lag{background:var(--surface-tint);color:var(--ink-2);border:1px solid var(--line)}
 </style>
 <style>
 /* ── Từ điển chỉ số — chỉ dùng ở màn này ── */
@@ -630,6 +731,181 @@ window.NTSF_CH = {
     }
   },
 
+  /* ── VÀNH KHUYÊN — CƠ CẤU 100% ──
+     Quy tắc 3 của bảng Quy tắc biểu đồ: cơ cấu của MỘT tổng, từ 2 đến 5 phần, các
+     phần chênh nhau đủ rõ thì vẽ vành khuyên. Quá 5 phần hoặc các phần xấp xỉ nhau
+     thì quay về thanh ngang — mắt người so ĐỘ DÀI chính xác hơn so GÓC nhiều.
+
+     Lỗ giữa luôn ghi tổng, nên người đọc không bao giờ mất mẫu số — đây chính là
+     lỗi thường gặp nhất của biểu đồ tròn: thấy "75%" mà không biết 75% của bao nhiêu.
+
+     ⚠️ KHÔNG CÓ KHỐI CHÚ GIẢI RIÊNG. Nhãn gắn thẳng quanh vành, mỗi nhãn nối về
+     đúng lát của nó bằng một đường dẫn mang màu lát đó. Hai bản trước đều đặt chú
+     giải thành một khối bên cạnh và đều bị trả lại (11 và 12/10/2026):
+       "quá xấu, đọc vào không hiểu gì" → "làm lại các nhãn thể hiện trên biểu đồ
+        luôn, không cần các thẻ ghi chú ở ngoài, và các con số phải to rõ".
+     Lý do kỹ thuật đằng sau yêu cầu đó: khối chú giải tách rời bắt mắt đi hai
+     chặng — nhìn ô màu, tìm lát cùng màu, rồi mới đọc số. Nhãn gắn tại chỗ bỏ hẳn
+     chặng giữa. Đừng dựng lại khối chú giải.
+
+     Nhãn tự dãn ra khi chồng nhau (`DAY_NHAN`), và bán kính vành tự co theo bề
+     rộng thẻ để hai cột chữ hai bên luôn còn chỗ — thẻ nửa màn chỉ rộng ~354px.
+
+     parts: [{ k:'tên', v:số, c:'--biến-màu', lbl:'giá trị tuyệt đối' }]
+     opt:   { tong:'chuỗi giữa vòng', donVi:'nhãn nhỏ dưới tổng',
+              ghiChu:'một dòng kết luận ở đáy' } */
+  donut: function (id, parts, opt) {
+    var box = (typeof id === 'string') ? document.getElementById(id) : id;
+    if (!box) return;
+    opt = opt || {};
+    box.innerHTML = '';
+    var tu = this;
+    var NS = 'http://www.w3.org/2000/svg';
+    function e(t, a) {
+      var n = document.createElementNS(NS, t);
+      for (var k in a) n.setAttribute(k, a[k]);
+      return n;
+    }
+    function mau(v) { return getComputedStyle(document.documentElement).getPropertyValue(v || '--c1').trim(); }
+
+    /* Vành phải chừa chỗ cho hai cột chữ hai bên. Bán kính tính NGƯỢC từ bề rộng
+       thẻ chứ không đặt cứng, nếu không thẻ nửa màn sẽ đẩy chữ tràn ra ngoài. */
+    var W = this.rong(box);
+    var hep = W < 470;
+    var khe = hep ? 13 : 26;                      /* vành → chữ */
+    var leMin = hep ? 100 : 112;                  /* bề rộng tối thiểu cột chữ */
+    var ngoaiMax = (W - 2 * khe - 2 * leMin) / 2;
+    var Rng = Math.min(hep ? 76 : 134, Math.max(44, ngoaiMax));
+    var R = Rng / 1.19, day = Math.max(13, R * 0.38);
+    var leW = (W - 2 * Rng - 2 * khe) / 2;
+
+    var cp = hep ? 9 : 10;                        /* cỡ chữ phụ */
+    var cs = hep ? 15 : 18;                       /* cỡ chữ phần trăm */
+    var DAY_NHAN = hep ? 40 : 46;                 /* chiều cao tối thiểu một nhãn */
+    var chuH = opt.ghiChu ? 26 : 8;
+
+    var tong = parts.reduce(function (s, p) { return s + (p.v || 0); }, 0) || 1;
+
+    /* Góc bắt đầu KHÔNG phải 12 giờ. Khi một lát chiếm ba phần tư vòng — đúng
+       trường hợp phân loại giá trị tồn kho — thì bắt đầu ở 12 giờ sẽ dồn hết nhãn
+       nhỏ lên một góc và để trống hẳn nửa kia. Nên xoay sao cho GIỮA lát lớn nhất
+       nằm ngang bên phải: nhãn lớn ra giữa phải, các nhãn nhỏ trải đều bên trái. */
+    var iMax = 0;
+    parts.forEach(function (p, i) { if ((p.v || 0) > (parts[iMax].v || 0)) iMax = i; });
+    var tongTruoc = 0;
+    for (var j = 0; j < iMax; j++) tongTruoc += parts[j].v || 0;
+    var batDau = -((tongTruoc + (parts[iMax].v || 0) / 2) / (parts.reduce(function (s, p) { return s + (p.v || 0); }, 0) || 1)) * Math.PI * 2;
+
+    /* Dựng trước danh sách nhãn để biết mỗi bên có mấy cái — chiều cao khung phải
+       đủ cho bên đông nhãn nhất, nếu không nhãn bị đẩy ra ngoài khung. */
+    var ds = [], a = batDau;
+    parts.forEach(function (p) {
+      var goc = (p.v || 0) / tong * Math.PI * 2;
+      if (goc > 0) ds.push({ p: p, d0: a, goc: goc, giua: a + goc / 2 });
+      a += goc;
+    });
+    var nP = 0, nT = 0;
+    ds.forEach(function (n) {
+      n.ben = Math.cos(n.giua) >= 0 ? 1 : -1;
+      if (n.ben > 0) nP++; else nT++;
+    });
+    var H = Math.max(2 * Rng + 46, Math.max(nP, nT) * DAY_NHAN + 20) + chuH;
+    var cx = W / 2, cy = (H - chuH) / 2;
+
+    var svg = e('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img' });
+
+    ds.forEach(function (n) {
+      /* cung gần trọn vòng vẽ hụt một chút, vì cung 360° có điểm đầu trùng điểm
+         cuối nên trình duyệt vẽ ra đường rỗng */
+      var buoc = Math.min(n.goc, Math.PI * 1.999);
+      var x0 = cx + R * Math.cos(n.d0), y0 = cy + R * Math.sin(n.d0);
+      var x1 = cx + R * Math.cos(n.d0 + buoc), y1 = cy + R * Math.sin(n.d0 + buoc);
+      svg.appendChild(e('path', {
+        d: 'M ' + x0 + ' ' + y0 + ' A ' + R + ' ' + R + ' 0 ' + (buoc > Math.PI ? 1 : 0) + ' 1 ' + x1 + ' ' + y1,
+        fill: 'none', stroke: mau(n.p.c), 'stroke-width': day
+      }));
+    });
+
+    if (opt.tong) {
+      /* Chữ trong lỗ vành bị giới hạn bởi ĐƯỜNG KÍNH TRONG, không phải bề rộng thẻ.
+         Nhãn đơn vị dài hơn chỗ đó thì ngắt làm hai dòng ở dấu · — cắt cụt thành
+         "tỷ đồng · tổn…" là mất luôn ý nghĩa của con số ở giữa. */
+      var trongD = 2 * (R - day / 2) - 8;
+      var cs2 = hep ? 8.5 : 9.5;
+      var dong = [];
+      if (opt.donVi) {
+        if (String(opt.donVi).length * cs2 * 0.49 > trongD && opt.donVi.indexOf('·') > 0) {
+          dong = opt.donVi.split('·').map(function (s) { return s.trim(); });
+        } else { dong = [opt.donVi]; }
+      }
+      var day1 = dong.length > 1 ? -4 : (dong.length ? 2 : 8);
+      var t1 = e('text', { x: cx, y: cy + day1, 'text-anchor': 'middle',
+        'font-size': hep ? 20 : 26, 'font-weight': 800, fill: mau('--ink'), 'font-family': 'Roboto,sans-serif' });
+      t1.textContent = opt.tong; svg.appendChild(t1);
+      dong.forEach(function (s, i) {
+        var t2 = e('text', { x: cx, y: cy + day1 + (hep ? 13 : 16) + i * (cs2 + 2), 'text-anchor': 'middle',
+          'font-size': cs2, fill: mau('--ink-3'), 'font-family': 'Roboto,sans-serif' });
+        t2.textContent = tu.catNhan(s, trongD, cs2 * 0.49); svg.appendChild(t2);
+      });
+    }
+
+    /* Vị trí mong muốn của mỗi nhãn là ngang với giữa lát của nó. Lát nhỏ nằm sát
+       nhau thì hai nhãn chồng lên nhau, nên sau khi xếp phải dãn chúng ra theo
+       DAY_NHAN rồi kéo cả cụm về trong khung. */
+    [1, -1].forEach(function (ben) {
+      var g = ds.filter(function (n) { return n.ben === ben; });
+      g.forEach(function (n) { n.y = cy + (Rng + 8) * Math.sin(n.giua); });
+      g.sort(function (x, y) { return x.y - y.y; });
+      for (var i = 1; i < g.length; i++) {
+        if (g[i].y - g[i - 1].y < DAY_NHAN) g[i].y = g[i - 1].y + DAY_NHAN;
+      }
+      if (g.length) {
+        var tran = (H - chuH) - 14, duoi = g[g.length - 1].y - tran;
+        if (duoi > 0) g.forEach(function (n) { n.y -= duoi; });
+        var tren = 16 - g[0].y;
+        if (tren > 0) g.forEach(function (n) { n.y += tren; });
+      }
+    });
+
+    ds.forEach(function (n) {
+      var ben = n.ben, c = mau(n.p.c);
+      var xA = cx + (Rng + 2) * Math.cos(n.giua), yA = cy + (Rng + 2) * Math.sin(n.giua);
+      var xB = cx + ben * (Rng + khe * 0.42);
+      var xRay = cx + ben * (Rng + khe);
+      svg.appendChild(e('polyline', {
+        points: xA + ',' + yA + ' ' + xB + ',' + n.y + ' ' + xRay + ',' + n.y,
+        fill: 'none', stroke: c, 'stroke-width': 1.6, 'stroke-linejoin': 'round'
+      }));
+      svg.appendChild(e('circle', { cx: xA, cy: yA, r: 2.6, fill: c }));
+
+      var xT = xRay + ben * 6, neo = ben > 0 ? 'start' : 'end';
+      var pct = (n.p.v || 0) / tong * 100;
+
+      var l1 = e('text', { x: xT, y: n.y - 4, 'text-anchor': neo, 'font-size': cs,
+        'font-weight': 800, fill: mau('--ink'), 'font-family': 'Roboto,sans-serif' });
+      l1.textContent = pct.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+      svg.appendChild(l1);
+
+      var l2 = e('text', { x: xT, y: n.y + (hep ? 9 : 10), 'text-anchor': neo, 'font-size': cp,
+        'font-weight': 700, fill: mau('--ink-2'), 'font-family': 'Roboto,sans-serif' });
+      l2.textContent = tu.catNhan(n.p.k, leW - 8, cp * 0.55); svg.appendChild(l2);
+
+      if (n.p.lbl) {
+        var l3 = e('text', { x: xT, y: n.y + (hep ? 20 : 22), 'text-anchor': neo, 'font-size': cp - 0.5,
+          'font-weight': 600, fill: mau('--ink-3'), 'font-family': 'Roboto,sans-serif' });
+        l3.textContent = tu.catNhan(n.p.lbl, leW - 8, cp * 0.55); svg.appendChild(l3);
+      }
+    });
+
+    if (opt.ghiChu) {
+      var gc = e('text', { x: W / 2, y: H - 7, 'text-anchor': 'middle', 'font-size': 10.5,
+        'font-weight': 700, fill: mau('--c2'), 'font-family': 'Roboto,sans-serif' });
+      gc.textContent = opt.ghiChu; svg.appendChild(gc);
+    }
+
+    box.appendChild(svg);
+  },
+
   /* Chạy SAU khi vẽ xong: kéo mọi nhãn bị tràn khỏi khung về lại bên trong.
      Chỉ xảy ra ở màn hẹp, khi nhãn giá trị dài hơn phần lề chừa sẵn. Đo bằng
      getBBox nên phải gọi lúc SVG đã nằm trong DOM, không gọi lúc đang dựng. */
@@ -659,17 +935,107 @@ window.NTSF_CH = {
   }
 };
 
+/* ═══ NHÃN CHỈ TIÊU TRÊN TIÊU ĐỀ ═══
+   Trước ngày 11/10/2026 mỗi phần tử trên màn mang một mã riêng của dashboard —
+   QL2-B07, CL1-K01, VH3-P03. ĐÃ BỎ HẲN. Lý do người dùng nêu: mã màn bắt người đọc
+   nhớ hai hệ mã cho cùng một con số, mà nó không trả lời được câu hỏi duy nhất đáng
+   hỏi khi nhìn một biểu đồ — "cái này là chỉ tiêu nào trong bộ KPI của công ty".
+
+   Nay mỗi tiêu đề chỉ còn ĐÚNG MỘT nhãn, là mã trong thư viện KPI IGROUP v1.1:
+     KPI-150            đo đủ theo công thức chính thức
+     KPI-154 · phần     đo được một phần — phần thiếu ghi ở màn Định nghĩa chỉ số
+     Hỗ trợ phân tích   biểu đồ dựng để tìm nguyên nhân, không thuộc bộ KPI
+
+   Bảng tra là biến KPI_MAP của từng trang, khoá là id biểu đồ hoặc id bảng. Tiêu đề
+   nào đã ghi sẵn nhãn trong HTML thì giữ nguyên, không chồng thêm nhãn thứ hai. */
+window.NTSF_MA = {
+  MAN: {
+    'chien-luoc':  { ma: 'CL1', ten: 'Chiến lược',             tang: 1, href: 'chien-luoc.html' },
+    'quan-ly':     { ma: 'QL2', ten: 'Quản lý',                tang: 2, href: 'index.html' },
+    'van-hanh':    { ma: 'VH3', ten: 'Vận hành',               tang: 3, href: 'van-hanh.html' },
+    /* Ba màn chuyên đề TQ1 · GH2 · TK2 · NS2 đã gộp vào ba màn cấp trên ngày 30/09/2026.
+       Mã cũ không dùng lại cho màn khác, để tra cứu tài liệu cũ không bị nhầm. */
+    'du-lieu':     { ma: 'DL0', ten: 'Tình trạng dữ liệu KPI', tang: 0, href: 'du-lieu.html' },
+    'mo-hinh-du-lieu':  { ma: 'MH0', ten: 'Mô hình & dữ liệu', tang: 0, href: 'mo-hinh-du-lieu.html' },
+    'dinh-nghia':  { ma: 'DN0', ten: 'Định nghĩa chỉ số',      tang: 0, href: 'dinh-nghia.html' }
+  },
+  TANG: { 0: 'Quản trị', 1: 'Tầng 1 — Chiến lược', 2: 'Tầng 2 — Quản lý', 3: 'Tầng 3 — Vận hành' },
+
+  /* 23 chỉ tiêu Kho vận trong thư viện KPI IGROUP v1.1 — chỉ dùng cho chú thích
+     khi rê chuột lên nhãn. Định nghĩa và công thức đầy đủ ở màn Định nghĩa chỉ số. */
+  TEN: {
+    'KPI-150': 'Số lượng tồn kho',
+    'KPI-151': 'Mức tồn kho an toàn so với thực tế',
+    'KPI-152': 'Số ngày tồn kho thành phẩm',
+    'KPI-153': 'Tỷ lệ hàng chậm luân chuyển',
+    'KPI-154': 'Hiệu suất sử dụng kho lạnh',
+    'KPI-155': 'Số ngày tồn kho khả dụng',
+    'KPI-156': 'Tỷ lệ hàng hết hạn sử dụng',
+    'KPI-157': 'Trung bình thời gian nhập hàng',
+    'KPI-158': 'Trung bình thời gian xuất hàng',
+    'KPI-159': 'Tổng số lệnh nhập hàng',
+    'KPI-160': 'Khối lượng trung bình nhập hàng',
+    'KPI-161': 'Tổng số lệnh xuất hàng',
+    'KPI-162': 'Khối lượng trung bình xuất hàng',
+    'KPI-163': 'Tỷ lệ đơn hàng nhỏ lẻ',
+    'KPI-072': 'Thời gian từ nhận đơn đến xuất hàng',
+    'KPI-073': 'Giao hàng đúng hạn và đủ lượng',
+    'KPI-074': 'Tỷ lệ đáp ứng đơn hàng',
+    'KPI-075': 'Đơn hàng bị khoá hoặc vướng',
+    'KPI-052': 'Hàng sản xuất lưu kho quá 2 tháng',
+    'KPI-039': 'Tỷ lệ hàng cô lập',
+    'KPI-038': 'Tỷ lệ hàng hư hỏng trong quá trình lưu kho',
+    'KPI-100': 'Số ngày tồn kho toàn bộ',
+    'KPI-065': 'Chi phí logistics trên mỗi kg'
+  },
+
+  maMan: function () {
+    var k = document.body.dataset.page || '';
+    return this.MAN[k] ? this.MAN[k].ma : '??';
+  },
+
+  /* Gắn nhãn chỉ tiêu cạnh tiêu đề. Gọi lại sau mỗi lần vẽ vì trang có thể dựng
+     lại thẻ. Tiêu đề đã có sẵn một nhãn nào đó thì bỏ qua, không chồng nhãn. */
+  gan: function () {
+    var map = window.KPI_MAP; if (!map) return;
+    var tu = this;
+    Object.keys(map).forEach(function (id) {
+      var e = document.getElementById(id); if (!e) return;
+      var o = e.closest('article, .card, .insight'); if (!o) return;
+      var h = o.querySelector('h3, h4'); if (!h) return;
+      if (h.querySelector('.tag')) return;
+
+      var ma = map[id];
+      var s = document.createElement('span');
+      s.className = 'tag ' + (!ma ? 'ops' : ma.indexOf('·') >= 0 ? 'kpi-part' : 'kpi-code');
+      if (ma) {
+        s.textContent = ma;
+        var g = ma.split(' ')[0];
+        s.title = (tu.TEN[g] || g) + ' · thư viện KPI IGROUP v1.1'
+                + (ma.indexOf('·') >= 0 ? ' · mới đo được một phần' : '');
+      } else {
+        s.textContent = 'Hỗ trợ phân tích';
+        s.title = 'Biểu đồ dựng để tìm nguyên nhân — không thuộc bộ KPI chính thức';
+      }
+      /* Thứ tự đọc: tên → chỉ tiêu nào → quyết định gì → nút ghi chú.
+         Nhãn chèn trước phần tử nào đến trước trong hai nút kia. */
+      var sau = h.querySelector('.qd-ma, .note-pin');
+      if (sau) h.insertBefore(s, sau); else h.appendChild(s);
+    });
+  }
+};
+
 (function () {
   'use strict';
 
   var NAV = [
-    { group: 'Điều hành' },
-    { id: 'tong-quan',  href: 'index.html',      ico: '◪', label: 'Tổng quan' },
-    { id: 'giao-hang',  href: 'giao-hang.html',  ico: '◰', label: 'Giao hàng & Khách hàng' },
-    { id: 'ton-kho',    href: 'ton-kho.html',    ico: '▦', label: 'Tồn kho' },
-    { id: 'nang-suat',  href: 'nang-suat.html',  ico: '◱', label: 'Năng suất kho' },
+    { group: 'Ba cấp quyết định' },
+    { id: 'chien-luoc', href: 'chien-luoc.html', ico: '◉', label: '① Chiến lược · Ban điều hành' },
+    { id: 'quan-ly',    href: 'index.html',      ico: '◪', label: '② Quản lý · Giám đốc Khối' },
+    { id: 'van-hanh',   href: 'van-hanh.html',   ico: '◱', label: '③ Vận hành · Trưởng phòng' },
     { group: 'Quản trị', dim: true },
     { id: 'du-lieu',    href: 'du-lieu.html',    ico: '◈', label: 'Tình trạng dữ liệu KPI' },
+    { id: 'mo-hinh-du-lieu',  href: 'mo-hinh-du-lieu.html',  ico: '◫', label: 'Mô hình & dữ liệu' },
     { id: 'dinh-nghia', href: 'dinh-nghia.html', ico: '◇', label: 'Định nghĩa chỉ số' }
   ];
 
@@ -858,18 +1224,28 @@ window.NTSF_CH = {
         b.title = 'Ghi chú cho mục này'; b.textContent = '✎';
         b.addEventListener('click', function (e) {
           e.stopPropagation();
-          /* Bỏ nhãn tag và chính nút ✎ ra khỏi tên vị trí, nếu không
-             chuỗi sẽ dính thêm chữ như "Toàn kỳ" hay "CC-04". */
+          /* Bỏ nhãn tag, nút quyết định và chính nút ✎ ra khỏi tên vị trí, nếu không
+             chuỗi sẽ dính thêm chữ như "Toàn kỳ" hay "KPI-154". */
           var c = h.cloneNode(true);
-          Array.prototype.forEach.call(c.querySelectorAll('.tag, .note-pin'), function (x) { x.remove(); });
+          Array.prototype.forEach.call(c.querySelectorAll('.tag, .note-pin, .qd-ma'), function (x) { x.remove(); });
+          /* Ghi theo TÊN mục chứ không theo mã màn — mã màn đã bỏ ngày 11/10/2026,
+             người nhận ghi chú không còn chỗ nào để tra nó nữa. */
           moPanel(c.textContent.replace('✎', '').replace(/\s+/g, ' ').trim());
         });
         h.appendChild(b);
       });
     }
+    /* Gắn nhãn chỉ tiêu một lần khi trang dựng xong; màn có biểu đồ sẽ gọi lại
+       NTSF_MA.gan() sau mỗi lần vẽ. */
+    try { window.NTSF_MA.gan(); } catch (e) { }
+    setTimeout(function () { try { window.NTSF_MA.gan(); ganNut(); } catch (e) { } }, 300);
+
     ganNut();
     /* Biểu đồ vẽ lại không đụng tới tiêu đề, nhưng trang có thể dựng thẻ động */
     setTimeout(ganNut, 1200);
+
+    /* Mã riêng cho bảng phân tích sâu (QL2-P03 và đuôi -CT) đã bỏ ngày 11/10/2026
+       cùng với cả hệ mã màn — tiêu đề bảng đã nói rõ đang xem lát cắt nào. */
 
     document.getElementById('noteFab').addEventListener('click', function () {
       if (panel.classList.contains('on')) dongPanel(); else moPanel('Toàn trang');
@@ -944,12 +1320,340 @@ window.NTSF_CH = {
    Trang gọi NTSF_RANGE.init({ onChange: fn }) rồi vẽ lại
    theo cửa sổ thời gian nhận được.
    ═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   NTSF_QD — SỔ QUYẾT ĐỊNH
+   Dựng sau workshop 01–02/10/2026. Khung IIBA: một phân tích chỉ có
+   giá trị khi nó thay đổi một quyết định. Vì vậy mỗi biểu đồ trên
+   dashboard phải gắn được vào ít nhất một quyết định có người quyết,
+   có nhịp, và có NGƯỠNG HÀNH ĐỘNG thống nhất TRƯỚC khi có kết quả.
+
+   Nguồn nội dung: cột "Quyết định phục vụ" trong Sổ đăng ký chỉ tiêu
+   (25/09/2026), đã phân sẵn cấp đọc và loại Dẫn dắt / Kết quả.
+
+   ⚠️ Mọi ngưỡng dưới đây là ĐỀ XUẤT của Khối, chưa được duyệt.
+   Duyệt xong thì đổi `duyet: false` thành `true` và ghi ngày.
+   ═══════════════════════════════════════════════════════ */
+window.NTSF_QD = (function () {
+  'use strict';
+
+  /* tt: 'du' = đủ dữ liệu quyết được · 'phan' = quyết được một phần
+         'chua' = chưa quyết được vì thiếu dữ liệu */
+  var DS = [
+    /* ── ① CHIẾN LƯỢC ─────────────────────────────────────── */
+    { ma:'QĐ-01', man:'chien-luoc', ten:'Có đầu tư mở rộng kho lạnh không?',
+      ai:'Ban điều hành · đề xuất từ Giám đốc Khối', nhip:'Quý và năm',
+      hoi:'Sức chứa hiện có còn đủ cho nhu cầu 3–5 năm tới, hay phải mở rộng?',
+      kq:['KPI-154 Hiệu suất sử dụng kho lạnh'],
+      dan:['KPI-150 Số lượng tồn kho','KPI-155 Số ngày tồn khả dụng'],
+      nguong:'Hiệu suất kho lạnh vượt <b>90% ba tháng liên tiếp</b> → lập hồ sơ đầu tư. '
+           + 'Dưới <b>60%</b> → rà lại hợp đồng thuê kho ngoài thay vì mở rộng.',
+      tt:'phan',
+      thieu:'Đang đo theo <b>tấn</b>, công thức chính thức đo theo thể tích hoặc pallet. '
+          + '11 trên 20 kho chưa khai sức chứa trong hồ sơ layout.' },
+
+    { ma:'QĐ-02', man:'chien-luoc', ten:'Cam kết mức phục vụ nào với từng thị trường?',
+      ai:'Ban điều hành · CSO chủ trì', nhip:'Quý',
+      hoi:'Thị trường nào Khối đủ sức cam kết SLA, thị trường nào chưa?',
+      kq:['KPI-073 Giao đúng hạn và đủ lượng'],
+      dan:['KPI-072 Thời gian từ nhận đơn đến xuất hàng','KPI-074 Tỷ lệ đáp ứng đơn hàng'],
+      nguong:'Chỉ cam kết SLA cho thị trường có OTD <b>ba tháng liên tiếp ≥ mức cam kết + 5 điểm %</b>. '
+           + 'Dưới mức đó thì cam kết khoảng thời gian rộng hơn, không hạ chất lượng để chạy theo con số.',
+      tt:'phan',
+      thieu:'Mới đo được vế <b>đúng hạn</b>, chưa có vế <b>đủ lượng</b> vì view thiếu lượng đặt. '
+          + 'Chưa khách hàng nào có SLA khai trong hệ thống.' },
+
+    { ma:'QĐ-03', man:'chien-luoc', ten:'Có chấp nhận mức vốn đang kẹt trong kho không?',
+      ai:'Ban điều hành · CFO đồng duyệt', nhip:'Quý',
+      hoi:'Vốn nằm trong hàng bao lâu mới quay vòng, và phần nào đang có nguy cơ thành hàng chết?',
+      kq:['KPI-152 Số ngày tồn kho thành phẩm','KPI-100 Số ngày tồn kho toàn bộ'],
+      dan:['KPI-153 Tỷ lệ hàng chậm luân chuyển','KPI-052 Hàng lưu kho quá 2 tháng'],
+      nguong:'Vốn đọng vượt <b>10% tồn bình quân hai quý liên tiếp</b> → Ban điều hành duyệt phương án xả hàng '
+           + 'kèm mức giảm giá tối đa. Không xả bằng giảm giá khi chưa có mức trần được duyệt.',
+      tt:'chua',
+      thieu:'<b>KPI-152 và KPI-100 để trống</b> theo quyết định 30/09/2026 — chờ giá vốn hàng bán từ Kế toán. '
+          + 'Hiện chỉ quyết được bằng chỉ số dẫn dắt.' },
+
+    { ma:'QĐ-04', man:'chien-luoc', ten:'Có đầu tư để nhìn thấy tiền đang MẤT và TỐN không?',
+      ai:'Ban điều hành', nhip:'Năm · theo kỳ ngân sách',
+      hoi:'Khối đang mất và tốn bao nhiêu tiền mỗi kỳ mà không nhìn thấy được?',
+      kq:['Chưa có chỉ tiêu nào đo được'],
+      dan:['KPI-156 Hàng hết hạn','KPI-038 Hàng hư hỏng','KPI-065 Chi phí logistics/kg'],
+      nguong:'Nếu sau <b>31/12/2026</b> vẫn chưa có giá vốn hàng bán và chi phí vận hành kho theo tháng '
+           + '→ đưa hai khoản này vào <b>phạm vi bắt buộc</b> của dự án ERP thay vì chờ.',
+      tt:'chua',
+      thieu:'Cả ba chỉ tiêu đều chưa đo được. Hai thẻ <i>Tiền đã MẤT</i> và <i>Tiền đang TỐN</i> '
+          + 'trên màn Chiến lược để trống chính là bằng chứng cho quyết định này.' },
+
+    /* ── ② QUẢN LÝ ───────────────────────────────────────── */
+    { ma:'QĐ-05', man:'quan-ly', ten:'Tháng này siết nhóm hàng nào?',
+      ai:'Giám đốc Khối', nhip:'Tháng',
+      hoi:'Nhóm hàng nào đang giữ nhiều vốn nhất mà quay vòng chậm nhất?',
+      kq:['KPI-153 Tỷ lệ hàng chậm luân chuyển'],
+      dan:['KPI-052 Hàng lưu kho quá 2 tháng','Số ngày tồn theo nhóm hàng','Phân loại giá trị tồn kho'],
+      nguong:'Nhóm có số ngày tồn <b>trên 90 ngày</b> hoặc giữ <b>trên 5% giá trị tồn</b> mà vòng quay <b>dưới 1</b> '
+           + '→ đưa vào danh sách siết của tháng sau, có tên người theo dõi.',
+      tt:'phan',
+      thieu:'Mới đo được vế <b>chậm luân chuyển</b>; vế <b>cận date</b> thiếu hạn sử dụng thật của mã hàng.' },
+
+    { ma:'QĐ-06', man:'quan-ly', ten:'Có dám nhận thêm đơn không?',
+      ai:'Giám đốc Khối · cùng Kinh doanh', nhip:'Tuần',
+      hoi:'Với mức tồn hiện tại, Khối còn đủ hàng để nhận thêm đơn trong bao lâu?',
+      kq:['KPI-074 Tỷ lệ đáp ứng đơn hàng'],
+      dan:['KPI-151 Mức tồn an toàn','KPI-155 Số ngày tồn khả dụng','KPI-150 Số lượng tồn kho'],
+      nguong:'Số ngày tồn khả dụng của nhóm hàng trong đơn <b>dưới 15 ngày</b> → không nhận thêm, '
+           + 'hoặc nhận kèm điều kiện thời gian giao rộng hơn.',
+      tt:'chua',
+      thieu:'<b>KPI-151</b> có trường nhưng giá trị bằng 0 ở toàn bộ mã — Kế hoạch chưa khai mức tồn an toàn. '
+          + '<b>KPI-074</b> thiếu lượng đặt trong view.' },
+
+    { ma:'QĐ-07', man:'quan-ly', ten:'Có thuê kho ngoài hay san tải nội bộ?',
+      ai:'Giám đốc Khối', nhip:'Tháng · trước mùa cao điểm',
+      hoi:'Kho nào đang quá tải, và còn chỗ trống ở kho nào để san sang?',
+      kq:['KPI-154 Hiệu suất sử dụng kho lạnh — từng kho'],
+      dan:['Tồn kho cuối kỳ theo tháng','Lệch tải giữa chín kho tự có'],
+      nguong:'Kho nào vượt <b>100%</b> → san tải nội bộ trước. '
+           + 'Chỉ thuê kho ngoài khi <b>tổng chín kho tự có vượt 90%</b> và không còn chỗ san.',
+      tt:'phan',
+      thieu:'Sức chứa thiết kế lấy từ <b>hồ sơ layout của Khối</b>, không lấy từ SAP — '
+          + 'SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng.' },
+
+    { ma:'QĐ-08', man:'quan-ly', ten:'Khách nào cần làm việc lại về mức phục vụ?',
+      ai:'Giám đốc Khối · cùng Kinh doanh', nhip:'Tháng',
+      hoi:'Khách nào đang nhận mức phục vụ thấp hơn hẳn mức chung, và có đáng để đàm phán lại?',
+      kq:['KPI-073 Giao đúng hạn — từng khách'],
+      dan:['Lệch trung vị theo khách','Phân bố mức độ trễ'],
+      nguong:'Khách có OTD <b>dưới mức chung hai tháng liên tiếp</b> và sản lượng <b>trên 500 tấn mỗi kỳ</b> '
+           + '→ đưa vào danh sách làm việc lại về thời gian giao.',
+      tt:'phan',
+      thieu:'Chưa có SLA riêng của từng khách trong hệ thống nên mốc so sánh là <b>mức chung</b>, không phải cam kết thật.' },
+
+    { ma:'QĐ-09', man:'quan-ly', ten:'Có đổi chính sách đơn nhỏ lẻ không?',
+      ai:'Giám đốc Khối · CSO quyết phần thương mại', nhip:'Quý',
+      hoi:'Đơn nhỏ lẻ đang ăn mòn năng suất kho bao nhiêu, và có đáng đặt phụ phí không?',
+      kq:['KPI-163 Tỷ lệ đơn hàng nhỏ lẻ'],
+      dan:['KPI-162 Khối lượng trung bình mỗi lệnh xuất'],
+      nguong:'⚠️ <b>Chưa chốt được ngưỡng thế nào là đơn nhỏ lẻ</b> — thư viện KPI ghi thẳng <i>"cần thống nhất"</i>. '
+           + 'Đề xuất lấy <b>dưới 5 tấn một lệnh</b>; vượt 15% tổng số lệnh thì bàn phụ phí.',
+      tt:'chua',
+      thieu:'Dữ liệu đã đủ để tính ngay khi Khối chốt ngưỡng. Đây là <b>quyết định bị chặn bởi định nghĩa</b>, '
+          + 'không phải bởi dữ liệu.' },
+
+    /* ── ③ VẬN HÀNH ──────────────────────────────────────── */
+    { ma:'QĐ-10', man:'van-hanh', ten:'Hôm nay chuyển hàng khỏi kho nào?',
+      ai:'Trưởng phòng Quản lý Kho', nhip:'Ngày',
+      hoi:'Kho nào đã vượt sức chứa, và chuyển sang kho nào thì còn chỗ?',
+      kq:['Số kho vượt trần'],
+      dan:['Mức lấp đầy từng kho','Lượng cần chuyển đi so với chỗ trống nhận được'],
+      nguong:'Kho vượt <b>100%</b> → chuyển ngay trong ngày. Kho <b>80–100%</b> → ngừng nhận thêm hàng mới. '
+           + 'Ưu tiên chuyển các lô cũ nhất để giải quyết cùng lúc KPI-052.',
+      tt:'phan',
+      thieu:'Bảng kho là <b>ảnh chụp 16/09/2026</b>, chưa nối tự động — phải đối chiếu SAP trước khi điều việc.' },
+
+    { ma:'QĐ-11', man:'van-hanh', ten:'Lô nào đẩy trước?',
+      ai:'Trưởng phòng Quản lý Kho', nhip:'Tuần',
+      hoi:'Lô nào già nhất và nằm ở kho đang quá tải?',
+      kq:['KPI-052 Hàng lưu kho quá 2 tháng'],
+      dan:['Tuổi tồn theo dải','Số lô quá 180 ngày'],
+      nguong:'Lô quá <b>180 ngày</b> → đẩy trong tháng. Lô quá <b>60 ngày</b> và nằm ở kho vượt trần → ưu tiên trước. '
+           + 'Lô mang ngày chuyển số dư đầu kỳ phải xác minh với Ban dự án ERP trước khi coi là hàng tồn lâu.',
+      tt:'phan',
+      thieu:'Đây là <b>tuổi lô</b>, không phải hạn sử dụng — chỉ 24 trên 17.407 lô có ghi hạn dùng.' },
+
+    { ma:'QĐ-12', man:'van-hanh', ten:'Đơn nào gỡ vướng trong ngày?',
+      ai:'Trưởng phòng Điều phối Vận chuyển', nhip:'Ngày',
+      hoi:'Đơn nào đang đứng im, vì lý do gì, và đơn nào thực ra đã chết cần đóng?',
+      kq:['KPI-075 Đơn hàng bị khoá hoặc vướng'],
+      dan:['Khối lượng và số dòng còn treo theo khách','Ngày kế hoạch cũ nhất còn treo'],
+      nguong:'Đơn có ngày kế hoạch <b>quá 30 ngày</b> → phân loại <i>còn hiệu lực</i> hay <i>đơn chết cần đóng</i> '
+           + 'trong tuần. Không để đơn treo quá một quý mà chưa phân loại.',
+      tt:'phan',
+      thieu:'Đếm được số đơn nhưng <b>chưa biết lý do khoá</b> — cần IT cấp bảng giải mã trạng thái đơn.' },
+
+    { ma:'QĐ-13', man:'van-hanh', ten:'Bố trí người và xe ngày nào?',
+      ai:'Trưởng phòng Quản lý Kho · cùng Điều phối', nhip:'Tuần',
+      hoi:'Khối lượng việc rơi vào những ngày nào và giờ nào trong tuần?',
+      kq:['Sản lượng xử lý bình quân mỗi ngày'],
+      dan:['Nhịp tác nghiệp theo giờ','Nhịp theo thứ trong tuần','Nhịp xuất container theo thứ'],
+      nguong:'Thứ có sản lượng vượt <b>1,5 lần bình quân</b> → tăng ca bốc xếp. '
+           + 'Dưới <b>0,5 lần</b> → rút người sang việc khác. Đỉnh người và đỉnh xe phải trùng nhau.',
+      tt:'du',
+      thieu:'' }
+  ];
+
+  var NHAN_TT = { du:'Quyết được', phan:'Quyết được một phần', chua:'Chưa quyết được' };
+
+  /* Dẫn dắt (lead) báo sớm, can thiệp được · Kết quả (lag) báo muộn, chỉ để nghiệm thu.
+     Lấy từ cột "Loại" trong Sổ đăng ký chỉ tiêu 25/09/2026. */
+  var LOAI = {
+    'KPI-150':'lead','KPI-151':'lead','KPI-152':'lead','KPI-153':'lead','KPI-154':'lead',
+    'KPI-155':'lead','KPI-100':'lead','KPI-052':'lead','KPI-039':'lead',
+    'KPI-072':'lead','KPI-073':'lead','KPI-074':'lead','KPI-075':'lead',
+    'KPI-156':'lag','KPI-038':'lag','KPI-157':'lag','KPI-158':'lag','KPI-159':'lag',
+    'KPI-160':'lag','KPI-161':'lag','KPI-162':'lag','KPI-163':'lag','KPI-065':'lag'
+  };
+  var NHAN_LOAI = { lead:'Dẫn dắt', lag:'Kết quả' };
+
+  /* Trả về thẻ nhãn Dẫn dắt / Kết quả cho một chuỗi có chứa mã KPI. */
+  function nhanLoai(s) {
+    var m = /KPI-\d{3}/.exec(s || ''); if (!m) return '';
+    var l = LOAI[m[0]]; if (!l) return '';
+    return '<span class="tag ' + l + '">' + NHAN_LOAI[l] + '</span>';
+  }
+
+  /* ⚠️ Khối "thẻ người dùng" (ai đọc · quyết định gì · nhịp xem · so với gì · đào
+     sâu tới) ĐÃ BỎ ngày 13/10/2026 theo yêu cầu người dùng. Workshop 01–02/10 gọi
+     đây là "thẻ người dùng dashboard", nhưng trên màn nó chỉ là năm ô chữ đứng
+     chắn giữa tiêu đề và con số. Mỗi chỉ tiêu nay đã tự mang quyết định của nó
+     (dòng ⟶ trên mặt thẻ và nút Quyết định cạnh biểu đồ) nên khối này thừa.
+     Đừng dựng lại. Dữ liệu người đọc/nhịp xem của từng màn vẫn còn trong tài liệu. */
+
+  function cua(man) {
+    return DS.filter(function (x) { return x.man === man; });
+  }
+  function tim(ma) {
+    for (var i = 0; i < DS.length; i++) if (DS[i].ma === ma) return DS[i];
+    return null;
+  }
+
+  /* ── Dòng quyết định in ngay trên mặt thẻ chỉ tiêu ──
+     Thay cho dòng công thức: nhìn thẻ là biết con số này quyết được việc gì. */
+  function dong(ma) {
+    var q = tim(ma); if (!q) return '';
+    return '<span class="qd-dong qd-v-' + q.tt + '">⟶ ' + q.ten + '</span>';
+  }
+
+  /* ── Khối quyết định chèn lên ĐẦU bảng phân tích sâu của chính chỉ tiêu đó ── */
+  function khoi(ma) {
+    var q = tim(ma); if (!q) return '';
+    return '<div class="qd-khoi">'
+      + '<div class="qd-khoi-top"><span class="qd-tt qd-' + q.tt + '">' + NHAN_TT[q.tt] + '</span>'
+      + '<b>' + q.ten + '</b></div>'
+      + '<div class="qd-khoi-luoi">'
+      + '<div><h5>Câu hỏi cần trả lời</h5><p>' + q.hoi + '</p></div>'
+      + '<div><h5>Ngưỡng hành động <i>· đề xuất, chưa duyệt</i></h5><p>' + q.nguong + '</p></div>'
+      + '<div><h5>Ai quyết · nhịp</h5><p>' + q.ai + '<br>' + q.nhip + '</p></div>'
+      + '</div>'
+      + (q.thieu ? '<p class="qd-khoi-thieu">⚠️ <b>Còn thiếu để quyết cho chắc:</b> ' + q.thieu + '</p>' : '')
+      + '</div>';
+  }
+  /* ── Nút quyết định cạnh tiêu đề biểu đồ ──
+     Trong HTML chỉ cần ghi data-qd="QĐ-07" lên thẻ <article class="card">.
+     Nút ghi chữ "Quyết định" chứ KHÔNG ghi mã QĐ-07: mã quyết định là cách đánh
+     số nội bộ, người đọc không tra ở đâu được — câu hỏi thật nằm trong chú thích
+     và trong hộp mở ra khi bấm. Bỏ mã hiển thị ngày 11/10/2026. */
+  function gan() {
+    var ds = document.querySelectorAll('[data-qd]');
+    Array.prototype.forEach.call(ds, function (el) {
+      if (el.tagName === 'BUTTON') return;                 /* nút trong bảng đã có sẵn */
+      var ma = el.dataset.qd, q = tim(ma); if (!q) return;
+      var h = el.querySelector('h3'); if (!h) return;
+      if (h.querySelector('.qd-ma')) return;
+      var b = document.createElement('button');
+      b.className = 'qd-ma'; b.type = 'button';
+      b.dataset.qd = ma; b.title = q.ten + ' · bấm để xem câu hỏi và ngưỡng hành động';
+      b.textContent = '⟶ Quyết định';
+      h.appendChild(b);
+    });
+  }
+
+  /* ── Bảng phân tích quyết định ── */
+  var scrim = null;
+  function hop() {
+    if (scrim) return scrim;
+    scrim = document.createElement('div');
+    scrim.className = 'scrim qd-scrim';
+    scrim.innerHTML =
+      '<div class="modal"><div class="modal-head">'
+      + '<div><div class="eyebrow" id="qdEye">—</div><h2 id="qdTitle">—</h2></div>'
+      + '<div class="grow" style="flex:1"></div>'
+      + '<button class="btn" onclick="window.print()">⎙ In / PDF</button>'
+      + '<button class="close" id="qdClose" aria-label="Đóng">✕</button>'
+      + '</div><div class="modal-body" id="qdBody"></div></div>';
+    document.body.appendChild(scrim);
+    scrim.addEventListener('click', function (e) {
+      if (e.target === scrim || e.target.closest('#qdClose')) dongHop();
+    });
+    return scrim;
+  }
+  function dongHop() {
+    if (!scrim) return;
+    scrim.classList.remove('on');
+    document.body.style.overflow = '';
+  }
+  function mo(ma) {
+    var q = tim(ma); if (!q) return;
+    var s = hop();
+    document.getElementById('qdEye').textContent =
+      'Quyết định · cấp ' + (NTSF_MA.MAN[q.man] ? NTSF_MA.MAN[q.man].ten : q.man);
+    document.getElementById('qdTitle').innerHTML = q.ten;
+    document.getElementById('qdBody').innerHTML = than(q);
+    s.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    var c = document.getElementById('qdClose'); if (c) c.focus();
+  }
+
+  function than(q) {
+    var h = '';
+    h += '<div class="attrs">'
+       + at('Người quyết', q.ai)
+       + at('Nhịp xem', q.nhip) + at('Trạng thái', NHAN_TT[q.tt])
+       + '</div>';
+
+    h += '<div class="card"><h3>Câu hỏi cần trả lời</h3><p class="qd-lon">' + q.hoi + '</p></div>';
+
+    h += '<div class="card"><h3>Chỉ số đi kèm</h3>'
+       + '<p class="how">Chỉ số <b>kết quả</b> cho biết đã đạt chưa nhưng đến muộn · chỉ số <b>dẫn dắt</b> '
+       + 'cho phép can thiệp sớm. Workshop 02/10 gọi đây là cây chỉ số.</p>'
+       + '<div class="qd-cs"><div><h5>Kết quả · lag</h5><ul>'
+       + q.kq.map(function (x) { return '<li>' + x + '</li>'; }).join('')
+       + '</ul></div><div><h5>Dẫn dắt · lead</h5><ul>'
+       + q.dan.map(function (x) { return '<li>' + x + '</li>'; }).join('')
+       + '</ul></div></div></div>';
+
+    h += '<div class="card qd-ng"><h3>Ngưỡng hành động</h3>'
+       + '<p class="how">Workshop nhấn mạnh: ngưỡng phải thống nhất <b>TRƯỚC</b> khi có kết quả, '
+       + 'nếu không sẽ diễn giải theo ý muốn.</p>'
+       + '<p class="qd-lon">' + q.nguong + '</p>'
+       + '<p class="qd-duyet">⚠️ <b>Đây là ngưỡng do Khối đề xuất, chưa được duyệt.</b> '
+       + 'Cần Giám đốc Khối chốt và ghi ngày hiệu lực trước khi dùng để ra quyết định thật.</p></div>';
+
+    if (q.thieu) {
+      h += '<div class="insight"><h4>Còn thiếu gì để quyết cho chắc</h4><p>' + q.thieu + '</p></div>';
+    }
+    return h;
+  }
+  function at(k, v) {
+    return '<div class="attr"><div class="k">' + k + '</div><div class="v num">' + v + '</div></div>';
+  }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-qd]');
+    if (!b || b.tagName !== 'BUTTON') return;
+    e.preventDefault(); e.stopPropagation();
+    mo(b.dataset.qd);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && scrim && scrim.classList.contains('on')) dongHop();
+  });
+
+  return { DS: DS, LOAI: LOAI, cua: cua, tim: tim,
+           gan: gan, mo: mo,
+           nhanLoai: nhanLoai, dong: dong, khoi: khoi };
+})();
+
 window.NTSF_RANGE = (function () {
   'use strict';
 
-  var BASE = new Date(2026, 0, 1);    // mốc 0 của offset ngày
-  var END  = new Date(2026, 8, 16);   // ngày chốt số liệu 16/09/2026
+  /* ═══ THANH LỌC PHẠM VI ═══
+     Từ tháng → Đến tháng · So sánh với · các chiều lọc do từng màn khai báo · Tìm kiếm.
+     Bỏ cây phân cấp Năm→Quý→Tháng→Tuần→Ngày ngày 30/09/2026 vì quá nhiều bước bấm.
+     Lựa chọn ghi vào localStorage nên ba màn dùng chung một phạm vi. */
+
+  var BASE = new Date(2026, 0, 1);     // mốc 0 của offset ngày
+  var END  = new Date(2026, 8, 16);    // ngày chốt số liệu 16/09/2026
+  var HET  = 8;                        // tháng cuối có dữ liệu (0 = tháng 1)
   var THANG = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  var KHOA  = 'ntsf-pham-vi-v3';
 
   function off(d) { return Math.round((d - BASE) / 86400000); }
   function dateOf(o) { var d = new Date(BASE); d.setDate(d.getDate() + o); return d; }
@@ -957,48 +1661,227 @@ window.NTSF_RANGE = (function () {
   function mm(d) { return ('0' + (d.getMonth() + 1)).slice(-2); }
   function vn(d) { return dd(d) + '/' + mm(d) + '/' + d.getFullYear(); }
   function vnNgan(d) { return dd(d) + '/' + mm(d); }
-
   var END_OFF = off(END);
 
-  /* Thứ Hai đầu tuần chứa ngày d */
   function thuHai(d) {
-    var k = (d.getDay() + 6) % 7;      // 0 = thứ Hai
-    var r = new Date(d); r.setDate(d.getDate() - k); r.setHours(0, 0, 0, 0);
+    var k = (d.getDay() + 6) % 7;
+    var r = new Date(d); r.setDate(d.getDate() - k); r.setHours(0,0,0,0);
     return r;
   }
+  function dauThang(i) { var d = new Date(2026, i, 1); return d < BASE ? new Date(BASE) : d; }
+  function cuoiThang(i) { var d = new Date(2026, i + 1, 0); return d > END ? new Date(END) : d; }
+  function nhanThang(i) { return '2026.' + THANG[i]; }
 
-  var PRESETS = [
-    { id: 'w', label: 'Tuần này',  bucket: 'day',   ten: 'tuần hiện tại' },
-    { id: 'm', label: 'Tháng này', bucket: 'day',   ten: 'tháng hiện tại' },
-    { id: '3', label: '3 tháng',   bucket: 'week',  ten: '3 tháng gần nhất' },
-    { id: '6', label: '6 tháng',   bucket: 'month', ten: '6 tháng gần nhất' },
-    { id: 'y', label: 'Năm 2026',  bucket: 'month', ten: 'cả năm 2026' }
+  var PRESET = [
+    { id:'1T',  nhan:'1T',      tu:function(){ return HET; } },
+    { id:'3T',  nhan:'3T',      tu:function(){ return Math.max(0, HET - 2); } },
+    { id:'6T',  nhan:'6T',      tu:function(){ return Math.max(0, HET - 5); } },
+    { id:'ytd', nhan:'YTD 26',  tu:function(){ return 0; } }
   ];
 
-  function cuaSo(id) {
-    var p = null, i;
-    for (i = 0; i < PRESETS.length; i++) if (PRESETS[i].id === id) p = PRESETS[i];
-    if (!p) p = PRESETS[PRESETS.length - 1];
+  /* ═══ TRẠNG THÁI ═══ */
+  var tu = 0, den = HET, ss = 'truoc', dim = {}, q = '';
+  var DIMS = [], GOI_Y = '', cur = null, cb = null, hostEl = null, mo = true;
 
-    var from;
-    if (id === 'w')      from = thuHai(END);
-    else if (id === 'm') from = new Date(2026, END.getMonth(), 1);
-    else if (id === '3') from = new Date(2026, END.getMonth() - 2, 1);
-    else if (id === '6') from = new Date(2026, END.getMonth() - 5, 1);
-    else                 from = new Date(BASE);
-    if (from < BASE) from = new Date(BASE);
+  function doc() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KHOA) || 'null');
+      if (!s) return;
+      if (s.tu != null)  tu  = Math.min(Math.max(s.tu, 0), HET);
+      if (s.den != null) den = Math.min(Math.max(s.den, 0), HET);
+      if (tu > den) { var t = tu; tu = den; den = t; }
+      if (s.ss) ss = s.ss;
+      if (s.dim) dim = s.dim;
+      if (s.q != null) q = s.q;
+      if (s.mo != null) mo = !!s.mo;
+    } catch (e) { /* trình duyệt chặn localStorage thì dùng mặc định */ }
+  }
+  function luu() {
+    try { localStorage.setItem(KHOA, JSON.stringify({ tu:tu, den:den, ss:ss, dim:dim, q:q, mo:mo })); }
+    catch (e) { }
+  }
 
-    var fo = off(from);
+  function cuaSo(a, b) {
+    var f = dauThang(a), t = cuoiThang(b), n = b - a + 1;
     return {
-      id: p.id, label: p.label, ten: p.ten, bucket: p.bucket,
-      from: from, to: END, fromOff: fo, toOff: END_OFF,
-      soNgay: END_OFF - fo + 1,
-      nhan: vn(from) + ' → ' + vn(END),
-      toanKy: p.id === 'y'
+      tu:a, den:b, soThang:n,
+      from:f, to:t, fromOff:off(f), toOff:off(t),
+      soNgay: off(t) - off(f) + 1,
+      nhan: vn(f) + ' → ' + vn(t),
+      tenDay: n === 1 ? 'Tháng ' + (a + 1) : 'Tháng ' + (a + 1) + ' → Tháng ' + (b + 1),
+      tron: (b < HET)           /* tháng 9 mới có 16 ngày nên kỳ chạm tháng 9 là kỳ cụt */
     };
   }
 
-  /* Giải nén chuỗi "off,tk,pk,tr,tn,ct,cn,oo,ot;…" thành mảng bản ghi ngày */
+  function dungR() {
+    var n = den - tu + 1;
+    var w = cuaSo(tu, den);
+    var truoc = null, lyDo = '';
+
+    if (ss === 'truoc') {
+      if (tu - n >= 0) truoc = cuaSo(tu - n, tu - 1);
+      else if (tu > 0) { truoc = cuaSo(0, tu - 1); lyDo = 'Kỳ trước chỉ còn ' + tu + ' tháng dữ liệu, ngắn hơn kỳ đang xem.'; }
+      else lyDo = 'Kỳ đang xem đã bắt đầu từ tháng 1, không có kỳ nào trước nữa.';
+    } else if (ss === 'nam') {
+      lyDo = 'Bản trích chỉ có từ 03/01/2026 nên chưa có cùng kỳ năm trước. '
+           + 'Muốn so cùng kỳ thì phải kéo thêm dữ liệu năm 2025 từ SAP.';
+    }
+
+    var lech = truoc ? Math.abs(w.soNgay - truoc.soNgay) / Math.max(w.soNgay, truoc.soNgay) : 0;
+
+    cur = {
+      /* hợp đồng cũ — các màn đang dùng, không đổi tên */
+      id:'pv', label: w.tenDay, ten: w.tenDay.toLowerCase(),
+      bucket: n === 1 ? 'day' : (n <= 3 ? 'week' : 'month'),
+      from: w.from, to: w.to, fromOff: w.fromOff, toOff: w.toOff,
+      soNgay: w.soNgay, nhan: w.nhan, toanKy: (tu === 0 && den === HET),
+      /* phần mới */
+      tu: tu, den: den, soThang: n, tenDay: w.tenDay, tron: w.tron,
+      soSanh: ss, truoc: truoc, lyDoSoSanh: lyDo,
+      binhQuan: lech > 0.10, lechNgay: lech,
+      dim: dim, q: q
+    };
+    return cur;
+  }
+
+  /* ═══ GIAO DIỆN ═══ */
+  function opt(v, ten, chon) {
+    return '<option value="' + v + '"' + (String(chon) === String(v) ? ' selected' : '') + '>' + ten + '</option>';
+  }
+  function huyHieu() {
+    if (cur.toanKy && !q && khongLoc()) return 'Toàn bộ';
+    var s = cur.soThang === 9 ? 'Toàn kỳ' : cur.tenDay;
+    if (!khongLoc()) s += ' · đã lọc';
+    if (q) s += ' · tìm “' + q + '”';
+    return s;
+  }
+  function khongLoc() {
+    for (var i = 0; i < DIMS.length; i++) if (dim[DIMS[i].id] && dim[DIMS[i].id] !== 'all') return false;
+    return true;
+  }
+
+  function ve() {
+    if (!hostEl) return;
+    var h = '', i, j;
+
+    h += '<div class="pv-top">'
+       + '<button class="pv-tog" type="button" data-tog="1" aria-expanded="' + mo + '">'
+       + '<span class="pv-mui">' + (mo ? '▾' : '▸') + '</span> Phạm vi phân tích</button>'
+       + '<span class="pv-badge">' + huyHieu() + '</span>'
+       + '<span class="pv-grow"></span><div class="chips">';
+    for (i = 0; i < PRESET.length; i++) {
+      var p = PRESET[i], khop = (tu === p.tu() && den === HET);
+      h += '<button class="chip" type="button" data-p="' + p.id + '"'
+         + (khop ? ' aria-pressed="true"' : '') + '>' + p.nhan + '</button>';
+    }
+    h += '</div><button class="chip pv-reset" type="button" data-reset="1">↺ Đặt lại</button></div>';
+
+    h += '<div class="pv-body"' + (mo ? '' : ' hidden') + '>';
+
+    h += truong('Từ tháng', '<select data-f="tu">' + dsThang(tu) + '</select>');
+    h += truong('Đến tháng', '<select data-f="den">' + dsThang(den) + '</select>');
+    h += truong('So sánh với',
+          '<select data-f="ss">'
+        + opt('none', 'Không so sánh', ss)
+        + opt('truoc', 'Kỳ liền trước', ss)
+        + opt('nam', 'Cùng kỳ năm trước', ss)
+        + '</select>');
+
+    for (i = 0; i < DIMS.length; i++) {
+      var d = DIMS[i], o = '';
+      for (j = 0; j < d.opts.length; j++) o += opt(d.opts[j][0], d.opts[j][1], dim[d.id] || 'all');
+      h += truong(d.nhan, '<select data-d="' + d.id + '">' + o + '</select>');
+    }
+
+    if (GOI_Y) {
+      h += '<label class="pv-f pv-q"><span>Tìm kiếm</span>'
+         + '<span class="pv-ip"><i>⌕</i><input type="search" data-f="q" value="' + esc(q)
+         + '" placeholder="' + esc(GOI_Y) + '" autocomplete="off"></span></label>';
+    }
+    h += '</div>';
+
+    h += '<p class="rb-note' + ((!cur.tron || cur.lyDoSoSanh || cur.binhQuan) ? ' rb-warn' : '')
+       + '"' + (mo ? '' : ' hidden') + '>' + chuTrangThai() + '</p>';
+
+    hostEl.innerHTML = h;
+    hostEl.className = 'pv';
+  }
+  function truong(nhan, dk) { return '<label class="pv-f"><span>' + nhan + '</span>' + dk + '</label>'; }
+  function dsThang(chon) {
+    var s = '', i;
+    for (i = 0; i <= HET; i++) s += opt(i, nhanThang(i), chon);
+    return s;
+  }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+  function chuTrangThai() {
+    var s = 'Đang xem <b>' + cur.tenDay + '</b> · ' + cur.nhan + ' · <b>' + cur.soNgay + '</b> ngày theo lịch';
+    if (!cur.tron) s += ' · ⚠️ kỳ có <b>tháng 9 mới 16 ngày</b>, đừng so tổng với kỳ đủ tháng';
+    s += '.';
+    if (cur.truoc) {
+      s += ' So với <b>' + cur.truoc.tenDay + '</b> (' + cur.truoc.soNgay + ' ngày)';
+      s += cur.binhQuan
+        ? ' — hai kỳ lệch <b>' + Math.round(cur.lechNgay * 100) + '%</b> số ngày nên bảng so sánh '
+          + '<b>tự quy về bình quân mỗi ngày</b>.'
+        : '.';
+    } else if (cur.lyDoSoSanh) {
+      s += ' <b>Chưa so sánh được:</b> ' + cur.lyDoSoSanh;
+    }
+    return s;
+  }
+
+  var hoTim = null;
+  function batSuKien() {
+    hostEl.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.tog)        { mo = !mo; luu(); ve(); return; }
+      else if (b.dataset.p)     { var p = timPreset(b.dataset.p); tu = p.tu(); den = HET; }
+      else if (b.dataset.reset) { tu = 0; den = HET; ss = 'truoc'; dim = {}; q = ''; }
+      else return;
+      xong();
+    });
+    hostEl.addEventListener('change', function (e) {
+      var s = e.target;
+      if (s.dataset.d) { dim[s.dataset.d] = s.value; }
+      else if (s.dataset.f === 'tu')  { tu = +s.value;  if (tu > den) den = tu; }
+      else if (s.dataset.f === 'den') { den = +s.value; if (den < tu) tu = den; }
+      else if (s.dataset.f === 'ss')  { ss = s.value; }
+      else return;
+      xong();
+    });
+    /* Ô tìm kiếm gõ tới đâu lọc tới đó, chờ 220ms cho khỏi vẽ lại liên tục */
+    hostEl.addEventListener('input', function (e) {
+      if (e.target.dataset.f !== 'q') return;
+      q = e.target.value.trim();
+      clearTimeout(hoTim);
+      hoTim = setTimeout(function () {
+        var oNoi = document.activeElement === e.target;
+        luu(); dungR(); ve();
+        if (oNoi) { var ip = hostEl.querySelector('[data-f="q"]'); if (ip) { ip.focus(); ip.setSelectionRange(q.length, q.length); } }
+        if (cb) cb(cur);
+      }, 220);
+    });
+  }
+  function timPreset(id) { for (var i = 0; i < PRESET.length; i++) if (PRESET[i].id === id) return PRESET[i]; return PRESET[3]; }
+  function xong() { luu(); dungR(); ve(); if (cb) cb(cur); }
+
+  function init(opt2) {
+    opt2 = opt2 || {};
+    hostEl = document.getElementById(opt2.host || 'rangeChips');
+    if (!hostEl) return null;
+    cb = opt2.onChange || null;
+    DIMS = opt2.dims || [];
+    GOI_Y = opt2.timKiem || '';
+    doc();
+    /* đọc localStorage trước rồi mới điền mặc định, nếu không chiều lọc riêng
+       của màn này sẽ bị bộ dim dùng chung của màn khác xoá mất */
+    for (var i = 0; i < DIMS.length; i++) if (dim[DIMS[i].id] == null) dim[DIMS[i].id] = 'all';
+    dungR(); ve(); batSuKien();
+    if (cb) cb(cur);
+    return cur;
+  }
+
+  /* ═══ TIỆN ÍCH CHO CÁC MÀN ═══ */
   function parse(packed) {
     return packed.split(';').map(function (s) {
       var v = s.split(',');
@@ -1009,12 +1892,9 @@ window.NTSF_RANGE = (function () {
       };
     });
   }
-
   function loc(rows, r) {
     return rows.filter(function (x) { return x.o >= r.fromOff && x.o <= r.toOff; });
   }
-
-  /* Gom nhóm theo ngày / tuần / tháng. Trả về [{nhan, phu, rows}] */
   function gom(rows, r) {
     var out = [], key = {}, i, x, k, lb, sub;
     for (i = 0; i < rows.length; i++) {
@@ -1039,51 +1919,25 @@ window.NTSF_RANGE = (function () {
     });
     return out;
   }
-
-  /* Số tháng trọn vẹn mà cửa sổ chạm tới — để cắt các mảng theo tháng sẵn có */
   function thangTrongKy(r) {
-    var a = r.from.getMonth(), b = r.to.getMonth(), out = [];
-    for (var i = a; i <= b; i++) out.push(i);
+    var out = [], i;
+    for (i = r.tu; i <= r.den; i++) out.push(i);
     return out;
   }
-
-  var current = null, cb = null;
-
-  function render(host, activeId) {
-    host.innerHTML = PRESETS.map(function (p) {
-      return '<button class="chip" data-r="' + p.id + '"'
-           + (p.id === activeId ? ' aria-pressed="true"' : '') + '>' + p.label + '</button>';
-    }).join('');
+  /* Khớp một chuỗi bất kỳ với ô Tìm kiếm — bỏ dấu để gõ không dấu vẫn ra */
+  function khop(s) {
+    if (!q) return true;
+    return boDau(String(s)).indexOf(boDau(q)) >= 0;
   }
-
-  function init(opt) {
-    opt = opt || {};
-    var host = document.getElementById(opt.host || 'rangeChips');
-    if (!host) return null;
-    cb = opt.onChange || null;
-    var def = opt.def || 'y';
-
-    render(host, def);
-    host.addEventListener('click', function (e) {
-      var b = e.target.closest('.chip');
-      if (!b) return;
-      var kids = host.children, i;
-      for (i = 0; i < kids.length; i++) kids[i].setAttribute('aria-pressed', 'false');
-      b.setAttribute('aria-pressed', 'true');
-      current = cuaSo(b.dataset.r);
-      if (cb) cb(current);
-    });
-
-    current = cuaSo(def);
-    if (cb) cb(current);
-    return current;
+  function boDau(s) {
+    return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
   }
 
   return {
     init: init, parse: parse, loc: loc, gom: gom,
-    cuaSo: cuaSo, thangTrongKy: thangTrongKy,
+    thangTrongKy: thangTrongKy, khop: khop, boDau: boDau,
     vn: vn, vnNgan: vnNgan, THANG: THANG,
-    get hienTai() { return current; },
+    get hienTai() { return cur; },
     DATA_END: END
   };
 })();
@@ -1112,7 +1966,7 @@ window.NTSF_RANGE = (function () {
 
       <section class="banner">
         <h2>Mọi con số trên dashboard được tính như thế nào</h2>
-        <p><span id="bannerSo">—</span> chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ</p>
+        <p><span id="bannerSo">—</span> chỉ số đang hiển thị trên 5 màn hình · mỗi mục ghi rõ công thức, nguồn dữ liệu, xuất hiện ở đâu và cần lưu ý gì khi đọc · đây là màn tra cứu, cố ý không có biểu đồ · mã KPI theo <b>IGROUP KPI Library v1.1</b>, danh mục đầy đủ 23 chỉ tiêu xem ở Tình trạng dữ liệu KPI</p>
       </section>
 
       <!-- QUY ƯỚC CHUNG -->
@@ -1127,8 +1981,87 @@ window.NTSF_RANGE = (function () {
           <div><h5>Đơn vị khối lượng</h5><p><b>Tấn</b> = 1.000 kg. Chỉ cộng các dòng có đơn vị <b>KG</b> — dữ liệu gốc có 24 loại đơn vị, cộng lẫn sẽ sai.</p></div>
           <div><h5>Đơn vị tiền</h5><p><b>Tỷ đồng</b>, theo <b>giá trị sổ sách</b> của SAP, không phải giá bán.</p></div>
           <div><h5>Cách viết số</h5><p>Dấu <b>chấm</b> ngăn hàng nghìn, dấu <b>phẩy</b> ngăn thập phân. Chênh lệch giữa hai tỷ lệ ghi là <b>điểm %</b>.</p></div>
-          <div><h5>Nhãn trên thẻ</h5><p>Nhãn <b>mã KPI</b> là chỉ tiêu cam kết. Nhãn <b>Vận hành</b> là chỉ số theo dõi thêm, không thuộc bộ KPI nào.</p></div>
+          <div><h5>Nhãn trên thẻ</h5><p>Mỗi thẻ ghi rõ <b>đang tính chỉ tiêu nào</b>, bốn dạng: <code>KPI-150</code> đo đủ · <code>KPI-154 · phần</code> đo một phần · <code>KPI-065 · chưa đo</code> có chỉ tiêu nhưng chưa có dữ liệu · <b>Ngoài bộ KPI</b> là chỉ số vận hành, không có trong thư viện 23 chỉ tiêu.</p></div>
         </div>
+      </article>
+
+      <!-- QUY TẮC BIỂU ĐỒ -->
+      <article class="card" style="border-top:3px solid var(--c2)">
+        <h3>Quy tắc chọn biểu đồ</h3>
+        <p class="how">Chốt ngày <b>11/10/2026</b>. Dạng dữ liệu quyết định dạng biểu đồ, <b>không phải chỗ trống trên màn</b> quyết định. Mỗi lần thêm biểu đồ mới thì tra bảng này trước khi vẽ · cột cuối ghi biểu đồ nào trên dashboard đang theo quy tắc đó, để kiểm lại được.</p>
+        <p class="how">Nền tham chiếu: <b>IBCS</b> (chuẩn trình bày báo cáo kinh doanh) cho việc gắn dạng biểu đồ với dạng dữ liệu · <b>bullet graph của Stephen Few</b> cho thực tế so với mục tiêu · thông lệ <b>small multiples</b> thay cho hai trục tung khi hai chuỗi lệch nhau về độ lớn.</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr>
+            <th style="width:30px">#</th>
+            <th style="width:230px">Dạng dữ liệu</th>
+            <th style="width:180px">Phải dùng</th>
+            <th>Không dùng — vì sao</th>
+            <th style="width:210px">Đang áp dụng ở</th>
+          </tr></thead>
+          <tbody>
+            <tr><td><b>1</b></td>
+              <td><b>Số dư tại từng thời điểm</b> theo thời gian — tồn kho, tỷ lệ lấp đầy, tỷ lệ đúng hạn</td>
+              <td><b>Đường</b>, có chấm tại mỗi mốc</td>
+              <td>Cột — cột ngầm nói rằng cộng các kỳ lại có nghĩa, mà cộng mức lấp đầy của chín tháng thì vô nghĩa</td>
+              <td>Tồn kho cuối kỳ · Hiệu suất kho lạnh · Giao đúng hạn</td></tr>
+            <tr><td><b>2</b></td>
+              <td><b>Lượng phát sinh trong kỳ</b> — nhập, xuất, container, số tác nghiệp</td>
+              <td><b>Cột dọc</b>, một cột một kỳ</td>
+              <td>Đường — đường nối hai tháng gợi ý có giá trị liên tục ở giữa, trong khi đây là tổng rời rạc của từng tháng</td>
+              <td>Luân chuyển kho · Container xuất · Sản lượng xử lý · Khối lượng nhập</td></tr>
+            <tr><td><b>3</b></td>
+              <td><b>Cơ cấu 100% của một tổng</b>, từ 2 đến 5 phần, chênh lệch rõ</td>
+              <td><b>Vành khuyên</b>, lỗ giữa ghi tổng, % in cạnh tên</td>
+              <td>Quá 5 phần hoặc các phần xấp xỉ nhau — mắt so độ dài chính xác hơn so góc, khi đó quay về quy tắc 6</td>
+              <td>Phân loại giá trị tồn kho · Điều kiện giao hàng</td></tr>
+            <tr><td><b>4</b></td>
+              <td><b>Cơ cấu của một tổng thay đổi theo thời gian</b></td>
+              <td><b>Cột chồng</b> theo kỳ</td>
+              <td>Xếp nhiều vành khuyên cạnh nhau — không đọc được chiều thay đổi</td>
+              <td>Cơ cấu tác nghiệp theo tháng · Vốn nằm trong kho (TP + VT)</td></tr>
+            <tr><td><b>5</b></td>
+              <td><b>Phân bố theo dải có thứ tự</b> — tuổi tồn, giờ trong ngày, mức trễ, thời gian nhập</td>
+              <td><b>Cột hoặc thanh giữ ĐÚNG thứ tự dải</b>, không sắp lại theo độ lớn</td>
+              <td>Vành khuyên — vành khuyên làm mất thứ tự, mà thứ tự chính là thông tin ở đây</td>
+              <td>Tuổi tồn · Phân bố mức độ trễ · Nhịp theo giờ · Phân bố thời gian nhập</td></tr>
+            <tr><td><b>6</b></td>
+              <td><b>Xếp hạng hạng mục không có thứ tự tự nhiên</b> — kho, nhóm hàng, mã, khách hàng</td>
+              <td><b>Thanh ngang, sắp giảm dần</b></td>
+              <td>Cột dọc — tên kho và tên mã hàng dài, xoay nghiêng thì khó đọc</td>
+              <td>Kho Thành Phẩm · Nhóm hàng · Mã đọng vốn · Luồng di chuyển</td></tr>
+            <tr><td><b>7</b></td>
+              <td><b>Thực tế so với mục tiêu hoặc sức chứa</b></td>
+              <td><b>Thanh kèm vạch mục tiêu và dải ngưỡng</b> — kiểu bullet graph</td>
+              <td>Đồng hồ kim — chiếm nhiều chỗ, chở được ít thông tin, không xếp cạnh nhau để so được</td>
+              <td>Kho Thành Phẩm — sức chứa so với tồn</td></tr>
+            <tr><td><b>8</b></td>
+              <td><b>Hai chuỗi lệch nhau nhiều lần về độ lớn</b></td>
+              <td><b>Tách thành hai ô, mỗi ô một trục</b>, ghi rõ thang đo khác nhau</td>
+              <td>Hai trục tung trên cùng một ô — người vẽ tự chọn thang đo là tự chọn chỗ hai đường cắt nhau, nhìn ra quan hệ không có thật</td>
+              <td>Tồn kho cuối kỳ: kho lạnh ~4.300 t tách khỏi kho vật tư ~300 t</td></tr>
+            <tr><td><b>9</b></td>
+              <td><b>Giá trị có cả âm và dương</b> quanh mốc 0</td>
+              <td><b>Cột hai chiều</b>, trục 0 vẽ đậm</td>
+              <td>Dời đáy trục lên khỏi 0 — làm sai lệch tỷ lệ giữa các cột</td>
+              <td>Biến động tồn ròng theo tháng</td></tr>
+            <tr><td><b>10</b></td>
+              <td><b>Cần con số chính xác</b>, nhiều cột thuộc tính</td>
+              <td><b>Bảng</b></td>
+              <td>Biểu đồ — biểu đồ để thấy hình dạng, không để tra số</td>
+              <td>Bảng 12 khách hàng · Ba bảng việc màn Vận hành</td></tr>
+            <tr><td><b>11</b></td>
+              <td><b>Chỉ tiêu có ngưỡng</b> — nhất là ngưỡng sức chứa</td>
+              <td>Vẽ vạch ngưỡng <b>và ghi nhãn ngưỡng thẳng trên biểu đồ</b>; hai vạch gần nhau thì đặt nhãn khác phía</td>
+              <td>Chỉ tô màu mà không ghi nhãn — người đọc thấy một vệt màu rồi phải đoán nó nghĩa là gì</td>
+              <td>Hiệu suất kho lạnh 60 / 80–90 / 95% · Tồn kho cuối kỳ · Giao đúng hạn</td></tr>
+            <tr><td><b>12</b></td>
+              <td><b>Màu</b></td>
+              <td><b>Đỏ chỉ dành cho vượt ngưỡng cần can thiệp.</b> Cam là cảnh báo, xanh là đạt, xanh dương là trung tính</td>
+              <td>Dùng màu để trang trí hoặc phân biệt hạng mục — hết màu để báo động</td>
+              <td>Toàn bộ dashboard</td></tr>
+          </tbody>
+        </table></div>
+        <p class="how" style="margin-top:10px"><b>Hai ngoại lệ đã biết, cố ý giữ:</b> <i>Vốn nằm trong kho theo tháng</i> là số dư (quy tắc 1 đòi đường) nhưng cần tách Kho Thành Phẩm với Kho Vật Tư nên dùng cột chồng theo quy tắc 4 — không thể vừa là đường vừa tách cơ cấu. <i>Tuổi tồn</i> và <i>Phân bố mức độ trễ</i> dùng thanh ngang thay vì cột dọc vì nhãn dải dài (<code>90–180 ngày</code>, <code>Trễ trên 30 ngày</code>); thứ tự dải vẫn giữ nguyên từ trên xuống nên không vi phạm phần cốt lõi của quy tắc 5.</p>
       </article>
 
       <!-- TỪ ĐIỂN -->
@@ -1178,10 +2111,10 @@ window.NTSF_RANGE = (function () {
       <section class="insight">
         <h4>Ba chỗ dễ đọc nhầm nhất</h4>
         <p><span class="formula">Tổng luân chuyển kho 37.387 tấn ≠ Sản lượng giao khách 2.570 tấn — chênh 14,5 lần</span></p>
-        <p><b>Một — luân chuyển kho và giao khách là hai thứ khác nhau.</b> Màn 1 có biểu đồ <b>Tổng luân chuyển kho</b> gồm cả 20 kho của Khối, tính cả bao bì và phụ gia ra xưởng. Màn 2 có <b>Sản lượng giao cho khách</b> chỉ tính hàng đi khách. Hai biểu đồ này không bao giờ khớp nhau và không nên khớp.</p>
-        <p><b>Hai — cùng một chỉ số nhưng khác kỳ.</b> Màn 1 là màn điều hành nên hiển thị <b>tháng gần nhất</b>: giao đúng hạn 52,7%, sản lượng xử lý 103 tấn mỗi ngày. Các màn chuyên đề hiển thị <b>toàn kỳ</b>: giao đúng hạn 16,6%, sản lượng xử lý 144 tấn mỗi ngày. Không phải số nào sai, chỉ là khác kỳ — nhãn trên mỗi thẻ đều ghi rõ.</p>
+        <p><b>Một — luân chuyển kho và giao khách là hai thứ khác nhau.</b> Quản lý có biểu đồ <b>Tổng luân chuyển kho</b> gồm cả 20 kho của Khối, tính cả bao bì và phụ gia ra xưởng. Quản lý có <b>Sản lượng giao cho khách</b> chỉ tính hàng đi khách. Hai biểu đồ này không bao giờ khớp nhau và không nên khớp.</p>
+        <p><b>Hai — cùng một chỉ số nhưng khác kỳ.</b> Quản lý là màn điều hành nên hiển thị <b>tháng gần nhất</b>: giao đúng hạn 52,7%, sản lượng xử lý 103 tấn mỗi ngày. Các màn chuyên đề hiển thị <b>toàn kỳ</b>: giao đúng hạn 16,6%, sản lượng xử lý 144 tấn mỗi ngày. Không phải số nào sai, chỉ là khác kỳ — nhãn trên mỗi thẻ đều ghi rõ.</p>
         <p><b>Ba — con số đẹp chưa chắc là tin tốt.</b> <b>Chính xác soạn hàng 100%</b> không chứng minh thao tác chính xác, vì hệ thống tự xác nhận lệnh ngay khi tạo. <b>Mức lấp đầy kho lạnh 66,9%</b> là số tổng của 9 kho tự có — nó che mất việc Kho A (4000) đang vượt trần 103,3% trong khi bốn kho A nhỏ chỉ dùng 38–47%. Hai chỗ này đều đã ghi cảnh báo ngay trên thẻ.</p>
-        <p class="act">Gợi ý hành động: khi bộ KPI chính thức của Khối được chốt, sửa lại đúng ba chỗ — mảng chỉ tiêu ở Màn 5, nhãn mã KPI trên các thẻ, và các mục tương ứng ở màn này. Toàn bộ biểu đồ và bảng còn lại tự cập nhật theo.</p>
+        <p class="act">Gợi ý hành động: bộ chỉ tiêu đã chuyển sang <b>IGROUP KPI Library v1.1</b> ngày 30/09/2026 — mảng chỉ tiêu ở Tình trạng dữ liệu KPI, nhãn mã KPI trên các thẻ và các mục ở màn này đều đã sửa theo. Việc còn lại là báo công ty bốn lỗi phát hiện trong chính thư viện KPI (đơn vị KPI-150, công thức KPI-155 thiếu tử số, KPI-154 mô tả không khớp công thức, KPI-153 cộng hai vế có thể trùng).</p>
       </section>
 
     </div>
@@ -1189,7 +2122,9 @@ window.NTSF_RANGE = (function () {
 </div>
 
 <script>
-/* ═══ TỪ ĐIỂN CHỈ SỐ — 26 mục đang hiển thị trên 5 màn ═══ */
+/* ═══ TỪ ĐIỂN CHỈ SỐ — các con số đang hiển thị trên 5 màn ═══
+   Mã KPI theo IGROUP KPI Library v1.1 (cập nhật 30/09/2026).
+   Bộ mã cũ CC-xx · LG-xx · SX-05 của bản v1.0 đã bị công ty bỏ. */
 const G={ton:'Tồn kho',giao:'Giao hàng',cont:'Container',ns:'Năng suất',qt:'Quản trị'};
 const DEFS=[
 /* ── TỒN KHO ── */
@@ -1198,154 +2133,154 @@ const DEFS=[
  ng:'Bảng quy hoạch kho của Khối Kho vận & Logistics, bản chốt 22/09/2026',
  luu:'<b>Đây là ranh giới của toàn bộ báo cáo.</b> Mọi con số tồn kho, luân chuyển, tuổi tồn và giá trị trên dashboard đều đã lọc theo đúng 20 mã kho này.<br><br><b>Kho Thành Phẩm — 11 kho:</b> <code>5300</code> Kho A (4000) · <code>5301</code> Kho B · <code>5302</code> Kho C · <code>5303</code> Kho D · <code>5304</code> Kho E · <code>5201</code> 461-Kho A · <code>5202</code> 916-Kho A · <code>5101</code> 548-Kho A · <code>5102</code> 946-Kho A · <code>9005</code> Kho NCC Thế Khánh · <code>9006</code> Kho NCC AGIFISH. Hai kho 9005 và 9006 là <b>kho nhà cung cấp, thuê ngoài</b>, mới phát sinh từ tháng 7/2026.<br><br><b>Kho Vật Tư — 9 kho:</b> <code>2000</code> Kho vật tư tổng · <code>2100</code>/<code>2101</code> Kho Bao Bì Cá · <code>2102</code>/<code>2103</code> Kho B.Bì Tôm · <code>2200</code>/<code>2201</code> Kho PG/HC Cá · <code>2202</code>/<code>2203</code> Kho PGHC Tôm. Bốn kho <code>2101 · 2103 · 2201 · 2203</code> có trong quy hoạch nhưng <b>SAP chưa ghi nhận tồn nào</b> trong chín tháng.<br><br><b>Đã loại khỏi báo cáo — 44 kho khác của plant P100:</b> trại nuôi A00x–G00x, kho nguyên liệu 1000/1001, nhiên liệu 3000/3001, BTP 4000, kho xưởng 5103/5203/5204, phụ phẩm 6000/6001, kho cảng 9001, hàng ký gửi 9002/9003. Các kho này có số liệu trong SAP nhưng <b>không thuộc phạm vi điều hành của Khối</b>.'},
 
-{g:'ton', n:'Tồn kho cuối kỳ', ma:null, val:'4.937,1', u:'tấn', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Tồn kho cuối kỳ', ma:null, val:'4.937,1', u:'tấn', man:'Quản lý',
  ct:'Khối lượng tồn trong 20 kho của Khối tại thời điểm chốt cuối tháng, chỉ cộng các dòng có đơn vị KG',
  ng:'stock_monthly_by_location.csv ← MMIM_STOCKINDATERANGE_SRV, lọc theo 20 mã kho',
  luu:'Chốt cuối tháng 9: <b>Kho Thành Phẩm 4.563,4 t</b> và <b>Kho Vật Tư 373,7 t</b>.<br><br>Ảnh chụp tồn tức thời trong stock.csv ngày 16/09 cho <b>4.850,8 tấn</b> (Thành phẩm 4.516,0 · Vật tư 334,8) — lệch vì khác thời điểm chốt, không phải một trong hai sai. Các biểu đồ theo tháng dùng số chốt; các biểu đồ cơ cấu, tuổi tồn, nhóm hàng dùng ảnh chụp.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026.</b> Trước đó con số này là <b>6.153,4 t</b> của toàn bộ 64 kho plant P100.'},
 
-{g:'ton', n:'Mức lấp đầy kho lạnh', ma:'CC-04', val:'66,9', u:'%', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Mức lấp đầy kho lạnh', ma:'KPI-154 · phần', val:'66,9', u:'%', man:'Quản lý',
  ct:'Tồn 9 kho lạnh TỰ CÓ ÷ Sức chứa thiết kế 6.444,6 tấn',
  ng:'stock_monthly_by_location.csv (9 mã kho tự có 5300–5304, 5101, 5102, 5201, 5202) + hồ sơ layout kho của Khối',
- luu:'<b>Đã sửa ngày 17/09/2026.</b> Trước đó tử số lấy nhầm là tồn của <b>toàn bộ 64 kho</b> — gồm cả trại nuôi, vật tư, kho ngoài — rồi đem chia cho sức chứa của riêng 9 kho lạnh, ra 95,5% và báo sai là "vượt sức chứa 109,5%" ở tháng 8. Số đúng là <b>66,9%</b>, và kho <b>chưa bao giờ vượt trần</b>.<br><br>Tổng số vẫn che mất lệch tải: <b>Kho A (4000) đang ở 103,3%</b> trong khi bốn kho A nhỏ chỉ dùng 38–47%. Xem bảng chi tiết từng kho ở Màn 3.<br><br><b>Mẫu số chỉ gồm 9 kho lạnh TỰ CÓ.</b> Hai kho NCC 9005/9006 thuộc phạm vi Khối nhưng là kho thuê ngoài, hồ sơ layout không có sức chứa nên không đưa vào mẫu số — nếu cộng vào tử số mà không cộng mẫu số thì lại sai đúng kiểu cũ.'},
+ luu:'<b>Đã sửa ngày 17/09/2026.</b> Trước đó tử số lấy nhầm là tồn của <b>toàn bộ 64 kho</b> — gồm cả trại nuôi, vật tư, kho ngoài — rồi đem chia cho sức chứa của riêng 9 kho lạnh, ra 95,5% và báo sai là "vượt sức chứa 109,5%" ở tháng 8. Số đúng là <b>66,9%</b>, và kho <b>chưa bao giờ vượt trần</b>.<br><br>Tổng số vẫn che mất lệch tải: <b>Kho A (4000) đang ở 103,3%</b> trong khi bốn kho A nhỏ chỉ dùng 38–47%. Xem bảng chi tiết từng kho ở Quản lý.<br><br><b>Mẫu số chỉ gồm 9 kho lạnh TỰ CÓ.</b> Hai kho NCC 9005/9006 thuộc phạm vi Khối nhưng là kho thuê ngoài, hồ sơ layout không có sức chứa nên không đưa vào mẫu số — nếu cộng vào tử số mà không cộng mẫu số thì lại sai đúng kiểu cũ.<br><br><b>Công thức chính thức KPI-154:</b> <i>Thể tích/pallet đang lưu ÷ Tổng sức chứa kho lạnh × 100</i>, ngưỡng 80–90%. Dashboard đang đo bằng <b>tấn</b> chứ không bằng thể tích hay số pallet, vì dữ liệu ô kệ rỗng — đây là lý do gắn nhãn <i>phần</i>. Đo theo tấn cho <b>66,9%</b>, dưới ngưỡng dưới 80%.'},
 
-{g:'ton', n:'Sức chứa thiết kế kho lạnh', ma:null, val:'6.444,6', u:'tấn', man:'Màn 3',
+{g:'ton', n:'Sức chứa thiết kế kho lạnh', ma:null, val:'6.444,6', u:'tấn', man:'Quản lý',
  ct:'Tổng sức chứa thiết kế của 9 kho lạnh TỰ CÓ tại NTSF Cần Thơ',
  ng:'Hồ sơ layout kho của Khối Kho vận, không lấy từ SAP',
- luu:'Kèm theo: <b>13.633 m²</b> diện tích và <b>67 cửa</b>. Đây là <b>master data ngoài SAP</b> — SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng nên không cộng được. Nếu Khối sửa layout kho thì phải cập nhật lại mảng <code>WH</code> trong Màn 3, dashboard không tự biết.<br><br><b>Còn thiếu:</b> hồ sơ chưa khai diện tích và sức chứa cho <b>9 kho vật tư</b> và <b>2 kho NCC thuê ngoài</b> — tức 11 trên 20 kho trong phạm vi chưa đo được mức lấp đầy.'},
+ luu:'Kèm theo: <b>13.633 m²</b> diện tích và <b>67 cửa</b>. Đây là <b>master data ngoài SAP</b> — SAP có trường sức chứa trên ô kệ nhưng 3.444/3.445 ô bị gắn cờ rỗng nên không cộng được. Nếu Khối sửa layout kho thì phải cập nhật lại mảng <code>WH</code> trong Quản lý, dashboard không tự biết.<br><br><b>Còn thiếu:</b> hồ sơ chưa khai diện tích và sức chứa cho <b>9 kho vật tư</b> và <b>2 kho NCC thuê ngoài</b> — tức 11 trên 20 kho trong phạm vi chưa đo được mức lấp đầy.'},
 
-{g:'ton', n:'Tồn theo nhóm kho', ma:null, val:'2', u:'nhóm', man:'Màn 3',
+{g:'ton', n:'Tồn theo nhóm kho', ma:null, val:'2', u:'nhóm', man:'Quản lý',
  ct:'Gộp 20 kho của Khối thành 2 nhóm: Kho Thành Phẩm và Kho Vật Tư',
  ng:'Bảng quy hoạch kho của Khối + stock.csv',
- luu:'SAP <b>có</b> tách kho vật liệu và kho thành phẩm, ghi rõ ngay trong tên kho: <code>461-Kho BaoBì Cá</code>, <code>548-Kho PGHC Tôm</code>, <code>Kho A (4000)</code>… nhưng <b>việc xếp kho nào vào nhóm nào là quyết định của Khối</b>, không đọc tự động từ SAP.<br><br>Ảnh chụp 16/09: <b>Kho Thành Phẩm 4.516,0 t</b> (93,1% khối lượng, 96,3% giá trị) và <b>Kho Vật Tư 334,8 t</b> (6,9% khối lượng, 3,7% giá trị).<br><br>Chỉ <b>9 kho lạnh tự có</b> trong nhóm thành phẩm mới thuộc phạm vi CC-04.'},
+ luu:'SAP <b>có</b> tách kho vật liệu và kho thành phẩm, ghi rõ ngay trong tên kho: <code>461-Kho BaoBì Cá</code>, <code>548-Kho PGHC Tôm</code>, <code>Kho A (4000)</code>… nhưng <b>việc xếp kho nào vào nhóm nào là quyết định của Khối</b>, không đọc tự động từ SAP.<br><br>Ảnh chụp 16/09: <b>Kho Thành Phẩm 4.516,0 t</b> (93,1% khối lượng, 96,3% giá trị) và <b>Kho Vật Tư 334,8 t</b> (6,9% khối lượng, 3,7% giá trị).<br><br>Chỉ <b>9 kho lạnh tự có</b> trong nhóm thành phẩm mới thuộc phạm vi KPI-154.'},
 
-{g:'ton', n:'Số ngày tồn kho thành phẩm', ma:'CC-02', val:'49,0', u:'ngày', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Số ngày tồn kho thành phẩm', ma:null, val:'49,0', u:'ngày', man:'Quản lý',
  ct:'Tồn kho bình quân ÷ Lượng xuất bình quân mỗi ngày, bình quân gia quyền Z402 + Z400 + Z401',
  ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, lọc các mã đang nằm trong 20 kho của Khối',
- luu:'Nằm trong khoảng cam kết 30–60 ngày, <b>nhưng con số tổng che một vấn đề lớn</b>: nhóm <code>Z401 Tôm PTO/PD</code> ở <b>423,2 ngày</b>, gấp 7 lần ngưỡng trên, giữ 20,45 tỷ. Phải tách tối thiểu bốn dòng khi báo cáo — cá fillet, tôm vỏ, tôm PTO/PD, và phụ gia bên kho vật tư.<br><br>Các nhóm <code>Z207 thức ăn nuôi</code> và <code>Z202 nguyên liệu tôm</code> <b>đã bị loại</b> vì thuộc trại nuôi, ngoài phạm vi Khối.'},
+ luu:'Nằm trong khoảng cam kết 30–60 ngày, <b>nhưng con số tổng che một vấn đề lớn</b>: nhóm <code>Z401 Tôm PTO/PD</code> ở <b>423,2 ngày</b>, gấp 7 lần ngưỡng trên, giữ 20,45 tỷ. Phải tách tối thiểu bốn dòng khi báo cáo — cá fillet, tôm vỏ, tôm PTO/PD, và phụ gia bên kho vật tư.<br><br>Các nhóm <code>Z207 thức ăn nuôi</code> và <code>Z202 nguyên liệu tôm</code> <b>đã bị loại</b> vì thuộc trại nuôi, ngoài phạm vi Khối.<br><br>⚠️ <b>Đây KHÔNG phải KPI-152.</b> Công thức chính thức của KPI-152 là <i>(Tồn kho thành phẩm bình quân ÷ Giá vốn hàng bán) × 365</i> — mẫu số là <b>giá vốn hàng bán</b>, Khối chưa có. Con số 49,0 ngày ở đây là <b>số ngày quay vòng do SAP tính sẵn</b> trong báo cáo Vòng quay tồn kho, dùng để điều hành chứ không dùng để báo cáo KPI-152. Theo quyết định 30/09/2026, <b>KPI-152 để trống</b> cho tới khi Kế toán cung cấp giá vốn.<br><br>Ghi chú kỹ thuật cần Kế toán xác nhận: trường <code>turnover_days</code> trong dữ liệu bằng đúng <b>258 ÷ vòng quay</b> (khớp 2.382/3.004 dòng) — 258 là số ngày của kỳ trích. Nếu vòng quay của SAP tính theo giá trị thì <b>365 ÷ vòng quay</b> chính là công thức chính thức; chưa kiểm chứng được vì tệp không có số xuất kho theo giá vốn.'},
 
-{g:'ton', n:'Giá trị tồn kho', ma:null, val:'396,8', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Giá trị tồn kho', ma:null, val:'396,8', u:'tỷ đồng', man:'Quản lý',
  ct:'ƯỚC TÍNH: đơn giá bình quân từng mã × lượng đang nằm trong 20 kho của Khối, ảnh chụp 16/09/2026',
  ng:'stock.csv (lượng theo kho) × inventory_value.csv (đơn giá bình quân theo mã)',
  luu:'<b>Đây là ƯỚC TÍNH, không phải số sổ sách.</b> SAP trả <code>current_stock_value = 0</code> ở toàn bộ 12.626 dòng tồn, nên <b>không có giá trị tiền theo từng kho</b>. Cách tính: lấy đơn giá bình quân từng mã trong báo cáo Vòng quay tồn kho nhân với lượng đang nằm trong 20 kho của Khối; mã không có đơn giá thì bù bằng đơn giá bình quân của chính nhóm hàng đó.<br><br>Tách theo nhóm: <b>Kho Thành Phẩm 382,0 tỷ (96,3%)</b> · <b>Kho Vật Tư 14,8 tỷ (3,7%)</b>.<br><br><b>Dùng để so tương quan giữa hai nhóm kho, không dùng để đối chiếu sổ sách.</b> Số sổ sách phải lấy từ Kế toán. Báo cáo <code>C_STOCKQUANTITYVALUEBYTYPE</code> cho <b>440,3 tỷ</b> nhưng đó là toàn bộ 64 kho của plant P100 và không bóc được theo kho.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026.</b>'},
 
-{g:'ton', n:'Giá trị tồn kho bình quân cả kỳ', ma:null, val:'233,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Giá trị tồn kho bình quân cả kỳ', ma:null, val:'233,0', u:'tỷ đồng', man:'Quản lý',
  ct:'Bình quân giá trị tồn kho trong kỳ 01/01 → 16/09/2026, của các mã đang có mặt trong 20 kho của Khối',
  ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, cột avg_stock_value_vnd của 809 mã',
  luu:'<b>Đây là bình quân của CẢ KỲ 9 tháng, không phải riêng tháng 9.</b><br><br>Chỉ cộng <b>809 mã đang có mặt trong 20 kho của Khối</b> tại ảnh chụp 16/09. Lưu ý: đây là con số ở <b>cấp MÃ HÀNG</b>, không phải cấp kho — một mã vừa nằm trong vừa nằm ngoài phạm vi sẽ được tính trọn, nên con số này hơi rộng hơn thực tế.<br><br>Mẫu số của chỉ tiêu vốn đọng (26,02 ÷ 233,00 = <b>11,2%</b>) và của biểu đồ phân loại ABC đều dùng con số này.<br><br><b>Đã thu hẹp phạm vi ngày 22/09/2026</b> — trước đó là 263,0 tỷ của toàn bộ 3.468 mã.'},
 
-{g:'ton', n:'Vốn đọng trong kho', ma:'CC-03 · phần', val:'26,0', u:'tỷ đồng', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Vốn đọng trong kho', ma:'KPI-153 · phần', val:'26,0', u:'tỷ đồng', man:'Quản lý',
  ct:'Tổng giá trị 20 mã có giá trị trên 500 triệu nhưng vòng quay dưới 1',
  ng:'inventory_value.csv',
- luu:'Bằng <b>11,2%</b> giá trị tồn bình quân, so với chỉ tiêu CC-03 là dưới 5%. Mới là vế <b>chậm luân chuyển</b> của CC-03; vế <b>cận date</b> chưa đo được vì thiếu hạn sử dụng.'},
+ luu:'<b>Công thức chính thức KPI-153:</b> <i>Giá trị tồn cận date + chậm luân chuyển ÷ Tổng giá trị tồn kho × 100</i>, ngưỡng dưới 5%, cảnh báo trên 10%.<br><br>Bằng <b>11,2%</b> giá trị tồn bình quân — đã vượt mức cảnh báo. Nhưng mới là vế <b>chậm luân chuyển</b>; vế <b>cận date</b> chưa đo được vì thiếu hạn sử dụng thật của mã hàng.<br><br>⚠️ Công thức của công ty <b>cộng hai vế lại</b>. Một mã vừa cận date vừa chậm luân chuyển sẽ bị đếm hai lần. Đã báo lại công ty ngày 30/09/2026, chờ hướng dẫn.'},
 
-{g:'ton', n:'Tồn trên 90 ngày', ma:null, val:'520,5', u:'tấn', man:'Màn 3',
- ct:'Khối lượng các lô có tuổi trên 90 ngày tính từ ngày sản xuất',
- ng:'batch.csv ← API_BATCH_SRV',
- luu:'Đây là <b>tuổi lô</b>, không phải cận hạn sử dụng. Hàng đông lạnh có hạn dùng dài hơn 90 ngày rất nhiều — đừng đọc thành hàng sắp hỏng. Dùng để nhắc rà soát, không dùng để kết luận chất lượng.'},
+{g:'ton', n:'Tồn trên 60 ngày', ma:'KPI-052 · phần', val:'2.330,0', u:'tấn', man:'Quản lý',
+ ct:'Khối lượng các lô có tuổi trên 60 ngày ÷ Tổng khối lượng thành phẩm tồn kho × 100',
+ ng:'batch.csv ← API_BATCH_SRV, cộng các khoảng tuổi 61–90, 91–180 và trên 180 ngày',
+ luu:'<b>Đã đổi mốc từ 90 ngày sang 60 ngày ngày 30/09/2026</b> để khớp công thức chính thức <i>Hàng sản xuất lưu kho quá 2 tháng</i>. Mốc cũ 90 ngày cho 520,5 tấn.<br><br>Chi tiết: Kho Thành Phẩm <b>2.211,1 t</b> (881,8 + 922,0 + 407,3) và Kho Vật Tư <b>118,9 t</b> (42,9 + 37,8 + 38,2).<br><br>Chia cho tổng tồn thành phẩm 4.516,1 t theo đúng mẫu số của công thức thì bằng <b>49,0%</b>, so với ngưỡng <b>dưới 10%</b>. Chia cho toàn bộ tồn 4.850,8 t thì bằng 48,0%. Cả hai cách đều vượt ngưỡng rất xa.<br><br>⚠️ Gắn nhãn <i>phần</i> vì mẫu số đúng của công thức là <b>sản lượng sản xuất trong kỳ</b>, không phải tồn kho — Khối chưa có số sản lượng sản xuất. Đây là <b>tuổi lô</b>, không phải cận hạn sử dụng; hàng đông lạnh có hạn dùng dài hơn 60 ngày rất nhiều, đừng đọc thành hàng sắp hỏng.'},
 
-{g:'ton', n:'Mức tập trung giá trị', ma:null, val:'75,3', u:'%', man:'Màn 1 · Màn 3',
+{g:'ton', n:'Mức tập trung giá trị', ma:null, val:'75,3', u:'%', man:'Quản lý',
  ct:'Tỷ trọng giá trị tồn nằm ở nhóm "Top 3%" — nhóm mã đắt nhất theo phân loại của SAP',
  ng:'inventory_value.csv ← MM_IM_INV_TURNOVR_ANLYS_SRV, trường <code>AverageStockValueCategory</code>',
  luu:'<b>Nhóm do SAP tự xếp, không phải cách chia của Khối.</b> SAP xếp toàn bộ <b>3.468 mã của nhà máy</b> theo giá trị tồn bình quân từ cao xuống thấp rồi cắt theo <b>phần trăm SỐ MÃ</b>, không phải theo phần trăm giá trị:<br><br>· <code>T03</code> Top 3% — 105 mã đầu bảng (3,03% danh mục)<br>· <code>T10</code> Top 10% — 242 mã kế tiếp (luỹ kế 10,01%)<br>· <code>T20</code> Top 20% — 347 mã (luỹ kế 20,02%)<br>· <code>T40</code> Top 40% — 693 mã (luỹ kế 40,00%)<br>· <code>T70</code> Top 70% — 1.040 mã (luỹ kế 69,99%)<br>· <code>REM</code> Remainder — 1.041 mã còn lại<br><br>Các nhóm không chồng lấn về giá trị: mã thấp nhất của Top 3% là <b>571,96 triệu</b>, cao nhất của Top 10% là <b>566,51 triệu</b>.<br><br>⚠️ <b>Không phải ABC kinh điển.</b> ABC truyền thống cắt theo giá trị luỹ kế (A = 80% giá trị). SAP ở đây cắt theo số lượng mã. Trùng hợp là nhóm 3% đầu giữ tới 71,3% giá trị trên toàn nhà máy, nên nhìn giống lớp A.<br><br>⚠️ <b>Tên nhóm là thứ hạng trên TOÀN NHÀ MÁY, không phải trên 20 kho của Khối.</b> Lọc về phạm vi Khối thì nhóm "Top 3%" còn <b>98 mã</b>, bằng <b>12,1%</b> trong 809 mã đang nằm trong kho — đọc nhãn "Top 3%" thành "3% danh mục của Khối" là sai.<br><br>Nhóm Remainder có mã giá trị <b>âm</b> (thấp nhất −4,12 triệu) do tồn âm hoặc bút toán điều chỉnh, nên tổng nhóm này hiện 0,00 tỷ.'},
 
-{g:'ton', n:'Biến động ròng theo tháng', ma:null, val:null, u:null, man:'Màn 1 · Màn 3',
+{g:'ton', n:'Biến động ròng theo tháng', ma:null, val:null, u:null, man:'Quản lý',
  ct:'Lượng nhập trong tháng − Lượng xuất trong tháng',
  ng:'stock_monthly.csv',
  luu:'Cột hướng lên là kho phình ra, cột hướng xuống là kho vơi đi. Đọc cùng biểu đồ tồn kho để thấy tồn tăng do nhập nhiều hay do xuất chậm.'},
 
-{g:'ton', n:'Tổng luân chuyển kho theo tháng', ma:null, val:null, u:null, man:'Màn 1',
+{g:'ton', n:'Tổng luân chuyển kho theo tháng', ma:null, val:null, u:null, man:'Quản lý',
  ct:'Tổng khối lượng nhập cộng tổng khối lượng xuất trong tháng, tính trên 20 kho thuộc Khối',
  ng:'stock_monthly.csv',
  luu:'<b>Không phải sản lượng giao khách.</b> Bao gồm cả nguyên liệu vào sản xuất và thức ăn ra trại. Tháng 1 luân chuyển 37.387 tấn nhưng chỉ giao khách 2.570 tấn — lệch <b>14,5 lần</b>.'},
 
 /* ── GIAO HÀNG ── */
-{g:'giao', n:'Giao hàng đúng hạn', ma:'SX-05', val:'52,7', u:'% tháng 9', man:'Màn 1 · Màn 2',
+{g:'giao', n:'Giao hàng đúng hạn', ma:'KPI-073 · phần', val:'52,7', u:'% tháng 9', man:'Quản lý',
  ct:'Dòng lệnh xuất ĐÚNG NGÀY kế hoạch ÷ tổng số dòng đã xuất, nhóm theo tháng kế hoạch',
  ng:'odo_item.csv ← API_WHSE_OUTB_DLV_ORDER, trường PlndGoodsIssueStartUTCDateTime và ActlGoodsIssueStartUTCDateTime',
- luu:'<b>Quy tắc chốt ngày 18/09/2026:</b> kho xuất đúng ngày kế hoạch thì tính đúng hạn, lệch ngày nào — kể cả xuất sớm — đều không tính. Toàn kỳ <b>15,3%</b> (1.621 trên 10.610 dòng), tháng 9 <b>52,7%</b>.<br><br><b>Mốc kế hoạch là ngày dự kiến RA KHỎI BÃI</b> (<code>planned_out_of_yard</code>), đúng 10.610/10.610 dòng — không phải ngày giao tới khách. Đây là cam kết của chính kho, nên hợp với một chỉ tiêu của Khối Kho vận.<br><br><b>Phải quy đổi múi giờ.</b> SAP trả về giờ UTC — tên trường có sẵn chữ <code>UTC</code>. Mốc kế hoạch luôn là 17:00 UTC ở 100% số dòng, tức 00:00 giờ Việt Nam hôm sau; đó là dấu hiệu của một trường chỉ nhập ngày. Nếu so ngày thô không quy đổi thì OTD chỉ còn <b>0,2%</b> và đỉnh phân bố rơi vào "trễ đúng 1 ngày" — một hình dạng không có thật trong vận hành.<br><br>Quy tắc cũ "trễ không quá 24 giờ" cho <b>16,6%</b>, đúng bằng "đúng ngày hoặc sớm hơn".'},
+ luu:'<b>Quy tắc chốt ngày 18/09/2026:</b> kho xuất đúng ngày kế hoạch thì tính đúng hạn, lệch ngày nào — kể cả xuất sớm — đều không tính. Toàn kỳ <b>15,3%</b> (1.621 trên 10.610 dòng), tháng 9 <b>52,7%</b>.<br><br><b>Mốc kế hoạch là ngày dự kiến RA KHỎI BÃI</b> (<code>planned_out_of_yard</code>), đúng 10.610/10.610 dòng — không phải ngày giao tới khách. Đây là cam kết của chính kho, nên hợp với một chỉ tiêu của Khối Kho vận.<br><br><b>Phải quy đổi múi giờ.</b> SAP trả về giờ UTC — tên trường có sẵn chữ <code>UTC</code>. Mốc kế hoạch luôn là 17:00 UTC ở 100% số dòng, tức 00:00 giờ Việt Nam hôm sau; đó là dấu hiệu của một trường chỉ nhập ngày. Nếu so ngày thô không quy đổi thì OTD chỉ còn <b>0,2%</b> và đỉnh phân bố rơi vào "trễ đúng 1 ngày" — một hình dạng không có thật trong vận hành.<br><br>Quy tắc cũ "trễ không quá 24 giờ" cho <b>16,6%</b>, đúng bằng "đúng ngày hoặc sớm hơn".<br><br><b>Công thức chính thức KPI-073:</b> <i>Order lines delivered on time and in full ÷ Total order lines × 100</i>. Dashboard mới đo được vế <b>đúng hạn</b>; vế <b>đủ lượng</b> cần trường <i>lượng đặt</i> (Ordered Quantity) mà view hiện tại chưa có — đây là lý do gắn nhãn <i>phần</i>. Đã đưa vào phiếu yêu cầu IT đợt 1.'},
 
-{g:'giao', n:'Lệch trung vị', ma:null, val:'0', u:'ngày tháng 9', man:'Màn 2',
+{g:'giao', n:'Lệch trung vị', ma:null, val:'0', u:'ngày tháng 9', man:'Quản lý',
  ct:'Số ngày lệch của dòng nằm giữa dãy, đã sắp xếp',
  ng:'odo_item.csv',
  luu:'Đo bằng <b>ngày</b>, không phải giờ, cho khớp quy tắc đúng hạn. 0 nghĩa là dòng ở giữa xuất đúng ngày kế hoạch. Đi từ <b>20 ngày</b> tháng 1 xuống <b>0 ngày</b> tháng 9 — đây là chỉ số cho thấy mức cải thiện rõ nhất trong cả bộ.'},
 
-{g:'giao', n:'Sản lượng giao cho khách', ma:null, val:'20.392', u:'tấn', man:'Màn 2',
+{g:'giao', n:'Sản lượng giao cho khách', ma:null, val:'20.392', u:'tấn', man:'Quản lý',
  ct:'Tổng khối lượng trên các dòng lệnh xuất đã ghi nhận xuất kho thực tế',
  ng:'odo_item.csv',
- luu:'Chỉ tính hàng đi khách. Khác hoàn toàn với <b>Tổng luân chuyển kho</b> ở Màn 1 — đây là hai đại lượng riêng, không so trực tiếp được.'},
+ luu:'Chỉ tính hàng đi khách. Khác hoàn toàn với <b>Tổng luân chuyển kho</b> ở Quản lý — đây là hai đại lượng riêng, không so trực tiếp được.'},
 
-{g:'giao', n:'Lệnh xuất kho', ma:null, val:'1.235', u:'lệnh', man:'Màn 2',
+{g:'giao', n:'Lệnh xuất kho', ma:null, val:'1.235', u:'lệnh', man:'Quản lý',
  ct:'Số chứng từ lệnh xuất kho phát sinh trong kỳ, mỗi lệnh gồm nhiều dòng mặt hàng',
  ng:'odo_head.csv · odo_item.csv',
  luu:'1.235 lệnh tương ứng <b>12.149 dòng</b>, trong đó <b>10.610 dòng</b> đã có mốc xuất thực tế.'},
 
-{g:'giao', n:'Số khách hàng', ma:null, val:'66', u:'khách', man:'Màn 2',
+{g:'giao', n:'Số khách hàng', ma:null, val:'66', u:'khách', man:'Quản lý',
  ct:'Số bên nhận hàng riêng biệt xuất hiện trên lệnh xuất trong kỳ',
  ng:'odo_head.csv',
  luu:'Danh sách có cả <b>điểm đến nội bộ</b> như Kho CTY NTSF, nên đây không phải 66 khách hàng bên ngoài. Cần lọc lại nếu dùng cho báo cáo thương mại.'},
 
-{g:'giao', n:'Giao trong 7 ngày', ma:null, val:'39,7', u:'%', man:'Màn 2',
+{g:'giao', n:'Giao trong 7 ngày', ma:null, val:'39,7', u:'%', man:'Quản lý',
  ct:'Dòng lệnh xuất trong vòng 7 ngày kể từ ngày kế hoạch ÷ tổng số dòng đã xuất',
  ng:'odo_item.csv',
  luu:'Ngưỡng nới rộng hơn chỉ tiêu đúng hạn, dùng để thấy phần đuôi trễ nặng. Còn <b>60,3%</b> số dòng lệch quá 7 ngày, trong đó <b>22,0%</b> lệch trên 30 ngày.'},
 
-{g:'giao', n:'Lệnh xuất còn treo', ma:null, val:'18.923', u:'tấn', man:'Màn 1',
+{g:'giao', n:'Lệnh xuất còn treo', ma:null, val:'18.923', u:'tấn', man:'Quản lý',
  ct:'Khối lượng trên các dòng lệnh xuất chưa ghi nhận mốc xuất kho thực tế',
  ng:'odo_item.csv',
  luu:'Tương ứng <b>1.539 dòng</b> (12.149 trừ 10.610). Cần rà xem là đơn còn hiệu lực hay đơn cũ chưa đóng — số này lớn bất thường so với sản lượng giao thật.'},
 
 /* ── CONTAINER ── */
-{g:'cont', n:'Số container xuất', ma:null, val:'1.231', u:'container', man:'Màn 1 · Màn 2',
+{g:'cont', n:'Số container xuất', ma:null, val:'1.231', u:'container', man:'Quản lý',
  ct:'Mỗi lệnh xuất kho được tính là một container',
  ng:'container_daily.csv, suy ra từ odo_head.csv',
  luu:'<b>Đây là quy ước, không phải số đếm thật.</b> Căn cứ: khối lượng mỗi lệnh bị chặn cứng ở đúng <b>26,0 tấn</b> và không lệnh nào vượt — dấu hiệu của giới hạn một container. Trung vị 19,0 tấn mỗi lệnh. SAP hiện không lưu số container thật.'},
 
-{g:'cont', n:'Container mỗi ngày làm việc', ma:null, val:null, u:null, man:'Màn 1 · Màn 2',
+{g:'cont', n:'Container mỗi ngày làm việc', ma:null, val:null, u:null, man:'Quản lý',
  ct:'Số container trong kỳ ÷ số ngày thực có phát sinh của kỳ đó',
  ng:'container_daily.csv',
  luu:'Chia cho <b>ngày có phát sinh</b>, không chia cho số ngày theo lịch. Thứ Hai đạt 8,6 container mỗi ngày so với chủ nhật 2,6 — dùng để bố trí xe và nhân lực bốc xếp.'},
 
-{g:'cont', n:'Khối lượng bình quân mỗi container', ma:null, val:'16,6', u:'tấn', man:'Màn 2',
+{g:'cont', n:'Khối lượng bình quân mỗi container', ma:null, val:'16,6', u:'tấn', man:'Quản lý',
  ct:'Tổng khối lượng đã giao ÷ số container',
  ng:'container_daily.csv · odo_item.csv',
- luu:'<b>Không phải hiệu suất container.</b> Muốn tính hiệu suất (chỉ tiêu LG-01) phải biết loại container và tải trọng định mức của từng chuyến — thông tin này nằm ở booking hãng tàu, hiện chưa vào SAP.'},
+ luu:'<b>Không phải hiệu suất container.</b> Muốn tính hiệu suất phải biết loại container và tải trọng định mức của từng chuyến — thông tin này nằm ở booking hãng tàu, hiện chưa vào SAP.<br><br>Chỉ tiêu <code>LG-01 Hiệu suất sử dụng container</code> của bản v1.0 <b>đã bị bỏ ở bản v1.1</b>, nên hiện không còn chỉ tiêu cam kết nào cần con số này. Giữ lại vì vẫn hữu ích cho điều hành.'},
 
 /* ── NĂNG SUẤT ── */
-{g:'ns', n:'Sản lượng xử lý', ma:null, val:'144', u:'t/ngày toàn kỳ', man:'Màn 1 · Màn 4',
+{g:'ns', n:'Sản lượng xử lý', ma:null, val:'144', u:'t/ngày toàn kỳ', man:'Quản lý · Vận hành',
  ct:'Khối lượng xác nhận trên lệnh tác nghiệp kho ÷ số ngày có phát sinh',
  ng:'task_daily.csv ← API_WAREHOUSE_ORDER_TASK',
- luu:'Màn 1 hiển thị <b>103 tấn/ngày</b> của riêng tháng 9, Màn 4 hiển thị <b>144 tấn/ngày</b> bình quân toàn kỳ 238 ngày. Khác kỳ chứ không mâu thuẫn. Trung vị 143,5 tấn, ngày cao nhất 339,0 tấn.'},
+ luu:'Quản lý hiển thị <b>103 tấn/ngày</b> của riêng tháng 9, Vận hành hiển thị <b>144 tấn/ngày</b> bình quân toàn kỳ 238 ngày. Khác kỳ chứ không mâu thuẫn. Trung vị 143,5 tấn, ngày cao nhất 339,0 tấn.'},
 
-{g:'ns', n:'Tác nghiệp kho', ma:null, val:'45.861', u:'lệnh', man:'Màn 1 · Màn 4',
+{g:'ns', n:'Tác nghiệp kho', ma:null, val:'45.861', u:'lệnh', man:'Quản lý · Vận hành',
  ct:'Số lệnh soạn hàng và điều chuyển đã được xác nhận trong kỳ',
  ng:'task_daily.csv ← API_WAREHOUSE_ORDER_TASK',
- luu:'Gồm <b>12.993</b> lệnh soạn hàng xuất và <b>32.868</b> lệnh điều chuyển nội bộ. Đây là thước đo khối lượng công việc của kho, không phải sản lượng bán hàng.'},
+ luu:'Gồm <b>12.993</b> lệnh soạn hàng xuất và <b>32.868</b> lệnh điều chuyển nội bộ. Đây là thước đo khối lượng công việc của kho, không phải sản lượng bán hàng.<br><br>⚠️ <b>Toàn bộ 45.861 lệnh đều thuộc Kho Thành Phẩm. Chín Kho Vật Tư có 0 lệnh.</b> Lý do là kho bao bì, phụ gia, hoá chất <b>không chạy trên EWM</b> — chúng quản lý bằng Inventory Management thuần, nhập xuất bằng chứng từ vật tư nên không sinh warehouse task.<br><br>Bằng chứng: toàn bộ dữ liệu chỉ có <b>5 khu vực</b>, đều là khu thành phẩm — <code>5200</code> Khu vực chứa thành phẩm chính · <code>5201</code> Khu vực chứa thành phẩm tạm · <code>GRSX</code> Khu trung gian chờ nhập · <code>S910</code> Goods Receipt · <code>S970</code> Clarification Zone. Không có một khu bao bì hay vật tư nào. Ghép 628 mã có tác nghiệp sang tồn kho thì <b>312 mã nằm trong Kho Thành Phẩm, 0 mã nằm trong Kho Vật Tư</b>.<br><br>→ <b>Muốn đo năng suất Kho Vật Tư thì phải đưa nhóm kho đó vào EWM trước</b>, đây là việc của dự án ERP chứ không phải việc của báo cáo.'},
 
-{g:'ns', n:'Chính xác soạn hàng', ma:null, val:'100,0', u:'%', man:'Màn 1 · Màn 4',
+{g:'ns', n:'Chính xác soạn hàng', ma:null, val:'100,0', u:'%', man:'Quản lý · Vận hành',
  ct:'Lệnh không có chênh lệch số lượng ÷ tổng số lệnh',
  ng:'task_daily.csv ← trường DifferenceQuantityInBaseUnit',
  luu:'<b>Không có lệnh nào lệch trong 45.861 lệnh, nhưng đừng đọc thành thao tác chính xác.</b> Hệ thống đang tự xác nhận lệnh ngay khi tạo — thời gian hoàn thành trung vị bằng <b>0 phút</b> — nên chênh lệch gần như không có cơ hội phát sinh. Con số phản ánh cấu hình hệ thống, không phải chất lượng công việc ngoài hiện trường.'},
 
-{g:'ns', n:'Tỷ lệ điều chuyển trên soạn hàng', ma:null, val:'1 : 2,5', u:null, man:'Màn 4',
+{g:'ns', n:'Tỷ lệ điều chuyển trên soạn hàng', ma:null, val:'1 : 2,5', u:null, man:'Vận hành',
  ct:'Số lệnh điều chuyển nội bộ ÷ số lệnh soạn hàng xuất',
  ng:'task_daily.csv · task_by_route.csv',
  luu:'Mỗi lần hàng đổi khu vực là một lần tốn công bốc xếp. Riêng hai luồng đi và về giữa khu trung gian và khu thành phẩm chính đã chiếm <b>55,7%</b> toàn bộ tác nghiệp.'},
 
-{g:'ns', n:'Giờ cao điểm', ma:null, val:'8', u:'giờ sáng', man:'Màn 4',
+{g:'ns', n:'Giờ cao điểm', ma:null, val:'8', u:'giờ sáng', man:'Vận hành',
  ct:'Giờ có nhiều lệnh phát sinh nhất, cộng dồn cả kỳ',
  ng:'task_by_hour.csv',
  luu:'<b>SAP lưu giờ theo UTC, dashboard đã đổi sang giờ Việt Nam.</b> Đỉnh sáng 8 giờ với 6.973 lệnh, đỉnh chiều 17 giờ với 5.191 lệnh, đáy nghỉ trưa 12 giờ chỉ còn 571 lệnh.'},
 
-{g:'ns', n:'Nhịp theo thứ trong tuần', ma:null, val:null, u:null, man:'Màn 4',
+{g:'ns', n:'Nhịp theo thứ trong tuần', ma:null, val:null, u:null, man:'Vận hành',
  ct:'Khối lượng xử lý của thứ đó ÷ số ngày làm việc của thứ đó trong kỳ',
  ng:'task_daily.csv',
  luu:'Thứ Hai đạt <b>205,8 tấn/ngày</b> so với chủ nhật <b>66,5</b> — gấp <b>3,1 lần</b>. Chia theo số ngày thực nên so sánh được giữa các thứ dù số ngày lệch nhau.'},
 
 /* ── QUẢN TRỊ ── */
-{g:'qt', n:'Độ phủ bộ KPI', ma:null, val:'4 / 14', u:null, man:'Màn 5',
- ct:'Số chỉ tiêu đo được ÷ tổng số chỉ tiêu trong bộ KPI của Khối',
- ng:'KVL-QT-DM-07 · IGROUP KPI Library v1.0',
- luu:'Gồm <b>2</b> chỉ tiêu đủ dữ liệu và <b>2</b> chỉ tiêu đo được có điều kiện. Mười chỉ tiêu còn lại thiếu dữ liệu nguồn, không phải thiếu biểu đồ.'}
+{g:'qt', n:'Độ phủ bộ KPI', ma:null, val:'13 / 23', u:null, man:'Tình trạng dữ liệu KPI',
+ ct:'Số chỉ tiêu đo được ÷ tổng số chỉ tiêu Kho vận trong bộ KPI công ty',
+ ng:'IGROUP KPI Library v1.1 — bộ chính thức, thay bộ 14 chỉ tiêu cũ của bản v1.0',
+ luu:'Gồm <b>3</b> chỉ tiêu đo đủ theo đúng công thức chính thức (KPI-150, KPI-155, KPI-162) và <b>10</b> chỉ tiêu đo được một phần — phần thiếu ghi rõ ở từng dòng tại Tình trạng dữ liệu KPI.<br><br>Mười chỉ tiêu còn lại thiếu <b>dữ liệu nguồn</b>, không phải thiếu biểu đồ: 4 chờ IT bổ sung trường vào view, 1 chờ Kế hoạch khai mức tồn an toàn, 5 chờ giá vốn, chi phí logistics và quy trình ghi nhận hàng hư hỏng, hàng hủy.<br><br><b>Cảnh báo quản trị:</b> không chỉ tiêu nào trong 23 chỉ tiêu ghi Giám đốc Khối Kho vận là owner — owner đang là COO (13), CFO (2), CSO (1) và dùng chung (5). Bộ chỉ tiêu cũng nằm rải ở 5 nhóm, không có nhóm <i>Kho vận</i> hay <i>Logistics</i> riêng.'}
 ];
 
 /* ═══ THUẬT NGỮ SAP / EWM ═══ */
@@ -1374,13 +2309,20 @@ const TERM=[
 const GAP=[
  ['Thời gian tác nghiệp mỗi lệnh','Cấu hình hệ thống','Hệ thống tự xác nhận lệnh ngay khi tạo, thời gian hoàn thành trung vị bằng 0 phút. Muốn đo phải chuyển sang xác nhận bằng quét mã tại hiện trường.'],
  ['Tỷ lệ lấp đầy theo ô kệ','Dữ liệu ô kệ rỗng','3.444 trên 3.445 ô bị gắn cờ rỗng, trường khối lượng trong ô bằng 0. Cần bật quản lý ô kệ trong EWM.'],
- ['Độ chính xác tồn kho (CC-01)','Thiếu nghiệp vụ kiểm kê','Chín tháng chỉ có 4 phiếu kiểm kê với 7 dòng. Không có nghiệp vụ đếm thì không có số để đối chiếu.'],
- ['Hạn sử dụng thật của mã hàng','Thiếu quyền API','Cần quyền đọc API_PRODUCT_SRV. Hiện chỉ đo được tuổi lô, không đo được cận hạn.'],
- ['Tỷ lệ hủy hàng hết hạn (CC-05)','Thiếu quyền API','Cần quyền đọc API_MATERIAL_DOCUMENT_SRV để lọc các loại chuyển động hủy.'],
- ['Loại và tải trọng container (LG-01)','Thiếu master data','Thông tin nằm ở booking hãng tàu, chưa vào SAP. Dashboard chỉ suy ra được số lượng container.'],
- ['Ngày tàu chạy (LG-02)','Thiếu master data','Lịch tàu chưa được quản lý trong SAP nên không tính được thời gian cargo-ready đến tàu chạy.'],
- ['Chứng từ xuất khẩu (LG-05)','Thiếu phân hệ','SAP có Incoterms và cảng đích nhưng không theo dõi vòng đời bộ chứng từ.'],
- ['Mọi chỉ tiêu chi phí','Thiếu số liệu tài chính','Chi phí kho, chi phí vận chuyển, phí lưu container đều nằm ở phân hệ tài chính, ngoài phạm vi dữ liệu kho vận.'],
+ ['Mức tồn an toàn (KPI-151)','Master data chưa khai','Trường safety stock có đủ 100% trong view nhưng giá trị bằng 0 ở toàn bộ mã hàng. Việc của bộ phận Kế hoạch, không phải việc kỹ thuật.'],
+ ['Số ngày tồn kho (KPI-152 · KPI-100)','Thiếu giá vốn hàng bán','Công thức chính thức chia cho giá vốn hàng bán. Khối không có số này, phải xin Kế toán. Theo quyết định 30/09/2026 hai chỉ tiêu để trống chứ không hiển thị số thay thế.'],
+ ['Thời gian nhập hàng (KPI-157)','View thiếu trường','Cần dấu thời gian chứng từ nhập. Đã có trong SAP, chưa đưa vào view của Khối.'],
+ ['Tổng số lệnh nhập (KPI-159)','View thiếu trường','Cần số đơn mua (PurchaseOrder) để đếm được lệnh nhập. Đã có trong SAP, chưa đưa vào view.'],
+ ['Thời gian đơn đến xuất hàng (KPI-072)','View thiếu trường','Cần ngày tạo đơn bán. Hiện chỉ có mốc kế hoạch và mốc xuất thực tế của kho.'],
+ ['Đáp ứng đơn hàng (KPI-074) và vế đủ lượng của KPI-073','View thiếu trường','Cần lượng đặt (Ordered Quantity). Hiện chỉ có lượng đã giao.'],
+ ['Hạn sử dụng thật của mã hàng','Thiếu quyền API','API_PRODUCT_SRV trả 403. Hiện chỉ đo được tuổi lô, không đo được cận hạn — đây là vế còn thiếu của KPI-153.'],
+ ['Hàng hết hạn (KPI-156)','Thiếu quyền API và quy trình','Cần quyền đọc API_MATERIAL_DOCUMENT_SRV để lọc chuyển động hủy, và cần quy trình ghi nhận lý do hủy.'],
+ ['Hàng hư hỏng trong lưu kho (KPI-038)','Thiếu quy trình ghi nhận','Cần thống nhất với QM cách ghi nhận hàng hư hỏng phát hiện trong kho, hiện không có chuyển động riêng cho việc này.'],
+ ['Chi phí logistics trên mỗi kg (KPI-065)','Thiếu số liệu tài chính','Không view nào có chi phí cước. Có thể tách từ tài khoản sổ cái nếu Kế toán cho biết số hiệu tài khoản. Owner là COO/CFO/CSO, Khối thực thi nhưng không sở hữu con số.'],
+ ['Phân cấp danh mục hàng hoá','Thiếu quyền API','Phân cấp mẹ–con thật nằm ở trường MARA-PRDHA trong API_PRODUCT_SRV, đang bị 403. Các trường MATKL, MTART, DISMM trong view là phân loại song song, không phải cây phân cấp.'],
+ ['Loại và tải trọng container','Thiếu master data','Thông tin nằm ở booking hãng tàu, chưa vào SAP. Dashboard chỉ suy ra được số lượng container. Chỉ tiêu LG-01 của bản v1.0 đã bị bỏ ở v1.1.'],
+ ['Ngày tàu chạy và chứng từ xuất khẩu','Thiếu phân hệ','SAP có Incoterms và cảng đích nhưng không theo dõi lịch tàu lẫn vòng đời bộ chứng từ. Các chỉ tiêu LG-02 và LG-05 của bản v1.0 đã bị bỏ ở v1.1.'],
+ ['Độ chính xác tồn kho','Thiếu nghiệp vụ kiểm kê','Chín tháng chỉ có 4 phiếu kiểm kê với 7 dòng. Bản v1.1 không còn chỉ tiêu nào đo việc này, nhưng vẫn nên khôi phục cycle counting.'],
  ['Nhân sự và giờ công kho','Không có dữ liệu','Dashboard không nối với dữ liệu nhân sự nên không tính được năng suất trên đầu người hay chi phí nhân công mỗi tấn.'],
  ['Các nhà máy ngoài NTSF','Chưa triển khai SAP','Chỉ NTSF đang dùng SAP. Muốn có số liệu toàn Khối phải chờ các nhà máy khác lên hệ thống.']
 ];
@@ -1433,6 +2375,7 @@ document.getElementById('q').addEventListener('input',e=>{
 apply();
 
 /* màn tra cứu không có biểu đồ — nút đổi giao diện vẫn gọi hàm này */
+window.DRILL=typeof DRILL!=="undefined"?DRILL:null;
 window.drawAll=function(){};
 </script>
 </body>
